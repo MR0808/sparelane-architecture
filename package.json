@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "likec4 dev architecture",
-        "build": "likec4 build architecture -o dist",
+        "dev": "likec4 dev",
+        "build": "likec4 build -o dist",
         "preview": "likec4 preview -o dist"
     },
     "keywords": [],

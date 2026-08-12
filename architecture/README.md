@@ -10,7 +10,7 @@ This folder contains the proposed target architecture for Sparelane.
 - `platform.c4` - experience, APIs, identity, consumer, merchant, billing, events, data and operations
 - `payments.c4` - payment reliability engine plus wallet and ledger
 - `settlement.c4` - settlement and reconciliation domain
-- `security.c4` - risk, fraud, KYC/KYB, audit and PCI boundary
+- `risk.c4` - risk, fraud, KYC/KYB, audit and PCI boundary
 - `relationships.c4` - logical relationships between all elements
 - `views.c4` - architecture and dynamic workflow views
 - `deployment.c4` - production deployment model
@@ -26,7 +26,7 @@ architecture/
     platform.c4
     payments.c4
     settlement.c4
-    security.c4
+    risk.c4
     relationships.c4
     views.c4
     deployment.c4
@@ -67,4 +67,4 @@ The logical model is intended to be stable. Provider and deployment choices are 
 
 ## LikeC4 file loading
 
-LikeC4 automatically merges `.c4` files in one project. Domain files such as `payments.c4`, `settlement.c4` and `security.c4` use `extend sparelane` to add nested elements to the top-level Sparelane system defined in `platform.c4`.
+LikeC4 automatically merges `.c4` files in one project. Domain files such as `payments.c4`, `settlement.c4` and `risk.c4` use `extend sparelane` to add nested elements to the top-level Sparelane system defined in `platform.c4`.

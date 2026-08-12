@@ -1,7 +1,0 @@
-{
-    "$schema": "https://likec4.dev/schemas/config.json",
-    "name": "sparelane",
-    "title": "Sparelane Solution Architecture",
-    "metadata": { "owner": "Sparelane", "domain": "payments" },
-    "landingPage": { "redirect": true }
-}

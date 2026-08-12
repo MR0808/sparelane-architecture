@@ -1,4 +1,9 @@
 specification {
+
+  tag future
+
+  color purple #7C3AED
+
   element person {
     notation 'Person'
     style {
