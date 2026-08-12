@@ -1,0 +1,21 @@
+model {
+  extend sparelane {
+    settlementPlatform = system 'Settlement & Reconciliation' {
+      settlementService = service 'Settlement Service' {
+        description 'Coordinates merchant settlement only after consumer funds are successfully collected.'
+      }
+
+      settlementBatchService = service 'Settlement Batch Service' {
+        description 'Groups payable merchant transactions into settlement batches.'
+      }
+
+      settlementInstructionService = service 'Settlement Instruction Service' {
+        description 'Creates instructions for the banking or settlement partner.'
+      }
+
+      settlementReconciliation = service 'Settlement Reconciliation' {
+        description 'Reconciles provider settlement status with ledger entries and merchant references.'
+      }
+    }
+  }
+}

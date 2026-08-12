@@ -1,0 +1,111 @@
+specification {
+  element person {
+    notation 'Person'
+    style {
+      shape person
+      color gray
+    }
+  }
+
+  element externalSystem {
+    notation 'External System'
+    style { color gray }
+  }
+
+  element system {
+    notation 'System'
+    style { color blue }
+  }
+
+  element application {
+    notation 'Application'
+    style { color sky }
+  }
+
+  element service {
+    notation 'Service'
+    style { color indigo }
+  }
+
+  element database {
+    notation 'Database'
+    style {
+      shape cylinder
+      color green
+    }
+  }
+
+  element queue {
+    notation 'Queue / Event Bus'
+    style {
+      shape queue
+      color amber
+    }
+  }
+
+  element storage {
+    notation 'Storage'
+    style {
+      shape storage
+      color green
+    }
+  }
+
+  element scheduledJob {
+    notation 'Scheduled Job'
+    style { color amber }
+  }
+
+  element security {
+    notation 'Security Component'
+    style { color red }
+  }
+
+  relationship sync {
+    color gray
+    line solid
+  }
+
+  relationship async {
+    color amber
+    line dashed
+  }
+
+  relationship event {
+    color amber
+    line dashed
+  }
+
+  relationship payment {
+    color green
+    line solid
+  }
+
+  relationship webhook {
+    color purple
+    line dashed
+  }
+
+  relationship auth {
+    color red
+    line solid
+  }
+
+  deploymentNode environment
+
+  deploymentNode cloud {
+    style { color blue }
+  }
+
+  deploymentNode hosting {
+    style { color sky }
+  }
+
+  deploymentNode managedDatabase {
+    style { color green }
+  }
+
+  deploymentNode managedService {
+    style { color indigo }
+  }
+}

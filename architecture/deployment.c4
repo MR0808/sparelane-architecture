@@ -1,0 +1,33 @@
+deployment {
+  environment production 'Production' {
+    cloud webHosting 'Web / Edge Hosting' {
+      experience = instanceOf sparelane.experience
+      edge = instanceOf sparelane.edgeLayer
+      identity = instanceOf sparelane.identity
+    }
+
+    cloud applicationCloud 'Application Runtime' {
+      consumerServices = instanceOf sparelane.consumerDomain
+      merchantServices = instanceOf sparelane.merchantDomain
+      billingServices = instanceOf sparelane.billingDomain
+      paymentServices = instanceOf sparelane.paymentPlatform
+      fundsServices = instanceOf sparelane.fundsPlatform
+      settlementServices = instanceOf sparelane.settlementPlatform
+      notificationServices = instanceOf sparelane.notificationPlatform
+      riskServices = instanceOf sparelane.riskPlatform
+      eventServices = instanceOf sparelane.events
+      operationsServices = instanceOf sparelane.operations
+    }
+
+    managedDatabase postgres 'Managed PostgreSQL' {
+      data = instanceOf sparelane.data
+    }
+  }
+}
+
+views 'Sparelane Architecture / Deployment' {
+  deployment view productionDeployment {
+    title 'Production Deployment'
+    include production.**
+  }
+}

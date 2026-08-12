@@ -1,0 +1,18 @@
+{
+    "name": "sparelane-architecture",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "likec4 dev architecture",
+        "build": "likec4 build architecture -o dist",
+        "preview": "likec4 preview -o dist"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "devDependencies": {
+        "likec4": "^1.59.2"
+    }
+}

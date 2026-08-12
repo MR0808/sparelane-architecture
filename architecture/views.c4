@@ -1,0 +1,156 @@
+views 'Sparelane Architecture' {
+  view index {
+    title '01 / System Context'
+    include consumer, merchantUser, merchantDeveloper, sparelaneAdmin,
+      merchantEnvironment, sparelane, paymentProvider, bankingPartner,
+      payToNetwork, emailProvider, smsProvider, identityProviders,
+      merchantVerificationProvider
+  }
+
+  view platform {
+    title '02 / Sparelane Platform'
+    include consumer, merchantUser, merchantDeveloper, sparelaneAdmin,
+      merchantEnvironment, sparelane.*, paymentProvider, bankingPartner,
+      payToNetwork, emailProvider, smsProvider, identityProviders,
+      merchantVerificationProvider
+  }
+
+  view experienceApi {
+    title '03 / Experience and API'
+    include consumer, merchantUser, merchantDeveloper, sparelaneAdmin,
+      merchantEnvironment.*, sparelane.experience.*, sparelane.edgeLayer.*,
+      sparelane.identity.*, identityProviders
+  }
+
+  view paymentEngine {
+    title '04 / Payment Reliability Engine'
+    include sparelane.billingDomain.*, sparelane.paymentPlatform.*,
+      sparelane.consumerDomain.paymentMethodService,
+      sparelane.consumerDomain.methodPriorityService,
+      sparelane.fundsPlatform.*, sparelane.events.eventBus,
+      paymentProvider.*, payToNetwork
+  }
+
+  view settlement {
+    title '05 / Settlement and Reconciliation'
+    include sparelane.paymentPlatform.orchestration,
+      sparelane.fundsPlatform.*, sparelane.settlementPlatform.*,
+      sparelane.merchantDomain.reconciliationService,
+      sparelane.events.eventBus, sparelane.data.ledgerDb,
+      bankingPartner.*, merchantEnvironment.merchantBackend,
+      merchantEnvironment.merchantFinance
+  }
+
+  view dataArchitecture {
+    title '06 / Data Architecture'
+    include sparelane.consumerDomain.*, sparelane.merchantDomain.*,
+      sparelane.billingDomain.*, sparelane.paymentPlatform.paymentAttemptService,
+      sparelane.fundsPlatform.*, sparelane.riskPlatform.auditService,
+      sparelane.data.*
+  }
+
+  view securityArchitecture {
+    title '07 / Security Architecture'
+    include consumer, merchantUser, merchantDeveloper, sparelaneAdmin,
+      sparelane.experience.*, sparelane.edgeLayer.*, sparelane.identity.*,
+      sparelane.riskPlatform.*, sparelane.consumerDomain.paymentMethodService,
+      sparelane.data.operationalDb, sparelane.data.ledgerDb,
+      sparelane.data.auditDb, paymentProvider, identityProviders,
+      merchantVerificationProvider
+  }
+
+  view eventsArchitecture {
+    title '08 / Event Driven Architecture'
+    include sparelane.billingDomain.billService,
+      sparelane.billingDomain.billScheduler,
+      sparelane.paymentPlatform.orchestration,
+      sparelane.paymentPlatform.retryService,
+      sparelane.settlementPlatform.settlementService,
+      sparelane.notificationPlatform.notificationService,
+      sparelane.edgeLayer.webhookDelivery,
+      sparelane.events.*, sparelane.data.analyticsStore
+  }
+
+  dynamic view paymentLifecycle {
+    title 'Flows / Complete Recurring Payment Lifecycle'
+
+    merchantEnvironment.merchantBilling -> merchantEnvironment.merchantBackend 'bill becomes due'
+    merchantEnvironment.merchantBackend -> sparelane.edgeLayer.publicApi 'POST bill event'
+    sparelane.edgeLayer.publicApi -> sparelane.billingDomain.billValidation 'validate'
+    sparelane.billingDomain.billValidation -> sparelane.billingDomain.billService 'create bill'
+    sparelane.billingDomain.billService -> sparelane.events.eventBus 'BillCreated'
+    sparelane.billingDomain.billScheduler -> sparelane.paymentPlatform.orchestration 'T-3 payment check'
+    sparelane.paymentPlatform.orchestration -> sparelane.paymentPlatform.reliabilityEngine 'determine first method'
+    sparelane.paymentPlatform.reliabilityEngine -> sparelane.consumerDomain.methodPriorityService 'primary + backups'
+    sparelane.paymentPlatform.orchestration -> sparelane.paymentPlatform.preAuthService 'pre-authorise primary'
+    sparelane.paymentPlatform.preAuthService -> paymentProvider.cardProcessing 'authorisation request'
+    paymentProvider.providerWebhooks -> sparelane.edgeLayer.webhookIngress 'authorisation result'
+    sparelane.edgeLayer.webhookIngress -> sparelane.events.eventBus 'PaymentProviderEvent'
+    sparelane.events.eventBus -> sparelane.paymentPlatform.orchestration 'continue workflow'
+    sparelane.paymentPlatform.orchestration -> sparelane.paymentPlatform.cardPaymentService 'capture on due date'
+    sparelane.paymentPlatform.cardPaymentService -> paymentProvider.cardProcessing 'capture consumer funds'
+    paymentProvider.providerWebhooks -> sparelane.edgeLayer.webhookIngress 'capture successful'
+    sparelane.paymentPlatform.orchestration -> sparelane.fundsPlatform.ledgerService 'record collected funds'
+    sparelane.paymentPlatform.orchestration -> sparelane.events.eventBus 'PaymentSucceeded'
+    sparelane.events.eventBus -> sparelane.settlementPlatform.settlementService 'payment ready for settlement'
+    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementBatchService 'prepare settlement'
+    sparelane.settlementPlatform.settlementBatchService -> sparelane.settlementPlatform.settlementInstructionService
+    sparelane.settlementPlatform.settlementInstructionService -> bankingPartner.settlementRail 'merchant settlement'
+    bankingPartner.settlementEvents -> sparelane.edgeLayer.webhookIngress 'settlement confirmed'
+    sparelane.settlementPlatform.settlementReconciliation -> sparelane.merchantDomain.reconciliationService 'reconcile invoice'
+    sparelane.events.eventBus -> sparelane.edgeLayer.webhookDelivery 'SettlementCompleted'
+    sparelane.edgeLayer.webhookDelivery -> merchantEnvironment.merchantBackend 'settlement status'
+  }
+
+  dynamic view paymentRecovery {
+    title 'Flows / Failed Payment Recovery'
+
+    sparelane.billingDomain.billScheduler -> sparelane.paymentPlatform.orchestration 'payment action due'
+    sparelane.paymentPlatform.orchestration -> sparelane.consumerDomain.methodPriorityService 'get ordered methods'
+    sparelane.paymentPlatform.orchestration -> sparelane.paymentPlatform.cardPaymentService 'try primary card'
+    sparelane.paymentPlatform.cardPaymentService -> paymentProvider.cardProcessing 'authorise'
+    paymentProvider.providerWebhooks -> sparelane.edgeLayer.webhookIngress 'declined'
+    sparelane.edgeLayer.webhookIngress -> sparelane.events.eventBus 'PaymentDeclined'
+    sparelane.events.eventBus -> sparelane.paymentPlatform.orchestration
+    sparelane.paymentPlatform.orchestration -> sparelane.paymentPlatform.declineService 'classify decline'
+    sparelane.paymentPlatform.declineService -> sparelane.paymentPlatform.reliabilityEngine 'determine next action'
+    sparelane.paymentPlatform.reliabilityEngine -> sparelane.consumerDomain.methodPriorityService 'next backup'
+    sparelane.paymentPlatform.orchestration -> sparelane.paymentPlatform.cardPaymentService 'attempt backup card'
+    sparelane.paymentPlatform.orchestration -> sparelane.paymentPlatform.walletPaymentService 'attempt wallet if configured'
+    sparelane.paymentPlatform.orchestration -> sparelane.paymentPlatform.retryService 'schedule retry if required'
+    sparelane.paymentPlatform.retryService -> sparelane.events.eventBus 'PaymentRetryScheduled'
+    sparelane.events.eventBus -> sparelane.notificationPlatform.notificationService 'consumer action required'
+    sparelane.notificationPlatform.notificationService -> emailProvider 'email consumer'
+    sparelane.notificationPlatform.notificationService -> smsProvider 'SMS consumer'
+    consumer -> sparelane.experience.consumerWeb 'opens payment issue'
+    sparelane.experience.consumerWeb -> sparelane.edgeLayer.consumerBff 'Retry now'
+    sparelane.edgeLayer.consumerBff -> sparelane.paymentPlatform.orchestration 'manual retry'
+    sparelane.paymentPlatform.orchestration -> sparelane.edgeLayer.webhookDelivery 'notify merchant if unrecovered'
+    sparelane.edgeLayer.webhookDelivery -> merchantEnvironment.merchantBackend 'payment failed'
+  }
+
+  dynamic view merchantConnection {
+    title 'Flows / Connect Consumer to Merchant'
+
+    consumer -> merchantEnvironment.merchantWebsite 'opens billing portal'
+    merchantEnvironment.merchantWebsite -> sparelane.experience.hostedFlow 'Pay with Sparelane'
+    consumer -> sparelane.experience.hostedFlow 'authenticate'
+    sparelane.experience.hostedFlow -> sparelane.identity.identityService 'verify identity'
+    sparelane.experience.hostedFlow -> sparelane.consumerDomain.merchantConnectionService 'approve connection'
+    sparelane.consumerDomain.merchantConnectionService -> sparelane.data.operationalDb 'store connection'
+    sparelane.consumerDomain.merchantConnectionService -> sparelane.events.eventBus 'MerchantConnected'
+    sparelane.events.eventBus -> sparelane.edgeLayer.webhookDelivery
+    sparelane.edgeLayer.webhookDelivery -> merchantEnvironment.merchantBackend 'consumer connected'
+  }
+
+  dynamic view addPaymentMethod {
+    title 'Flows / Add Tokenised Card'
+
+    consumer -> sparelane.experience.consumerWeb 'add payment method'
+    sparelane.experience.consumerWeb -> paymentProvider.tokenisation 'secure card entry'
+    paymentProvider.tokenisation -> sparelane.edgeLayer.consumerBff 'returns payment token'
+    sparelane.edgeLayer.consumerBff -> sparelane.consumerDomain.paymentMethodService 'save token reference'
+    sparelane.consumerDomain.paymentMethodService -> sparelane.data.operationalDb 'store token + metadata'
+    sparelane.consumerDomain.paymentMethodService -> sparelane.consumerDomain.methodPriorityService 'set priority'
+  }
+}

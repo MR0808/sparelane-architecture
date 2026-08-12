@@ -1,0 +1,50 @@
+model {
+  merchantEnvironment = externalSystem 'Merchant Environment' {
+    description 'Existing merchant systems remain the source of truth for billing, customer accounts and finance.'
+
+    merchantWebsite = application 'Merchant Website / Billing Portal' {
+      description 'Existing merchant website, checkout or account portal.'
+    }
+
+    merchantBilling = application 'Merchant Billing System' {
+      description 'Existing billing, subscription or accounts-receivable platform.'
+    }
+
+    merchantFinance = application 'Merchant Finance / ERP' {
+      description 'Existing finance and reconciliation system.'
+    }
+
+    merchantBackend = application 'Merchant Integration Backend' {
+      description 'Merchant-side integration for API requests, webhook handling and reconciliation.'
+    }
+  }
+
+  paymentProvider = externalSystem 'Payment Service Provider' {
+    description 'PCI-compliant provider for card tokenisation, authorisation, capture and payment events.'
+
+    tokenisation = service 'Card Tokenisation'
+    cardProcessing = service 'Card Processing'
+    providerWebhooks = service 'Payment Webhooks'
+  }
+
+  bankingPartner = externalSystem 'Banking / Settlement Partner' {
+    description 'Partner providing merchant settlement and access to payment rails.'
+
+    settlementRail = service 'Settlement Rail'
+    settlementEvents = service 'Settlement Events'
+  }
+
+  payToNetwork = externalSystem 'PayTo / NPP' {
+    #future
+    description 'Australian account-to-account payment infrastructure planned for a later phase.'
+  }
+
+  emailProvider = externalSystem 'Email Provider'
+  smsProvider = externalSystem 'SMS Provider'
+
+  identityProviders = externalSystem 'External Identity Providers' {
+    description 'Google, Apple and passkey ecosystem.'
+  }
+
+  merchantVerificationProvider = externalSystem 'KYC / KYB Provider'
+}

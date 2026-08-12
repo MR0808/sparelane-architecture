@@ -1,0 +1,178 @@
+model {
+  sparelane = system 'Sparelane Platform' {
+    description 'Payment reliability layer for recurring bills. Sparelane orchestrates payment methods, pre-authorisation, retries, fallback, collection, settlement and notifications without guaranteeing payment.'
+
+    experience = system 'Experience Layer' {
+      consumerWeb = application 'Consumer Web App' {
+        description 'Responsive consumer application for bills, payment methods, merchant connections, payment issues and history.'
+        technology 'Next.js / TypeScript'
+      }
+
+      merchantPortal = application 'Merchant Portal' {
+        description 'Merchant onboarding, integration, payment activity, reporting and reconciliation.'
+        technology 'Next.js / TypeScript'
+      }
+
+      adminPortal = application 'Sparelane Admin Portal' {
+        description 'Internal merchant approval, payment investigation, support, risk and operational tooling.'
+        technology 'Next.js / TypeScript'
+      }
+
+      hostedFlow = application 'Hosted Pay with Sparelane Flow' {
+        description 'Secure Sparelane-hosted merchant connection and consent flow.'
+        technology 'Next.js'
+      }
+
+      merchantWidget = application 'Merchant Widget / Modal' {
+        description 'Embeddable merchant integration that launches the hosted Sparelane flow.'
+        technology 'JavaScript SDK'
+      }
+    }
+
+    edgeLayer = system 'API & Edge Layer' {
+      publicApi = service 'Merchant API' {
+        description 'Versioned merchant API for bills, payment status, customer connections and reconciliation.'
+        technology 'HTTPS / REST / JSON'
+      }
+
+      consumerBff = service 'Consumer Backend' {
+        technology 'Next.js Server Actions / API'
+      }
+
+      merchantBff = service 'Merchant Backend' {
+        technology 'Next.js Server Actions / API'
+      }
+
+      adminBff = service 'Admin Backend' {
+        technology 'Next.js Server Actions / API'
+      }
+
+      webhookIngress = service 'Provider Webhook Ingress' {
+        description 'Validates asynchronous provider events before internal processing.'
+      }
+
+      webhookDelivery = service 'Merchant Webhook Delivery' {
+        description 'Delivers signed payment and settlement events to merchant endpoints with retry tracking.'
+      }
+
+      rateLimiter = security 'API Rate Limiting'
+    }
+
+    identity = system 'Identity & Access' {
+      identityService = service 'Identity Service' {
+        description 'Authentication, verification, MFA, passkeys and session management.'
+      }
+
+      authorization = security 'Authorisation Service' {
+        description 'Role and permission enforcement across consumer, merchant and administrator contexts.'
+      }
+
+      merchantApiKeys = security 'Merchant API Key Management' {
+        description 'Issues, rotates and revokes merchant integration credentials.'
+      }
+
+      secrets = security 'Secrets Management'
+    }
+
+    consumerDomain = system 'Consumer Domain' {
+      consumerService = service 'Consumer Service'
+
+      paymentMethodService = service 'Payment Method Service' {
+        description 'Stores PSP token references and payment method metadata. Never stores raw PAN or CVV.'
+      }
+
+      methodPriorityService = service 'Payment Method Priority Service' {
+        description 'Maintains primary card, ordered backups and wallet fallback preference.'
+      }
+
+      merchantConnectionService = service 'Merchant Connection Service' {
+        description 'Manages consumer consent and merchant-customer connection references.'
+      }
+
+      consumerBillService = service 'Consumer Bill Service' {
+        description 'Consumer-facing current, upcoming and historical bill view.'
+      }
+    }
+
+    merchantDomain = system 'Merchant Domain' {
+      merchantService = service 'Merchant Service'
+
+      merchantOnboarding = service 'Merchant Onboarding Service' {
+        description 'Merchant registration, business verification, settlement details and approval workflow.'
+      }
+
+      integrationService = service 'Merchant Integration Service' {
+        description 'API, hosted-flow, widget and webhook configuration.'
+      }
+
+      reconciliationService = service 'Reconciliation Service' {
+        description 'Maintains merchant invoice and reconciliation references through settlement.'
+      }
+
+      merchantReporting = service 'Merchant Reporting Service' {
+        description 'Payment recovery, failed-payment, recovered-revenue and settlement reporting.'
+      }
+    }
+
+    billingDomain = system 'Bill Management' {
+      billService = service 'Bill Service' {
+        description 'Stores merchant bill events, due dates, amounts, invoice numbers and reconciliation references.'
+      }
+
+      billValidation = service 'Bill Validation Service' {
+        description 'Validates bill events, ownership, consumer connections and idempotency.'
+      }
+
+      billScheduler = scheduledJob 'Bill Scheduler' {
+        description 'Finds bills requiring pre-auth, reminder, retry, capture or failure escalation.'
+      }
+    }
+
+    notificationPlatform = system 'Notifications' {
+      notificationService = service 'Notification Service'
+      notificationPreferenceService = service 'Notification Preferences'
+      notificationTemplateService = service 'Template Service'
+      emailAdapter = service 'Email Adapter'
+      smsAdapter = service 'SMS Adapter'
+    }
+
+    events = system 'Event Platform' {
+      eventBus = queue 'Domain Event Bus' {
+        description 'Durable asynchronous channel between Sparelane domains.'
+      }
+
+      deadLetterQueue = queue 'Dead Letter Queue'
+
+      outboxProcessor = service 'Transactional Outbox Processor' {
+        description 'Reliably publishes domain events created inside database transactions.'
+      }
+    }
+
+    data = system 'Data Layer' {
+      operationalDb = database 'Operational Database' {
+        technology 'PostgreSQL'
+        description 'Transactional operational data excluding raw card PAN and CVV.'
+      }
+
+      ledgerDb = database 'Financial Ledger Database' {
+        technology 'PostgreSQL'
+        description 'Append-only financial ledger and settlement records.'
+      }
+
+      auditDb = database 'Audit Store'
+      analyticsStore = database 'Analytics Store'
+
+      objectStorage = storage 'Secure Object Storage' {
+        description 'Merchant verification evidence, exports and other non-card documents.'
+      }
+    }
+
+    operations = system 'Platform Operations' {
+      observability = service 'Observability Platform' {
+        description 'Logs, metrics, traces, uptime and application performance monitoring.'
+      }
+
+      alerting = service 'Operational Alerting'
+    }
+  }
+}

@@ -1,0 +1,25 @@
+model {
+  extend sparelane {
+    riskPlatform = system 'Risk, Security & Compliance' {
+      riskService = service 'Risk Engine' {
+        description 'Payment, consumer-account and merchant risk rules.'
+      }
+
+      merchantVerification = service 'Merchant Verification Service' {
+        description 'Coordinates merchant KYC/KYB requirements and approval.'
+      }
+
+      fraudService = service 'Fraud Monitoring' {
+        description 'Detects unusual account, merchant and payment behaviour.'
+      }
+
+      auditService = service 'Audit Service' {
+        description 'Tamper-resistant record of important administrative, financial and security actions.'
+      }
+
+      pciBoundary = security 'PCI Boundary' {
+        description 'Raw card entry and card data remain within the selected PCI-compliant payment provider boundary.'
+      }
+    }
+  }
+}

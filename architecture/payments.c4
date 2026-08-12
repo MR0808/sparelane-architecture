@@ -1,0 +1,64 @@
+model {
+  extend sparelane {
+    paymentPlatform = system 'Payment Reliability Engine' {
+      orchestration = service 'Payment Orchestrator' {
+        description 'Central coordinator for payment method selection, pre-authorisation, fallback, retries, capture and result processing.'
+      }
+
+      reliabilityEngine = service 'Reliability Engine' {
+        description 'Determines which payment method to attempt and when. MVP uses deterministic rules.'
+      }
+
+      preAuthService = service 'Pre-authorisation Service' {
+        description 'Performs early payment method checks ahead of bill due date where supported.'
+      }
+
+      paymentAttemptService = service 'Payment Attempt Service' {
+        description 'Immutable history of every payment attempt, provider response and result.'
+      }
+
+      cardPaymentService = service 'Card Payment Adapter' {
+        description 'Provider-independent abstraction for tokenised card authorisation, capture, void and refund.'
+      }
+
+      walletPaymentService = service 'Wallet Payment Service' {
+        description 'Uses Sparelane wallet funds where enabled and permitted.'
+      }
+
+      payToService = service 'PayTo Adapter' {
+        #future
+        description 'Future account-to-account payment adapter using Australian PayTo infrastructure.'
+      }
+
+      retryService = service 'Retry Service' {
+        description 'Creates controlled retries with retry windows and maximum attempt limits.'
+      }
+
+      declineService = service 'Decline Classification Service' {
+        description 'Normalises decline reasons and determines whether another attempt is appropriate.'
+      }
+
+      paymentStateMachine = service 'Payment State Machine' {
+        description 'Controls valid payment lifecycle state transitions.'
+      }
+    }
+
+    fundsPlatform = system 'Funds & Ledger' {
+      walletService = service 'Wallet Service' {
+        description 'Optional consumer wallet capability with configurable balance limits.'
+      }
+
+      ledgerService = service 'Double-entry Ledger' {
+        description 'Append-only balanced financial ledger for movements of funds.'
+      }
+
+      balanceService = service 'Balance Service' {
+        description 'Calculates available, pending and settlement balances from ledger entries.'
+      }
+
+      fundsReservation = service 'Funds Reservation Service' {
+        description 'Reserves funds where required during payment processing.'
+      }
+    }
+  }
+}
