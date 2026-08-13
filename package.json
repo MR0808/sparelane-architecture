@@ -1,18 +1,24 @@
 {
     "name": "sparelane-architecture",
     "version": "1.0.0",
-    "description": "",
+    "description": "Sparelane architecture portal and design source of truth",
     "main": "index.js",
     "scripts": {
         "dev": "likec4 dev",
         "build": "likec4 build -o dist",
-        "preview": "likec4 preview -o dist"
+        "preview": "likec4 preview -o dist",
+        "architecture:validate": "likec4 validate --json --no-layout .",
+        "openapi:lint": "node scripts/validate-openapi.mjs",
+        "docs:links": "node scripts/validate-doc-links.mjs",
+        "validate": "npm run architecture:validate && npm run openapi:lint && npm run docs:links",
+        "check": "npm run validate && npm run build"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "type": "commonjs",
     "devDependencies": {
+        "@apidevtools/swagger-parser": "^12.1.0",
         "likec4": "^1.59.2"
     }
 }

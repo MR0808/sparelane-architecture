@@ -1,50 +1,80 @@
 model {
   merchantEnvironment = externalSystem 'Merchant Environment' {
-    description 'Existing merchant systems remain the source of truth for billing, customer accounts and finance.'
+    #external #mvp
+    description 'Existing merchant systems remain the system of record for billing, invoices, subscriptions, customer accounts and finance.'
 
     merchantWebsite = application 'Merchant Website / Billing Portal' {
-      description 'Existing merchant website, checkout or account portal.'
+      description 'Existing merchant website, checkout or account portal where consumers manage bills.'
     }
 
     merchantBilling = application 'Merchant Billing System' {
-      description 'Existing billing, subscription or accounts-receivable platform.'
+      description 'Merchant system of record for billing, subscriptions and accounts receivable.'
     }
 
     merchantFinance = application 'Merchant Finance / ERP' {
-      description 'Existing finance and reconciliation system.'
+      description 'Merchant finance and reconciliation system that consumes Sparelane settlement outcomes.'
     }
 
     merchantBackend = application 'Merchant Integration Backend' {
-      description 'Merchant-side integration for API requests, webhook handling and reconciliation.'
+      description 'Merchant-side integration for bill submission, webhook handling and reconciliation updates.'
     }
   }
 
   paymentProvider = externalSystem 'Payment Service Provider' {
-    description 'PCI-compliant provider for card tokenisation, authorisation, capture and payment events.'
+    #external #mvp #proposed #sensitive
+    description 'PCI-compliant provider for card tokenisation, authorisation, capture and payment events. Specific vendor not yet selected.'
 
-    tokenisation = service 'Card Tokenisation'
-    cardProcessing = service 'Card Processing'
-    providerWebhooks = service 'Payment Webhooks'
+    tokenisation = service 'Card Tokenisation' {
+      #sensitive #mvp
+      description 'Secure card capture and tokenisation within the provider PCI boundary. Sparelane never receives raw PAN or CVV.'
+    }
+
+    cardProcessing = service 'Card Processing' {
+      #financial #mvp
+      description 'Authorises, captures, voids and refunds tokenised card payments on behalf of Sparelane.'
+    }
+
+    providerWebhooks = service 'Payment Webhooks' {
+      description 'Asynchronous payment status events delivered to Sparelane.'
+    }
   }
 
   bankingPartner = externalSystem 'Banking / Settlement Partner' {
-    description 'Partner providing merchant settlement and access to payment rails.'
+    #external #mvp #proposed #financial
+    description 'External partner providing merchant settlement and access to payment rails. Specific banking partner, custody model and instruction mechanics are not yet selected.'
 
-    settlementRail = service 'Settlement Rail'
-    settlementEvents = service 'Settlement Events'
+    settlementRail = service 'Settlement Rail' {
+      #financial
+      description 'Executes merchant settlement instructions only after consumer funds have been collected and made settlement-eligible.'
+    }
+
+    settlementEvents = service 'Settlement Events' {
+      description 'Confirms settlement outcomes (including failures and delayed status) back to Sparelane for reconciliation. Acknowledgement alone is not final SETTLED.'
+    }
   }
 
   payToNetwork = externalSystem 'PayTo / NPP' {
-    #future
-    description 'Australian account-to-account payment infrastructure planned for a later phase.'
+    #external #future
+    description 'Australian account-to-account payment infrastructure planned for a later phase. Not part of MVP.'
   }
 
-  emailProvider = externalSystem 'Email Provider'
-  smsProvider = externalSystem 'SMS Provider'
+  emailProvider = externalSystem 'Email Provider' {
+    #external #mvp #proposed
+    description 'Transactional email delivery for consumer and merchant notifications. Vendor not yet selected.'
+  }
+
+  smsProvider = externalSystem 'SMS Provider' {
+    #external #mvp #proposed
+    description 'Transactional SMS delivery for time-sensitive payment notifications. Vendor not yet selected.'
+  }
 
   identityProviders = externalSystem 'External Identity Providers' {
-    description 'Google, Apple and passkey ecosystem.'
+    #external #mvp #proposed #sensitive
+    description 'External identity ecosystems such as Google, Apple and passkeys used for consumer authentication.'
   }
 
-  merchantVerificationProvider = externalSystem 'KYC / KYB Provider'
+  merchantVerificationProvider = externalSystem 'KYC / KYB Provider' {
+    #external #mvp #proposed #sensitive
+    description 'Third-party business verification provider used during merchant onboarding. Vendor not yet selected.'
+  }
 }

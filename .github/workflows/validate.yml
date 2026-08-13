@@ -1,0 +1,34 @@
+name: Validate Architecture
+
+on:
+    pull_request:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+concurrency:
+    group: validate-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    validate:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
+                  cache: npm
+
+            - name: Install
+              run: npm ci
+
+            - name: Validate
+              run: npm run validate
+
+            - name: Build
+              run: npm run build

@@ -1,33 +1,124 @@
 deployment {
   environment production 'Production' {
-    cloud webHosting 'Web / Edge Hosting' {
+    #proposed
+    description 'Logical production topology. Cloud provider, regions, Kubernetes/serverless and managed service vendors are not yet selected.'
+
+    cloud edgeFront 'Web / Edge' {
+      #proposed
+      description 'Internet-facing experience applications. Stateless where practical.'
+      webApp = instanceOf sparelane.operations.webExperienceApp
       experience = instanceOf sparelane.experience
+    }
+
+    cloud apiRuntime 'API Application' {
+      #proposed
+      description 'HTTP APIs, experience backends and provider webhook ingress.'
+      apiApp = instanceOf sparelane.operations.apiApplication
       edge = instanceOf sparelane.edgeLayer
       identity = instanceOf sparelane.identity
     }
 
-    cloud applicationCloud 'Application Runtime' {
+    cloud applicationServices 'Application Services' {
+      #proposed
+      description 'Domain logic hosted inside API and worker deployables. Logical services may share processes.'
       consumerServices = instanceOf sparelane.consumerDomain
       merchantServices = instanceOf sparelane.merchantDomain
       billingServices = instanceOf sparelane.billingDomain
+      riskServices = instanceOf sparelane.riskPlatform
+    }
+
+    cloud asyncWorkers 'Async Workers' {
+      #proposed
+      description 'Isolated worker pools. Payment/settlement are Tier-1; notification/webhook failures must not stop payment correctness; analytics is shed-first.'
+      paymentWorker = instanceOf sparelane.operations.paymentWorker
+      settlementWorker = instanceOf sparelane.operations.settlementWorker
+      notificationWorker = instanceOf sparelane.operations.notificationWorker
       paymentServices = instanceOf sparelane.paymentPlatform
       fundsServices = instanceOf sparelane.fundsPlatform
       settlementServices = instanceOf sparelane.settlementPlatform
       notificationServices = instanceOf sparelane.notificationPlatform
-      riskServices = instanceOf sparelane.riskPlatform
-      eventServices = instanceOf sparelane.events
-      operationsServices = instanceOf sparelane.operations
     }
 
-    managedDatabase postgres 'Managed PostgreSQL' {
-      data = instanceOf sparelane.data
+    cloud scheduling 'Scheduler' {
+      #proposed
+      description 'Creates time-based work items; does not own workflow state.'
+      scheduler = instanceOf sparelane.operations.platformScheduler
+      billScheduler = instanceOf sparelane.billingDomain.billScheduler
+    }
+
+    managedService eventInfra 'Event / Queue Infrastructure' {
+      #proposed
+      description 'Durable at-least-once messaging, outbox publication and DLQ. Broker vendor TBD.'
+      events = instanceOf sparelane.events
+    }
+
+    managedDatabase operationalData 'Operational Database' {
+      #proposed
+      description 'Authoritative operational workflow state and transactional outbox.'
+      operationalDb = instanceOf sparelane.data.operationalDb
+    }
+
+    managedDatabase ledgerData 'Financial Ledger Database' {
+      #proposed
+      description 'Authoritative financial journal. May share cluster or be separate; topology TBD.'
+      ledgerDb = instanceOf sparelane.data.ledgerDb
+    }
+
+    managedDatabase auditData 'Audit Store' {
+      #proposed
+      description 'Durable security and privileged-action audit history.'
+      auditDb = instanceOf sparelane.data.auditDb
+    }
+
+    managedDatabase analyticsData 'Analytics Store' {
+      #proposed
+      description 'Derived analytics. Isolated from Tier-1 financial correctness path.'
+      analyticsStore = instanceOf sparelane.data.analyticsStore
+    }
+
+    managedService observabilityStack 'Observability' {
+      #proposed
+      description 'Logs, metrics, traces and alerting. Vendor TBD.'
+      observabilitySvc = instanceOf sparelane.operations.observability
+      alertingSvc = instanceOf sparelane.operations.alerting
     }
   }
 }
 
-views 'Sparelane Architecture / Deployment' {
+views {
   deployment view productionDeployment {
-    title 'Production Deployment'
+    title '08 Deployment / Production Deployment'
+    description 'Logical production topology: edge/web → API → domain services → async workers → event infrastructure → operational/ledger/audit/analytics stores. External PSP, settlement, KYC, email/SMS and identity remain outside. Vendors TBD.'
     include production.**
+    autoLayout TopBottom
+  }
+
+  deployment view runtimeProcessing {
+    title '08 Deployment / Runtime Processing'
+    description 'Sync HTTP (API Application) versus async workers, scheduler, outbox processor, event bus and data stores. Makes synchronous request paths distinct from background financial and notification processing.'
+    include production.apiRuntime,
+      production.asyncWorkers,
+      production.scheduling,
+      production.eventInfra,
+      production.operationalData,
+      production.ledgerData,
+      production.analyticsData
+    autoLayout LeftRight
+  }
+
+  deployment view resilienceIsolation {
+    title '08 Deployment / Resilience & Failure Isolation'
+    description 'Financial Tier-1 workers and stores are isolated from notification/webhook and analytics workloads. Notification or analytics failure must not take down payment correctness; settlement outage must not reverse COLLECTED payments.'
+    include production.asyncWorkers.paymentWorker,
+      production.asyncWorkers.settlementWorker,
+      production.asyncWorkers.notificationWorker,
+      production.asyncWorkers.paymentServices,
+      production.asyncWorkers.settlementServices,
+      production.asyncWorkers.notificationServices,
+      production.operationalData,
+      production.ledgerData,
+      production.analyticsData,
+      production.eventInfra
+    autoLayout TopBottom
   }
 }

@@ -1,24 +1,32 @@
 model {
   extend sparelane {
     riskPlatform = system 'Risk, Security & Compliance' {
+      #mvp #sensitive
+      description 'Risk rules, merchant verification, fraud monitoring, durable audit and the logical PCI boundary marker. Does not replace the external PSP PCI provider boundary.'
+
       riskService = service 'Risk Engine' {
-        description 'Payment, consumer-account and merchant risk rules.'
+        #mvp #sensitive
+        description 'Applies payment, consumer-account and merchant risk rules before and during payment workflows.'
       }
 
       merchantVerification = service 'Merchant Verification Service' {
-        description 'Coordinates merchant KYC/KYB requirements and approval.'
+        #mvp #sensitive
+        description 'Coordinates merchant KYC/KYB requirements and approval with the external verification provider.'
       }
 
       fraudService = service 'Fraud Monitoring' {
-        description 'Detects unusual account, merchant and payment behaviour.'
+        #mvp #sensitive
+        description 'Detects unusual account, merchant, API and payment behaviour for operational review, including suspicious authentication and abuse signals.'
       }
 
       auditService = service 'Audit Service' {
-        description 'Tamper-resistant record of important administrative, financial and security actions.'
+        #mvp #sensitive
+        description 'Durable audit of login/security events, credential issuance/rotation/revocation, admin actions, merchant configuration changes, payment/settlement-sensitive actions, manual replay/retry and role changes. Records actor, action, target, timestamp, context, result and correlation IDs. Never logs secrets or raw payment credentials.'
       }
 
       pciBoundary = security 'PCI Boundary' {
-        description 'Raw card entry and card data remain within the selected PCI-compliant payment provider boundary.'
+        #mvp #sensitive
+        description 'Logical marker that raw PAN/CVV entry and tokenisation remain inside the external PCI-compliant payment provider. Sparelane stores token references and permitted metadata only; never intentionally receives or persists CVV.'
       }
     }
   }

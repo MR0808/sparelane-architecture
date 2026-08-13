@@ -1,0 +1,609 @@
+openapi: 3.1.0
+info:
+  title: Sparelane Merchant API
+  version: 1.0.0
+  summary: Merchant machine-to-machine API for bills, connections, payments and settlements.
+  description: |
+    Versioned HTTPS JSON API (`/v1`).
+
+    **Bill accepted ≠ payment collected ≠ settlement settled.**
+
+    Authentication: Bearer merchant API key (Proposed).
+    Mutating financial endpoints require `Idempotency-Key`.
+  contact:
+    name: Sparelane Architecture
+servers:
+  - url: https://api.sparelane.example/v1
+    description: Proposed production base (host TBD)
+  - url: https://api.sandbox.sparelane.example/v1
+    description: Proposed sandbox base (host TBD)
+tags:
+  - name: Bills
+  - name: Connections
+  - name: Payments
+  - name: Settlements
+security:
+  - MerchantApiKey: []
+paths:
+  /bills:
+    post:
+      tags: [Bills]
+      operationId: createBill
+      summary: Submit a bill for payment reliability
+      description: |
+        Accepts a merchant bill into Sparelane. Successful response means **bill accepted**,
+        not payment collected.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/RequestId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBillRequest'
+            example:
+              connectionId: conn_01EXAMPLE
+              merchantBillReference: INV-10042
+              amount:
+                value: "150.00"
+                currency: AUD
+              dueDate: "2026-09-01"
+              reconciliationReference: REC-10042
+      responses:
+        '201':
+          description: Bill accepted
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/AuthorisationError'
+        '409':
+          description: Conflict or idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '503':
+          $ref: '#/components/responses/TemporarilyUnavailable'
+  /bills/{billId}:
+    get:
+      tags: [Bills]
+      operationId: getBill
+      summary: Retrieve a bill
+      parameters:
+        - $ref: '#/components/parameters/BillId'
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Bill
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/AuthorisationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /connections/{connectionId}:
+    get:
+      tags: [Connections]
+      operationId: getConnection
+      summary: Retrieve a merchant connection
+      description: Connections are created via hosted/widget consumer flows; this endpoint is read-only.
+      parameters:
+        - $ref: '#/components/parameters/ConnectionId'
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Connection
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/AuthorisationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /payments/{paymentId}:
+    get:
+      tags: [Payments]
+      operationId: getPayment
+      summary: Retrieve merchant-facing payment (workflow) status
+      description: |
+        Exposes payment reliability workflow status. Does not expose payment-method tokens,
+        full attempt internals, or restricted risk fields. Attempt-level API is TBD.
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Payment
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/AuthorisationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /settlements:
+    get:
+      tags: [Settlements]
+      operationId: listSettlements
+      summary: List settlements for the authenticated merchant
+      parameters:
+        - $ref: '#/components/parameters/RequestId'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/SettlementStatus'
+      responses:
+        '200':
+          description: Settlement page
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettlementList'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/AuthorisationError'
+        '429':
+          $ref: '#/components/responses/RateLimited'
+  /settlements/{settlementId}:
+    get:
+      tags: [Settlements]
+      operationId: getSettlement
+      summary: Retrieve a settlement
+      parameters:
+        - $ref: '#/components/parameters/SettlementId'
+        - $ref: '#/components/parameters/RequestId'
+      responses:
+        '200':
+          description: Settlement
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settlement'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '403':
+          $ref: '#/components/responses/AuthorisationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    MerchantApiKey:
+      type: http
+      scheme: bearer
+      bearerFormat: merchant-api-key
+      description: |
+        Proposed convention — `Authorization: Bearer <merchant-api-key>`.
+        The secret is shown once at issuance; Sparelane stores hashes only.
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: |
+        Merchant-scoped idempotency key for this operation (`bills.create`).
+        Safe retries with the same key and identical body return the original result.
+        Same key with a different body yields `idempotency_conflict`.
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 255
+    RequestId:
+      name: X-Request-Id
+      in: header
+      required: false
+      description: Optional client request correlation id. Server generates one if omitted.
+      schema:
+        type: string
+        maxLength: 128
+    BillId:
+      name: billId
+      in: path
+      required: true
+      schema:
+        type: string
+        examples: [bill_01EXAMPLE]
+    ConnectionId:
+      name: connectionId
+      in: path
+      required: true
+      schema:
+        type: string
+        examples: [conn_01EXAMPLE]
+    PaymentId:
+      name: paymentId
+      in: path
+      required: true
+      schema:
+        type: string
+        examples: [pay_01EXAMPLE]
+    SettlementId:
+      name: settlementId
+      in: path
+      required: true
+      schema:
+        type: string
+        examples: [set_01EXAMPLE]
+    Limit:
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: Opaque cursor for forward pagination.
+      schema:
+        type: string
+  headers:
+    RequestId:
+      description: Request correlation id.
+      schema:
+        type: string
+    RetryAfter:
+      description: Seconds to wait before retrying (rate limits / temporary failures).
+      schema:
+        type: integer
+  responses:
+    ValidationError:
+      description: Validation failed
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: validation_error
+              message: Request validation failed
+              requestId: req_01EXAMPLE
+              details:
+                - field: amount.value
+                  issue: invalid_format
+    AuthenticationError:
+      description: Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: authentication_error
+              message: Authentication failed
+              requestId: req_01EXAMPLE
+              details: []
+    AuthorisationError:
+      description: Authorisation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: authorisation_error
+              message: Not authorised for this resource
+              requestId: req_01EXAMPLE
+              details: []
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: not_found
+              message: Resource not found
+              requestId: req_01EXAMPLE
+              details: []
+    RateLimited:
+      description: Rate limited
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: rate_limited
+              message: Rate limit exceeded
+              requestId: req_01EXAMPLE
+              details: []
+    TemporarilyUnavailable:
+      description: Temporary service failure
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              code: temporarily_unavailable
+              message: Service temporarily unavailable
+              requestId: req_01EXAMPLE
+              details: []
+  schemas:
+    Money:
+      type: object
+      additionalProperties: false
+      required: [value, currency]
+      properties:
+        value:
+          type: string
+          description: Decimal string amount (never floating point).
+          pattern: '^-?\d+\.\d{2}$'
+          examples: ["150.00"]
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: ISO 4217 currency code.
+          examples: [AUD]
+    CreateBillRequest:
+      type: object
+      additionalProperties: false
+      required: [connectionId, merchantBillReference, amount, dueDate]
+      properties:
+        connectionId:
+          type: string
+          examples: [conn_01EXAMPLE]
+        merchantBillReference:
+          type: string
+          minLength: 1
+          maxLength: 128
+        amount:
+          $ref: '#/components/schemas/Money'
+        dueDate:
+          type: string
+          format: date
+          description: Calendar due date (date-only). Interpreted in the merchant's configured business timezone; see docs/contracts/due-dates.md. Exact local capture clock time is configurable/TBD.
+        reconciliationReference:
+          type: string
+          maxLength: 128
+    Bill:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - connectionId
+        - merchantBillReference
+        - amount
+        - dueDate
+        - status
+        - acceptedAt
+      properties:
+        id:
+          type: string
+          examples: [bill_01EXAMPLE]
+        connectionId:
+          type: string
+        merchantBillReference:
+          type: string
+        reconciliationReference:
+          type: string
+          nullable: true
+        amount:
+          $ref: '#/components/schemas/Money'
+        dueDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [accepted, cancelled]
+          description: Ingestion status. `accepted` does not mean collected or settled.
+        paymentId:
+          type: string
+          nullable: true
+          description: Associated payment workflow public id when created.
+          examples: [pay_01EXAMPLE]
+        acceptedAt:
+          type: string
+          format: date-time
+    Connection:
+      type: object
+      additionalProperties: false
+      required: [id, merchantCustomerReference, status, createdAt]
+      properties:
+        id:
+          type: string
+          examples: [conn_01EXAMPLE]
+        merchantCustomerReference:
+          type: string
+        status:
+          type: string
+          enum: [active, revoked, expired]
+        createdAt:
+          type: string
+          format: date-time
+    PaymentStatus:
+      type: string
+      description: Merchant-facing payment workflow status (subset/mapping of internal states).
+      enum:
+        - created
+        - scheduled
+        - preauth_pending
+        - preauthorised
+        - payment_pending
+        - retry_pending
+        - action_required
+        - collected
+        - failed
+        - cancelled
+    Payment:
+      type: object
+      additionalProperties: false
+      required: [id, billId, merchantBillReference, amount, status, dueDate]
+      properties:
+        id:
+          type: string
+          examples: [pay_01EXAMPLE]
+        billId:
+          type: string
+        merchantBillReference:
+          type: string
+        amount:
+          $ref: '#/components/schemas/Money'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        dueDate:
+          type: string
+          format: date
+        actionRequired:
+          type: boolean
+          description: True when status is action_required.
+        collectedAt:
+          type: string
+          format: date-time
+          nullable: true
+        failedAt:
+          type: string
+          format: date-time
+          nullable: true
+    SettlementStatus:
+      type: string
+      enum:
+        - pending
+        - eligible
+        - batched
+        - submitted
+        - processing
+        - settled
+        - failed
+        - retry_pending
+        - cancelled
+    Settlement:
+      type: object
+      additionalProperties: false
+      required: [id, status, amount]
+      properties:
+        id:
+          type: string
+          examples: [set_01EXAMPLE]
+        status:
+          $ref: '#/components/schemas/SettlementStatus'
+        amount:
+          $ref: '#/components/schemas/Money'
+        merchantReconciliationReference:
+          type: string
+          nullable: true
+        paymentId:
+          type: string
+          nullable: true
+        submittedAt:
+          type: string
+          format: date-time
+          nullable: true
+        settledAt:
+          type: string
+          format: date-time
+          nullable: true
+    SettlementList:
+      type: object
+      additionalProperties: false
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Settlement'
+        nextCursor:
+          type: string
+          nullable: true
+          description: Pass as `cursor` to fetch the next page; null when no more results.
+    ErrorDetail:
+      type: object
+      additionalProperties: false
+      properties:
+        field:
+          type: string
+        issue:
+          type: string
+    ErrorBody:
+      type: object
+      additionalProperties: false
+      required: [code, message, requestId]
+      properties:
+        code:
+          type: string
+          enum:
+            - validation_error
+            - authentication_error
+            - authorisation_error
+            - not_found
+            - conflict
+            - idempotency_conflict
+            - rate_limited
+            - temporarily_unavailable
+        message:
+          type: string
+          description: Safe human-readable message (no stack traces / internals).
+        requestId:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          $ref: '#/components/schemas/ErrorBody'

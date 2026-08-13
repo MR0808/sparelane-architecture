@@ -1,6 +1,6 @@
 model {
   consumer = person 'Consumer' {
-    description 'Individual using Sparelane to improve recurring bill payment reliability.'
+    description 'Individual who connects merchants and payment methods so Sparelane can improve recurring bill collection reliability.'
   }
 
   merchantUser = person 'Merchant User' {
@@ -8,7 +8,7 @@ model {
   }
 
   merchantDeveloper = person 'Merchant Developer' {
-    description 'Developer integrating merchant systems with Sparelane.'
+    description 'Developer integrating merchant billing systems with the Sparelane Merchant API and webhooks.'
   }
 
   sparelaneAdmin = person 'Sparelane Administrator' {

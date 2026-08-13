@@ -1,63 +1,82 @@
 model {
   extend sparelane {
     paymentPlatform = system 'Payment Reliability Engine' {
+      #mvp #financial
+      description 'Coordinates payment method selection, pre-authorisation, fallback, retry and capture across supported payment rails without guaranteeing payment success. Owns payment workflow state separately from bill ownership and settlement.'
+
       orchestration = service 'Payment Orchestrator' {
-        description 'Central coordinator for payment method selection, pre-authorisation, fallback, retries, capture and result processing.'
+        #mvp #financial
+        description 'Owns payment workflow coordination: receives workflow commands/events, obtains current state and eligible methods, invokes risk checks, initiates pre-auth/capture attempts, reacts to provider results, initiates fallback, asks Retry Service to schedule later attempts, emits lifecycle events, and decides when collection succeeded or the workflow failed irrecoverably. Does not act as PSP, ledger, settlement or notification provider.'
       }
 
       reliabilityEngine = service 'Reliability Engine' {
-        description 'Determines which payment method to attempt and when. MVP uses deterministic rules.'
+        #mvp
+        description 'Deterministic MVP method-selection engine. Determines which payment method is eligible next from primary card, ordered backups, wallet availability, prior attempt outcomes, decline classification and retry eligibility. Does not execute provider payments.'
       }
 
       preAuthService = service 'Pre-authorisation Service' {
-        description 'Performs early payment method checks ahead of bill due date where supported.'
+        #mvp #financial
+        description 'Coordinates early payment-method validation where the selected rail/provider supports it. Pre-authorisation reduces later failure risk but is not itself successful bill collection.'
       }
 
       paymentAttemptService = service 'Payment Attempt Service' {
-        description 'Immutable history of every payment attempt, provider response and result.'
+        #mvp #financial
+        description 'Records every actual payment attempt as an immutable history record: workflow id, method reference, provider reference, sequence, attempt type, amount, status, result classification and timestamps. Never stores PAN or CVV. One payment workflow may have many attempts.'
       }
 
       cardPaymentService = service 'Card Payment Adapter' {
-        description 'Provider-independent abstraction for tokenised card authorisation, capture, void and refund.'
+        #mvp #financial
+        description 'Provider-neutral card rail abstraction for tokenised authorise, pre-authorise, capture, void and refund operations. Does not model a specific PSP API.'
       }
 
       walletPaymentService = service 'Wallet Payment Service' {
-        description 'Uses Sparelane wallet funds where enabled and permitted.'
+        #mvp #financial
+        description 'Attempts payment using the optional Sparelane wallet capability where enabled, permitted and sufficiently funded. Creates a distinct payment attempt like other rails. Custody/regulatory model remains TBD.'
       }
 
       payToService = service 'PayTo Adapter' {
         #future
-        description 'Future account-to-account payment adapter using Australian PayTo infrastructure.'
+        description 'Future account-to-account payment adapter using Australian PayTo infrastructure. Explicitly excluded from MVP method selection.'
       }
 
       retryService = service 'Retry Service' {
-        description 'Creates controlled retries with retry windows and maximum attempt limits.'
+        #mvp
+        description 'Owns scheduling of future retry attempts within configured windows and maximum attempt limits. Schedules timing only; Payment Orchestrator decides workflow action and Reliability Engine selects the method. Does not execute payments.'
       }
 
       declineService = service 'Decline Classification Service' {
-        description 'Normalises decline reasons and determines whether another attempt is appropriate.'
+        #mvp
+        description 'Normalises provider decline and error responses into architectural classes: soft/retryable, hard/non-retryable, technical/provider error, or unknown. Does not invent PSP-specific decline codes or decide the next workflow action by itself.'
       }
 
       paymentStateMachine = service 'Payment State Machine' {
-        description 'Controls valid payment lifecycle state transitions.'
+        #mvp
+        description 'Owns legal payment-workflow state transitions (distinct from bill state, attempt state and settlement state). Rejects invalid transitions such as FAILED→COLLECTED or COLLECTED without a successful attempt.'
       }
     }
 
     fundsPlatform = system 'Funds & Ledger' {
+      #mvp #financial
+      description 'Optional Sparelane wallet capability and the append-only double-entry ledger that is the authoritative record of financial movements after successful collection. Ledger state is distinct from payment workflow state and settlement state.'
+
       walletService = service 'Wallet Service' {
-        description 'Optional consumer wallet capability with configurable balance limits.'
+        #mvp #financial #proposed #sensitive
+        description 'Optional Sparelane wallet capability for consumer available/reserved/spent balances used as a fallback payment method. Custody, safeguarding, licensing and funding rails remain TBD; do not assume Sparelane already operates a regulated stored-value facility.'
       }
 
       ledgerService = service 'Double-entry Ledger' {
-        description 'Append-only balanced financial ledger for movements of funds.'
+        #mvp #financial
+        description 'Authoritative append-only financial journal. Posts balanced journal transactions, associates entries with payment/settlement references, never mutates posted history, and enables balances to be derived. Does not own payment workflow state, PSP authorisation, settlement scheduling or merchant reconciliation.'
       }
 
       balanceService = service 'Balance Service' {
-        description 'Calculates available, pending and settlement balances from ledger entries.'
+        #mvp #financial
+        description 'Derives reproducible balances from ledger entries such as wallet available/reserved, merchant payable, settlement pending and platform clearing/control balances. Cached balances are not the authoritative journal.'
       }
 
       fundsReservation = service 'Funds Reservation Service' {
-        description 'Reserves funds where required during payment processing.'
+        #mvp #financial
+        description 'Reserves eligible Sparelane wallet funds where needed before final movement. Reservation is not final posting; reservations can be released or consumed. Does not reserve card balances Sparelane does not control.'
       }
     }
   }

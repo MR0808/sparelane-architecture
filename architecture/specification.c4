@@ -1,6 +1,28 @@
 specification {
 
-  tag future
+  tag mvp {
+    color #0F766E
+  }
+
+  tag future {
+    color #7C3AED
+  }
+
+  tag proposed {
+    color #B45309
+  }
+
+  tag external {
+    color #64748B
+  }
+
+  tag sensitive {
+    color #B91C1C
+  }
+
+  tag financial {
+    color #10B981
+  }
 
   color purple #7C3AED
 

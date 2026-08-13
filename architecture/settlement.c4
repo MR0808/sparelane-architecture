@@ -1,20 +1,27 @@
 model {
   extend sparelane {
     settlementPlatform = system 'Settlement & Reconciliation' {
+      #mvp #financial
+      description 'Merchant settlement and reconciliation after consumer funds are COLLECTED and made settlement-eligible. Settlement lifecycle is separate from Payment Workflow state. Sparelane does not advance funds when collection fails.'
+
       settlementService = service 'Settlement Service' {
-        description 'Coordinates merchant settlement only after consumer funds are successfully collected.'
+        #mvp #financial
+        description 'Owns settlement lifecycle: identifies eligible merchant payable funds, creates/maintains settlement records, coordinates batching where applicable, requests settlement instructions, handles provider results and emits settlement lifecycle events. Does not mutate ledger history, execute card payments, decide payment fallback, or act as the bank.'
       }
 
       settlementBatchService = service 'Settlement Batch Service' {
-        description 'Groups payable merchant transactions into settlement batches.'
+        #mvp #financial
+        description 'Optionally groups eligible settlements for processing under configured batching rules. Batching is a logical capability, not a mandatory constraint for every banking partner. Does not determine collection success or own merchant reconciliation.'
       }
 
       settlementInstructionService = service 'Settlement Instruction Service' {
-        description 'Creates instructions for the banking or settlement partner.'
+        #mvp #financial
+        description 'Translates internal settlement intent into an external banking/settlement-partner instruction, applies provider idempotency/reference, submits the instruction, records provider references, and safely handles network retry/unknown outcomes. Not the financial source of truth.'
       }
 
       settlementReconciliation = service 'Settlement Reconciliation' {
-        description 'Reconciles provider settlement status with ledger entries and merchant references.'
+        #mvp #financial
+        description 'Reconciles internal expected settlement vs provider settlement outcome vs ledger position vs merchant reconciliation reference. Identifies matched, amount-mismatch, missing, duplicate, unknown/unmatched and failed settlements without inventing provider file formats.'
       }
     }
   }

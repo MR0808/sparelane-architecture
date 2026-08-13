@@ -1,0 +1,30 @@
+# Architecture Portal v1
+
+**Status:** Current  
+**Owner:** Architecture (TBD)  
+**Last Reviewed:** 2026-08-13  
+**Related ADRs:** ADR-001–023 (Accepted)  
+**Related Views:** `01 Overview / Architecture Map`
+
+## Declaration
+
+**Architecture Portal v1** (this repository + [architecture.sparelane.co](https://architecture.sparelane.co)) includes:
+
+- Logical architecture (LikeC4)
+- Dynamic / sequence flows
+- Accepted ADRs (ADR-001–023)
+- Physical data design and ERD guidance
+- Merchant API OpenAPI contract
+- Security and threat model
+- Deployment and resilience design
+- Implementation blueprint and build phases
+- Operational runbooks
+- Governance process (change, checklist, ADR template, review cadence)
+
+## What v1 does **not** mean
+
+This does **not** mean every technology or vendor decision is final.
+
+[Open decisions](../decisions/open-decisions.md) remain authoritative for unresolved product, provider, regulatory and infrastructure choices. Diagrams tagged `#proposed` are directional, not procurement commitments.
+
+Implementation of the product lives in a separate application repository (`sparelane-platform` per implementation blueprint), guided by — but not replaced by — this portal.

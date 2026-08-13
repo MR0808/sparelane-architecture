@@ -1,178 +1,320 @@
 model {
   sparelane = system 'Sparelane Platform' {
+    #mvp
     description 'Payment reliability layer for recurring bills. Sparelane orchestrates payment methods, pre-authorisation, retries, fallback, collection, settlement and notifications without guaranteeing payment.'
 
     experience = system 'Experience Layer' {
+      #mvp
+      description 'Consumer, merchant and admin user experiences for managing connections, payment methods, bills and operational workflows.'
+
       consumerWeb = application 'Consumer Web App' {
+        #mvp
         description 'Responsive consumer application for bills, payment methods, merchant connections, payment issues and history.'
         technology 'Next.js / TypeScript'
       }
 
       merchantPortal = application 'Merchant Portal' {
-        description 'Merchant onboarding, integration, payment activity, reporting and reconciliation.'
+        #mvp
+        description 'Merchant onboarding, integration configuration, credentials, webhook setup, payment activity, reporting and reconciliation views. Supports hosted, widget and API adoption paths without requiring every merchant to use every style.'
         technology 'Next.js / TypeScript'
       }
 
       adminPortal = application 'Sparelane Admin Portal' {
-        description 'Internal merchant approval, payment investigation, support, risk and operational tooling.'
+        #mvp #sensitive
+        description 'Privileged internal portal for merchant approval, payment/settlement investigation, support, risk and operational tooling. Requires MFA, short-lived sessions, explicit privileged roles and durable audit. Must not provide direct ledger mutation.'
         technology 'Next.js / TypeScript'
       }
 
       hostedFlow = application 'Hosted Pay with Sparelane Flow' {
-        description 'Secure Sparelane-hosted merchant connection and consent flow.'
+        #mvp
+        description 'Lowest-effort Sparelane-hosted consumer connection and consent experience launched from merchant sites. Creates merchant-consumer connections without Sparelane becoming the merchant billing system.'
         technology 'Next.js'
       }
 
       merchantWidget = application 'Merchant Widget / Modal' {
-        description 'Embeddable merchant integration that launches the hosted Sparelane flow.'
+        #mvp
+        description 'Embeddable merchant entry point that launches the hosted Sparelane connection flow from the merchant website.'
         technology 'JavaScript SDK'
       }
     }
 
     edgeLayer = system 'API & Edge Layer' {
+      #mvp
+      description 'Sparelane edge boundary: TLS termination, authentication entry, request validation, rate limiting, abuse controls, provider webhook verification and merchant webhook signing. Does not expose internal payment, ledger or settlement services directly to merchants.'
+
       publicApi = service 'Merchant API' {
-        description 'Versioned merchant API for bills, payment status, customer connections and reconciliation.'
+        #mvp
+        description 'Versioned HTTPS JSON merchant API for bill submission/status, connections, payment status, settlement/reconciliation retrieval and integration health. Authenticates machine credentials, enforces scopes and rate limits. Resource-oriented external contract; not a pass-through to internal services.'
         technology 'HTTPS / REST / JSON'
       }
 
       consumerBff = service 'Consumer Backend' {
+        #mvp
+        description 'Server-side backend for consumer web and hosted-flow operations.'
         technology 'Next.js Server Actions / API'
       }
 
       merchantBff = service 'Merchant Backend' {
+        #mvp
+        description 'Server-side backend for merchant portal operations.'
         technology 'Next.js Server Actions / API'
       }
 
       adminBff = service 'Admin Backend' {
+        #mvp #sensitive
+        description 'Server-side backend for privileged Sparelane admin operations. Enforces MFA/session validation, authorisation and audit for elevated actions.'
         technology 'Next.js Server Actions / API'
       }
 
       webhookIngress = service 'Provider Webhook Ingress' {
-        description 'Validates asynchronous provider events before internal processing.'
+        #mvp #sensitive
+        description 'Accepts asynchronous payment and settlement events from external providers only after signature verification, timestamp/replay checks and event idempotency. Invalid webhooks are rejected and audited/monitored; unverified payloads must not drive trusted state transitions.'
       }
 
       webhookDelivery = service 'Merchant Webhook Delivery' {
-        description 'Delivers signed payment and settlement events to merchant endpoints with retry tracking.'
+        #mvp
+        description 'Owns merchant-facing webhook selection, signed payload construction, delivery, bounded retry, delivery history and failure state. At-least-once delivery with stable event IDs. Does not own payment workflow, settlement lifecycle or merchant billing state. Does not blindly expose internal domain events.'
       }
 
-      rateLimiter = security 'API Rate Limiting'
+      rateLimiter = security 'API Rate Limiting' {
+        #mvp
+        description 'Merchant-scoped rate limiting for abuse protection, accidental loops and expensive operations. Exact limits TBD; supports Retry-After style responses.'
+      }
     }
 
     identity = system 'Identity & Access' {
+      #mvp #sensitive
+      description 'Distinct authentication and authorisation for consumers, merchant users, merchant machine credentials and Sparelane administrators. Includes secrets management for platform credentials.'
+
       identityService = service 'Identity Service' {
-        description 'Authentication, verification, MFA, passkeys and session management.'
+        #mvp #sensitive
+        description 'Interactive authentication, verification, MFA, passkeys and session management for consumers, merchant users and administrators. Admin sessions require stronger assurance. Identity provider vendor TBD.'
       }
 
       authorization = security 'Authorisation Service' {
-        description 'Role and permission enforcement across consumer, merchant and administrator contexts.'
+        #mvp #sensitive
+        description 'Deny-by-default role and permission enforcement: merchant tenant isolation, consumer ownership checks, machine credential scopes and privileged admin separation. Final role matrix TBD.'
       }
 
       merchantApiKeys = security 'Merchant API Key Management' {
-        description 'Issues, rotates and revokes merchant integration credentials.'
+        #mvp #sensitive
+        description 'Issues merchant API credentials with one-time secret display, stores key hashes/references only (never plaintext secrets after issuance), supports rotation, revocation, expiry, scopes/permissions, environment isolation and last-used metadata.'
       }
 
-      secrets = security 'Secrets Management'
+      secrets = security 'Secrets Management' {
+        #mvp #proposed #sensitive
+        description 'Central managed store for PSP, banking, KYC/KYB, webhook signing, API cryptography, email/SMS and database credentials. No secrets in source control. Vendor TBD.'
+      }
     }
 
     consumerDomain = system 'Consumer Domain' {
-      consumerService = service 'Consumer Service'
+      #mvp
+      description 'Consumer profile, payment methods, merchant connections and consumer-facing bill presentation.'
+
+      consumerService = service 'Consumer Service' {
+        #mvp
+        description 'Maintains consumer profile and account state required for payment reliability.'
+      }
 
       paymentMethodService = service 'Payment Method Service' {
+        #mvp #sensitive
         description 'Stores PSP token references and payment method metadata. Never stores raw PAN or CVV.'
       }
 
       methodPriorityService = service 'Payment Method Priority Service' {
-        description 'Maintains primary card, ordered backups and wallet fallback preference.'
+        #mvp
+        description 'Maintains consumer-configured primary card, ordered backup cards and optional wallet fallback preference used by the Reliability Engine.'
       }
 
       merchantConnectionService = service 'Merchant Connection Service' {
+        #mvp
         description 'Manages consumer consent and merchant-customer connection references.'
       }
 
       consumerBillService = service 'Consumer Bill Service' {
-        description 'Consumer-facing current, upcoming and historical bill view.'
+        #mvp
+        description 'Presents current, upcoming and historical bills to the consumer.'
       }
     }
 
     merchantDomain = system 'Merchant Domain' {
-      merchantService = service 'Merchant Service'
+      #mvp
+      description 'Merchant onboarding, integration configuration, reporting and reconciliation support.'
+
+      merchantService = service 'Merchant Service' {
+        #mvp
+        description 'Maintains merchant account configuration and commercial settings.'
+      }
 
       merchantOnboarding = service 'Merchant Onboarding Service' {
-        description 'Merchant registration, business verification, settlement details and approval workflow.'
+        #mvp
+        description 'Merchant organisation creation, business verification, settlement details, sandbox/live readiness and approval workflow. Final compliance approval mechanics remain TBD.'
       }
 
       integrationService = service 'Merchant Integration Service' {
-        description 'API, hosted-flow, widget and webhook configuration.'
+        #mvp
+        description 'Owns merchant integration configuration: integration status, API credential metadata, webhook endpoint configuration, hosted/widget settings and sandbox/live mode. Does not own payment orchestration or settlement state.'
       }
 
       reconciliationService = service 'Reconciliation Service' {
-        description 'Maintains merchant invoice and reconciliation references through settlement.'
+        #mvp #financial
+        description 'Maintains Sparelane-side merchant invoice and reconciliation references for settlement matching. Does not mutate the merchant billing system of record.'
       }
 
       merchantReporting = service 'Merchant Reporting Service' {
+        #mvp
         description 'Payment recovery, failed-payment, recovered-revenue and settlement reporting.'
       }
     }
 
     billingDomain = system 'Bill Management' {
+      #mvp
+      description 'Ingests merchant bill events and schedules payment reliability actions against due dates.'
+
       billService = service 'Bill Service' {
+        #mvp
         description 'Stores merchant bill events, due dates, amounts, invoice numbers and reconciliation references.'
       }
 
       billValidation = service 'Bill Validation Service' {
-        description 'Validates bill events, ownership, consumer connections and idempotency.'
+        #mvp
+        description 'Validates bill events for ownership, consumer connection and idempotency before persistence. Duplicate merchant submissions for the same bill must not create duplicate payment workflows.'
       }
 
       billScheduler = scheduledJob 'Bill Scheduler' {
-        description 'Finds bills requiring pre-auth, reminder, retry, capture or failure escalation.'
+        #mvp
+        description 'Creates time-based bill action commands/work items (pre-auth, reminder, retry, capture windows). Does not own payment workflow state or execute complex financial logic itself.'
       }
     }
 
     notificationPlatform = system 'Notifications' {
-      notificationService = service 'Notification Service'
-      notificationPreferenceService = service 'Notification Preferences'
-      notificationTemplateService = service 'Template Service'
-      emailAdapter = service 'Email Adapter'
-      smsAdapter = service 'SMS Adapter'
+      #mvp
+      description 'Delivers consumer and operational notifications when payment action or awareness is required.'
+
+      notificationService = service 'Notification Service' {
+        #mvp
+        description 'Orchestrates notification delivery across email and SMS channels.'
+      }
+
+      notificationPreferenceService = service 'Notification Preferences' {
+        description 'Honours consumer and merchant notification preferences where configured.'
+      }
+
+      notificationTemplateService = service 'Template Service' {
+        description 'Renders notification content from approved templates.'
+      }
+
+      emailAdapter = service 'Email Adapter' {
+        #mvp
+        description 'Adapter for the selected transactional email provider.'
+      }
+
+      smsAdapter = service 'SMS Adapter' {
+        #mvp
+        description 'Adapter for the selected transactional SMS provider.'
+      }
     }
 
     events = system 'Event Platform' {
+      #mvp #proposed
+      description 'Durable asynchronous messaging with at-least-once delivery and idempotent consumers. No global ordering assumption; per-workflow/settlement/webhook serialization where required. Broker vendor TBD.'
+
       eventBus = queue 'Domain Event Bus' {
-        description 'Durable asynchronous channel between Sparelane domains.'
+        #mvp #proposed
+        description 'Durable asynchronous channel between Sparelane domains. At-least-once delivery. Technology choice is proposed, not final.'
       }
 
-      deadLetterQueue = queue 'Dead Letter Queue'
+      deadLetterQueue = queue 'Dead Letter Queue' {
+        #mvp
+        description 'Holds messages that exhausted bounded processing retries. Operators inspect business IDs, failure reason and authoritative state before any replay. Financial replay must never blindly repeat side effects.'
+      }
 
       outboxProcessor = service 'Transactional Outbox Processor' {
-        description 'Reliably publishes domain events created inside database transactions.'
+        #mvp
+        description 'Publishes outbox rows written atomically with operational state changes (e.g. COLLECTED). Polling vs CDC TBD. Duplicate publication possible; downstream consumers must be idempotent.'
       }
     }
 
     data = system 'Data Layer' {
+      #mvp
+      description 'Logical data stores with distinct ownership: Operational DB (workflow SoT), Ledger DB (financial SoT), Audit Store, derived Analytics Store and Secure Object Storage. Not fully event sourced. Physical topology TBD. Never stores raw PAN/CVV.'
+
       operationalDb = database 'Operational Database' {
+        #mvp
         technology 'PostgreSQL'
-        description 'Transactional operational data excluding raw card PAN and CVV.'
+        description 'Authoritative operational application state: consumers, merchants, connections, bills, payment workflows/attempts, integration and webhook metadata, payment-method token references. Not authoritative for financial journal balances. No raw PAN/CVV; API secrets as hashes/references only.'
       }
 
       ledgerDb = database 'Financial Ledger Database' {
+        #mvp #financial #sensitive
         technology 'PostgreSQL'
-        description 'Append-only financial ledger and settlement records.'
+        description 'Authoritative append-only financial journal transactions/entries and settlement financial records. Derived balances are reproducible from the journal. No direct admin UI mutation. Logically separate from operational workflow state.'
       }
 
-      auditDb = database 'Audit Store'
-      analyticsStore = database 'Analytics Store'
+      auditDb = database 'Audit Store' {
+        #sensitive
+        description 'Durable security/administrative audit history. Distinct from domain events and merchant webhooks. Must not store secrets or raw payment credentials.'
+      }
+
+      analyticsStore = database 'Analytics Store' {
+        #proposed
+        description 'Derived analytical store for merchant reporting and future reliability intelligence inputs. Not authoritative for payment, settlement, ledger or security decisions. Analytics outage must not stop payment correctness. Technology TBD.'
+      }
 
       objectStorage = storage 'Secure Object Storage' {
-        description 'Merchant verification evidence, exports and other non-card documents.'
+        #proposed #sensitive
+        description 'Access-restricted merchant verification evidence, exports and non-card documents. Never stores raw card credentials. Provider TBD.'
+      }
+
+      reliabilityIntelligence = service 'Reliability Intelligence' {
+        #future
+        description 'Future derived intelligence over payment outcomes, retries, decline classes and method ordering. Must not access PAN/CVV, bypass risk controls, execute payment rails or become financial source of truth.'
       }
     }
 
     operations = system 'Platform Operations' {
+      #mvp #proposed
+      description 'Observability, alerting and conceptual deployable runtime units. Logical services may share deployables. Cloud/worker platform vendors TBD.'
+
       observability = service 'Observability Platform' {
-        description 'Logs, metrics, traces, uptime and application performance monitoring.'
+        #mvp #proposed
+        description 'Structured logs, metrics and traces with correlation IDs. Redacts secrets and CHD. Vendor TBD.'
       }
 
-      alerting = service 'Operational Alerting'
+      alerting = service 'Operational Alerting' {
+        #mvp #proposed
+        description 'Actionable alerts for queue backlog, settlement stuck states, DLQ growth, ledger posting lag, provider outage and database availability — not every business decline.'
+      }
+
+      webExperienceApp = application 'Web / Experience Application' {
+        #mvp #proposed
+        description 'Deployable hosting Consumer Web, Merchant Portal, Admin Portal and/or Hosted Flow. One or multiple deployables TBD.'
+      }
+
+      apiApplication = application 'API Application' {
+        #mvp #proposed
+        description 'Deployable for HTTP request handling: experience backends, Merchant API and provider webhook ingress. Stateless where practical.'
+      }
+
+      paymentWorker = application 'Payment Worker' {
+        #mvp #proposed
+        description 'Async worker pool for payment execution, provider result handling and retry execution. Financial Tier-1 workload.'
+      }
+
+      settlementWorker = application 'Settlement Worker' {
+        #mvp #proposed
+        description 'Async worker pool for settlement lifecycle, instruction submission and reconciliation. Isolated from analytics/reporting load.'
+      }
+
+      notificationWorker = application 'Notification / Webhook Worker' {
+        #mvp #proposed
+        description 'Async worker pool for email/SMS notifications and merchant webhook delivery. Failures must not stop payment correctness.'
+      }
+
+      platformScheduler = scheduledJob 'Platform Scheduler' {
+        #mvp #proposed
+        description 'Triggers time-based work items (bills, retries, settlement sweeps, maintenance). Creates commands only; does not own workflow state. Vendor TBD.'
+      }
     }
   }
 }
