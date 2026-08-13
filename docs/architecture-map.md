@@ -8,6 +8,8 @@
 
 Maps architecture areas → LikeC4 views, docs, and ADRs. Visual table of contents: **01 Overview / Architecture Map**.
 
+**Requirements** ([requirements/](../requirements/README.md)) are the upstream statement of required behaviour and quality. They trace into architecture views, flows, ADRs, contracts, and implementation modules via frontmatter (portal: `/requirements` and `/requirements/traceability`). This map remains the domain-oriented index of architecture artefacts — it does not replace the requirements corpus.
+
 ---
 
 ## Lifecycle / status tags

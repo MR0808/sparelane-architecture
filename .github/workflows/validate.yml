@@ -30,5 +30,8 @@ jobs:
             - name: Validate
               run: npm run validate
 
-            - name: Build
-              run: npm run build
+            - name: Build stock LikeC4
+              run: npm run architecture:build:stock
+
+            - name: Build custom portal
+              run: npm run portal:build

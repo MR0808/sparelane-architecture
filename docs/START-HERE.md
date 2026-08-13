@@ -23,6 +23,7 @@ Sparelane is a payment reliability platform that sits between consumers and merc
 | **LikeC4** ([architecture portal](https://architecture.sparelane.co)) | Visual system context, domains, trust boundaries, deployment, and dynamic flows |
 | **ADRs** ([decision register](decisions/decision-register.md)) | Binding architecture decisions (Accepted) vs unresolved TBDs ([open decisions](decisions/open-decisions.md)) |
 | **Contracts** ([contracts/](contracts/README.md), [`openapi.yaml`](../contracts/openapi.yaml)) | Merchant API and webhook/event shapes |
+| **Requirements** ([requirements/](../requirements/README.md)) | Behaviour/quality statements with traceability into views, ADRs, contracts, tests (portal routes `/requirements`, `/requirements/traceability`) |
 | **Implementation** ([implementation/](implementation/README.md)) | Build blueprint, modules, deployables, phases — not application code |
 | **Runbooks** ([operations/runbooks/](operations/runbooks/README.md)) | Operator response for provider outages, DLQ, ledger lag, webhook backlog |
 
@@ -37,22 +38,25 @@ Also see the [architecture map](architecture-map.md) and [Architecture Portal v1
 1. LikeC4: **01 Overview / System Context**
 2. LikeC4: **01 Overview / Platform Architecture** (or **Architecture Map**)
 3. [Architecture principles](architecture-principles.md)
-4. [Decision register](decisions/decision-register.md)
+4. [Business requirements](../requirements/business/) (portal route `/requirements?type=business`)
+5. [Decision register](decisions/decision-register.md)
 
 ### Engineer
 
 1. [Implementation blueprint](implementation/README.md)
 2. LikeC4: **10 Implementation / Module Boundaries**
-3. [`contracts/openapi.yaml`](../contracts/openapi.yaml) + [contracts index](contracts/README.md)
-4. [Schema / ERD](schema/README.md)
-5. LikeC4: **09 Flows / Payments** (start with bill ingestion and primary success)
+3. [Requirements overview](../requirements/README.md) (portal `/requirements`) and [requirements governance](governance/requirements-governance.md)
+4. [`contracts/openapi.yaml`](../contracts/openapi.yaml) + [contracts index](contracts/README.md)
+5. [Schema / ERD](schema/README.md)
+6. LikeC4: **09 Flows / Payments** (start with bill ingestion and primary success)
 
 ### Payment / Banking Partner
 
 1. LikeC4: **03 Payments / Payment Reliability Engine**
 2. LikeC4: **04 Money Movement / Settlement & Reconciliation**
 3. LikeC4: **05 Integrations / Merchant Integration**
-4. LikeC4: **06 Security / PCI Boundary** + [PCI docs](security/pci-boundary.md)
+4. [Integration requirements](../requirements/integrations/) (portal `/requirements?type=integration`)
+5. LikeC4: **06 Security / PCI Boundary** + [PCI docs](security/pci-boundary.md)
 
 ### Security Reviewer
 

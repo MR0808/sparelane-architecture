@@ -27,14 +27,24 @@ jobs:
               id: pages
               uses: actions/configure-pages@v4
 
-            - name: Build LikeC4
-              uses: likec4/actions@v1
+            # Stock LikeC4 app (pinned). Switch to `npm run portal:build` after Portal Phase 1 review.
+            # See docs/governance/portal-rollback.md
+            - name: Setup Node
+              uses: actions/setup-node@v4
               with:
-                  action: build
-                  path: architecture
-                  output: dist
-                  base: /
-                  likec4-version: latest
+                  node-version: '22'
+                  cache: npm
+
+            - name: Install
+              run: npm ci
+
+            - name: Build stock LikeC4 portal
+              run: npm run architecture:build:stock
+
+            - name: Stage dist for Pages
+              run: |
+                  rm -rf dist
+                  mv dist-stock dist
 
             - name: Upload Pages artifact
               uses: actions/upload-pages-artifact@v3

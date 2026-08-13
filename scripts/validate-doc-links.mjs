@@ -38,6 +38,10 @@ function checkFile(filePath) {
     if (!target || target.startsWith('#') || /^[a-z][a-z0-9+.-]*:/i.test(target)) {
       continue
     }
+    // Portal app routes (not filesystem paths)
+    if (target.startsWith('/')) {
+      continue
+    }
     const bare = target.split('#')[0].split('?')[0]
     if (!bare) continue
     // Only validate repo-relative doc/code path links

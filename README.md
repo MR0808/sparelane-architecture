@@ -14,19 +14,29 @@ Sparelane sits between consumers and merchants to improve the likelihood that le
 
 ```bash
 npm install
-npm run dev          # LikeC4 local portal
+npm run portal:dev          # Custom architecture portal (Vite)
+npm run dev                 # Stock LikeC4 app (rollback / comparison)
 ```
 
 ## Validation
 
 ```bash
-npm run validate     # LikeC4 + OpenAPI + markdown link check
-npm run check        # validate + LikeC4 production build
-npm run architecture:validate
-npm run openapi:lint
-npm run docs:links
-npm run build        # static site → dist/
+npm run validate
+npm run architecture:build:stock
+npm run portal:build
+npm run check               # validate + both builds
 ```
+
+LikeC4 is pinned to **1.59.2** (do not deploy with `latest`). See [portal rollback](docs/governance/portal-rollback.md).
+
+## Production build
+
+```bash
+npm run architecture:build:stock   # → dist-stock/ (currently deployed)
+npm run portal:build               # → dist/ (custom portal; switch after review)
+```
+
+The static site artifact for Pages is `dist/` (stock staged from `dist-stock` until custom portal cutover).
 
 ---
 

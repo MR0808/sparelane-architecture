@@ -8,10 +8,15 @@
         "build": "likec4 build -o dist",
         "preview": "likec4 preview -o dist",
         "architecture:validate": "likec4 validate --json --no-layout .",
+        "architecture:build:stock": "likec4 build -o dist-stock",
+        "portal:dev": "vite --config portal/vite.config.ts",
+        "portal:build": "vite build --config portal/vite.config.ts",
+        "portal:preview": "vite preview --config portal/vite.config.ts --outDir dist",
         "openapi:lint": "node scripts/validate-openapi.mjs",
         "docs:links": "node scripts/validate-doc-links.mjs",
-        "validate": "npm run architecture:validate && npm run openapi:lint && npm run docs:links",
-        "check": "npm run validate && npm run build"
+        "requirements:validate": "node scripts/validate-requirements.mjs",
+        "validate": "npm run architecture:validate && npm run openapi:lint && npm run docs:links && npm run requirements:validate",
+        "check": "npm run validate && npm run architecture:build:stock && npm run portal:build"
     },
     "keywords": [],
     "author": "",
@@ -19,6 +24,21 @@
     "type": "commonjs",
     "devDependencies": {
         "@apidevtools/swagger-parser": "^12.1.0",
-        "likec4": "^1.59.2"
+        "@types/node": "22.17.1",
+        "@types/react": "19.1.10",
+        "@types/react-dom": "19.1.7",
+        "@vitejs/plugin-react": "4.7.0",
+        "likec4": "1.59.2",
+        "typescript": "5.9.2",
+        "vite": "6.3.5"
+    },
+    "dependencies": {
+        "gray-matter": "4.0.3",
+        "mermaid": "11.9.0",
+        "react": "19.2.8",
+        "react-dom": "19.2.8",
+        "react-markdown": "10.1.0",
+        "react-router-dom": "7.8.0",
+        "remark-gfm": "4.0.1"
     }
 }

@@ -24,6 +24,9 @@
 - [ ] LikeC4 builds (`npm run build`)
 - [ ] OpenAPI lint passes (`npm run openapi:lint`)
 - [ ] Doc links pass (`npm run docs:links`)
+- [ ] Requirements updated if behaviour changed
+- [ ] Traceability updated (requirement frontmatter / matrix)
+- [ ] Requirement validation passes (`npm run requirements:validate`)
 - [ ] ADR updated/added if needed
 - [ ] Dynamic flows updated if behaviour changed
 - [ ] Open decisions updated if relevant

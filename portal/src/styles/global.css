@@ -1,0 +1,452 @@
+:root {
+  color-scheme: light;
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --border: #d8dde6;
+  --text: #1a2332;
+  --muted: #5b6575;
+  --accent: #1f4b7a;
+  --accent-soft: #e8eef5;
+  --danger: #9b1c1c;
+  --radius: 8px;
+  --nav-width: 260px;
+  --header-height: 56px;
+  font-family: 'Segoe UI', 'IBM Plex Sans', system-ui, sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code,
+pre {
+  font-family: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, monospace;
+}
+
+.portal-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-height) 1fr;
+}
+
+.portal-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1.25rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.portal-header h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.portal-header a.brand {
+  color: inherit;
+  text-decoration: none;
+}
+
+.portal-body {
+  display: grid;
+  grid-template-columns: var(--nav-width) 1fr;
+  height: calc(100vh - var(--header-height));
+  min-height: 0;
+}
+
+.portal-body:has(.diagram-page) {
+  overflow: visible;
+}
+
+.portal-nav {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 1rem 0.75rem 2rem;
+  overflow: auto;
+}
+
+.portal-nav .nav-section {
+  margin-bottom: 0.85rem;
+}
+
+.portal-nav .nav-label {
+  display: block;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.portal-nav a {
+  display: block;
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.portal-nav a:hover {
+  background: var(--accent-soft);
+  text-decoration: none;
+}
+
+.portal-nav a.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.portal-main {
+  padding: 1.5rem 1.75rem 3rem;
+  overflow: auto;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.portal-main:has(.diagram-page) {
+  display: flex;
+  flex-direction: column;
+  /* visible so LikeC4 shadow overlays (search/details) are not clipped */
+  overflow: visible;
+  padding-bottom: 1rem;
+}
+
+.diagram-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+}
+
+.diagram-page-header .page-title {
+  margin-bottom: 0.15rem;
+}
+
+.diagram-page-header .page-lead {
+  margin-bottom: 0;
+}
+
+.diagram-shell {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: max(420px, 55vh);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  /* Allow LikeC4/Mantine overlays to escape the canvas */
+  overflow: visible;
+}
+
+.diagram-shell .likec4-host {
+  position: absolute;
+  inset: 0;
+  /* Must stay visible — LikeC4 portals menus/overlays inside the shadow tree;
+     overflow:hidden clips them to the canvas and breaks Ctrl+K / details. */
+  overflow: visible;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.diagram-shell .likec4-host > .portal-likec4-diagram,
+.diagram-shell .likec4-host > .likec4-view {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+}
+
+.related-docs {
+  flex: 0 0 auto;
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.markdown-body {
+  max-width: 52rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem 2rem;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  line-height: 1.25;
+}
+
+.markdown-body pre {
+  overflow: auto;
+  padding: 0.85rem 1rem;
+  background: #f0f2f5;
+  border-radius: 6px;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.92rem;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.55rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.mermaid-block {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #fafbfc;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: auto;
+}
+
+.mermaid-error {
+  color: var(--danger);
+  background: #fdecec;
+  border: 1px solid #f0b4b4;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  white-space: pre-wrap;
+}
+
+.placeholder-panel {
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  color: var(--muted);
+}
+
+/* Requirements */
+.req-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.req-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+  min-width: 5.5rem;
+}
+
+.req-stat strong {
+  display: block;
+  font-size: 1.15rem;
+}
+
+.req-stat span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.req-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.req-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.req-filter select,
+.req-filter input {
+  font: inherit;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  min-width: 9rem;
+  background: #fff;
+}
+
+.req-filter-search input {
+  min-width: 12rem;
+}
+
+.req-section-title {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 1.05rem;
+}
+
+.req-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  font-size: 0.9rem;
+}
+
+.req-table th,
+.req-table td {
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.req-table th {
+  background: #f0f2f5;
+  font-weight: 650;
+}
+
+.req-matrix-wrap {
+  overflow: auto;
+  margin-top: 0.75rem;
+}
+
+.req-matrix {
+  min-width: 720px;
+}
+
+.req-pill {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.req-pill.status-accepted,
+.req-pill.status-verified {
+  background: #e7f6ed;
+  color: #146c2e;
+}
+
+.req-pill.status-deferred,
+.req-pill.status-draft {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.req-pill.status-rejected {
+  background: #fdecec;
+  color: var(--danger);
+}
+
+.req-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.req-id {
+  margin: 0;
+  font-family: ui-monospace, monospace;
+  color: var(--muted);
+}
+
+.req-muted {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.req-coverage-list {
+  margin: 0.35rem 0 0.75rem;
+}
+
+.req-back {
+  margin: 0 0 0.75rem;
+}
+
+.req-body {
+  margin-bottom: 1.25rem;
+}
+
+.req-trace-section {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+  .portal-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .portal-nav {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    max-height: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem 0.35rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .portal-nav .nav-section {
+    display: contents;
+  }
+
+  .portal-nav .nav-label {
+    display: none;
+  }
+
+  .portal-nav a {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.85rem;
+  }
+
+  .diagram-page {
+    height: auto;
+    min-height: 0;
+  }
+
+  .diagram-shell {
+    min-height: 60vh;
+    height: 65vh;
+  }
+}

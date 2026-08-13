@@ -12,4 +12,5 @@
 | [Review cadence](review-cadence.md) | Event / pre-pilot / pre-prod / periodic |
 | [Document metadata](document-metadata.md) | Header convention |
 | [CODEOWNERS guidance](codeowners-guidance.md) | Ownership areas (names TBD) |
+| [Portal rollback](portal-rollback.md) | Stock LikeC4 vs custom portal |
 | [ADR template](../decisions/ADR-TEMPLATE.md) | New ADR structure |

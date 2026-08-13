@@ -2,6 +2,8 @@
 
 Maps Accepted ADRs → design docs → implementation modules → verification.
 
+**Complementary artefact:** requirement-centric traceability is generated from requirement markdown frontmatter in the portal (`/requirements/traceability`). Prefer updating requirement metadata for behaviour↔view↔test links; keep this document focused on **ADR → module → verification**. Do not maintain two conflicting hand-copied requirement matrices. See also [requirements README](../../requirements/README.md).
+
 | ADR | Design docs | Implementation module(s) | Verification |
 | --- | --- | --- | --- |
 | ADR-001 PSP tokenisation | [pci-boundary](../security/pci-boundary.md), [payment-method-selection](../payments/payment-method-selection.md) | Payment Methods, PSP adapter | No PAN/CVV stored; token ref only; PCI security tests |
