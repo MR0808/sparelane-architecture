@@ -11,7 +11,7 @@
         "architecture:build:stock": "likec4 build -o dist-stock",
         "portal:dev": "vite --config portal/vite.config.ts",
         "portal:build": "vite build --config portal/vite.config.ts",
-        "portal:preview": "vite preview --config portal/vite.config.ts --outDir dist",
+        "portal:preview": "vite preview --config portal/vite.config.ts",
         "openapi:lint": "node scripts/validate-openapi.mjs",
         "docs:links": "node scripts/validate-doc-links.mjs",
         "requirements:validate": "node scripts/validate-requirements.mjs",
