@@ -20,6 +20,8 @@ modules:
   - Payment Methods
   - PSP adapter
 tests: []
+designs:
+  - SEQ-SEC-001
 ---
 # NFR-SEC-002 — No raw PAN or CVV storage
 

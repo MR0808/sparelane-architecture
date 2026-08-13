@@ -20,6 +20,7 @@ modules:
   - Outbox
 tests:
   - FIN-INV-09
+  - OPS-REC-001
 ---
 # NFR-REL-001 — Idempotent async consumers
 

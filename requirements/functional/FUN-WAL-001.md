@@ -15,6 +15,9 @@ contracts: []
 modules:
   - Wallet
 tests: []
+openDecisions:
+  - OD-004
+  - OD-012
 ---
 # FUN-WAL-001 — Optional consumer wallet capability
 

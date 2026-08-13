@@ -17,6 +17,8 @@ contracts:
 modules:
   - Admin surfaces
 tests: []
+openDecisions:
+  - OD-024
 ---
 # NFR-SEC-004 — Admin MFA for privileged access
 

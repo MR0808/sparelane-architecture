@@ -17,9 +17,12 @@ contracts: []
 modules:
   - Payment Workflows
   - Reliability Engine
-tests: []
+tests:
+  - E2E-PAY-001
 dependsOn:
   - FUN-PAY-001
+designs:
+  - SEQ-PAY-003
 ---
 # FUN-PAY-003 — Use primary payment method first
 

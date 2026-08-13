@@ -18,6 +18,8 @@ modules:
   - Payment Methods
   - Reliability Engine
 tests: []
+openDecisions:
+  - OD-003
 ---
 # FUN-CON-004 — Set primary and backup payment method priority
 

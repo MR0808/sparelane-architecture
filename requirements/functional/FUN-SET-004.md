@@ -19,6 +19,9 @@ modules:
   - Reconciliation
   - Settlement
 tests: []
+designs:
+  - SEQ-MONEY-004
+  - SEQ-MONEY-006
 ---
 # FUN-SET-004 — Reconcile settlements
 

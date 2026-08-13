@@ -15,8 +15,11 @@ adrs:
 contracts: []
 modules:
   - Payment Workflows
-tests: []
+tests:
+  - E2E-PAY-004
 dependsOn: []
+designs:
+  - SEQ-PAY-006
 ---
 # FUN-PAY-007 — Complete failure terminal state
 

@@ -18,7 +18,10 @@ contracts: []
 modules:
   - Payment Workflows
   - Reliability Engine
-tests: []
+tests:
+  - E2E-PAY-005
+designs:
+  - SEQ-PAY-007
 ---
 # FUN-CON-006 — Consumer Retry Now
 

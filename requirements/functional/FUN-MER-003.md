@@ -21,6 +21,9 @@ modules:
   - Bills
   - Merchant Integrations
 tests: []
+designs:
+  - SEQ-PAY-001
+  - SEQ-INT-001
 ---
 # FUN-MER-003 — Submit bill
 

@@ -20,7 +20,14 @@ contracts:
   - docs/integrations/webhooks.md
 modules:
   - Webhooks
-tests: []
+tests:
+  - INT-API-002
+  - CON-WEBHOOK-001
+openDecisions:
+  - OD-031
+designs:
+  - SEQ-INT-003
+  - SEQ-INT-004
 ---
 # FUN-MER-006 — Receive signed webhook
 

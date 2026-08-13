@@ -18,6 +18,9 @@ contracts:
 modules:
   - Webhooks
 tests: []
+designs:
+  - SEQ-INT-003
+  - SEQ-INT-004
 ---
 # NFR-SEC-005 — Signed merchant webhooks
 

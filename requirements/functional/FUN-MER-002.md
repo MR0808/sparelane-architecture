@@ -17,7 +17,9 @@ contracts:
 modules:
   - Merchant Integrations
   - Webhooks
-tests: []
+tests:
+  - SEC-AUTH-001
+  - CON-API-001
 ---
 # FUN-MER-002 — Configure merchant integration
 

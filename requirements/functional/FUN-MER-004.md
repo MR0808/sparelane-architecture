@@ -17,7 +17,10 @@ contracts:
 modules:
   - Bills
   - API layer
-tests: []
+tests:
+  - INT-API-001
+designs:
+  - SEQ-INT-002
 ---
 # FUN-MER-004 — Safely retry duplicate bill request
 

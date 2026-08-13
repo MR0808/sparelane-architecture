@@ -15,7 +15,8 @@ modules: []
 tests: []
 dependsOn: []
 related: []
-openDecisionDocs: []
+openDecisions: []
+designs: []
 ---
 
 # REQ-000 — Short descriptive title

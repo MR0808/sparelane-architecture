@@ -1,13 +1,19 @@
 import type { ReactNode } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { MarkdownDoc } from '../components/MarkdownDoc'
+import { SourceFooter } from '../components/SourceFooter'
 import {
   adrHref,
   architectureViewHref,
   contractHref,
+  designHref,
   getRequirement,
-  listRequirements,
+  openDecisionHref,
+  testHref,
 } from '../lib/requirements'
+import { getTest } from '../lib/tests'
+import { getOpenDecision } from '../lib/openDecisions'
+import { getDesign } from '../lib/designs'
 
 function TraceList({
   title,
@@ -43,9 +49,16 @@ export function RequirementDetailPage() {
     )
   }
 
-  const relatedReqs = [...req.dependsOn, ...req.related]
-    .map((rid) => getRequirement(rid))
-    .filter(Boolean)
+  const openIds = [
+    ...req.openDecisions,
+    ...req.openDecisionDocs
+      .map((p) => {
+        const m = p.match(/(OD-\d{3})/i)
+        return m ? m[1].toUpperCase() : null
+      })
+      .filter((x): x is string => Boolean(x)),
+  ]
+  const uniqueOpen = [...new Set(openIds)]
 
   return (
     <article className="req-detail">
@@ -89,12 +102,24 @@ export function RequirementDetailPage() {
         ))}
       </TraceList>
 
-      <TraceList title="Decisions" empty={req.adrs.length === 0}>
+      <TraceList title="Decisions (ADRs)" empty={req.adrs.length === 0}>
         {req.adrs.map((adr) => (
           <li key={adr}>
             <Link to={adrHref(adr)}>{adr}</Link>
           </li>
         ))}
+      </TraceList>
+
+      <TraceList title="Open decisions" empty={uniqueOpen.length === 0}>
+        {uniqueOpen.map((oid) => {
+          const od = getOpenDecision(oid)
+          return (
+            <li key={oid}>
+              <Link to={openDecisionHref(oid)}>{oid}</Link>
+              {od ? ` — ${od.title}` : ''}
+            </li>
+          )
+        })}
       </TraceList>
 
       <TraceList title="Contracts" empty={req.contracts.length === 0}>
@@ -116,19 +141,31 @@ export function RequirementDetailPage() {
         ))}
       </TraceList>
 
-      <TraceList title="Tests" empty={req.tests.length === 0}>
-        {req.tests.map((t) => (
-          <li key={t}>
-            <code>{t}</code>{' '}
-            <span className="req-muted">
-              — <Link to="/docs/implementation/financial-invariant-tests">financial invariants</Link>{' '}
-              / <Link to="/requirements">test catalog</Link>
-            </span>
-          </li>
-        ))}
+      <TraceList title="Design diagrams" empty={req.designs.length === 0}>
+        {req.designs.map((did) => {
+          const design = getDesign(did)
+          return (
+            <li key={did}>
+              <Link to={designHref(did)}>{did}</Link>
+              {design ? ` — ${design.title}` : ''}
+            </li>
+          )
+        })}
       </TraceList>
 
-      {relatedReqs.length > 0 ? (
+      <TraceList title="Tests" empty={req.tests.length === 0}>
+        {req.tests.map((t) => {
+          const spec = getTest(t)
+          return (
+            <li key={t}>
+              <Link to={testHref(t)}>{t}</Link>
+              {spec ? ` — ${spec.title}` : ''}
+            </li>
+          )
+        })}
+      </TraceList>
+
+      {(req.dependsOn.length > 0 || req.related.length > 0) && (
         <TraceList title="Related requirements" empty={false}>
           {req.dependsOn.map((rid) => (
             <li key={`d-${rid}`}>
@@ -143,30 +180,9 @@ export function RequirementDetailPage() {
             </li>
           ))}
         </TraceList>
-      ) : null}
-
-      {req.openDecisionDocs.length > 0 ? (
-        <TraceList title="Open decisions" empty={false}>
-          {req.openDecisionDocs.map((d) => (
-            <li key={d}>
-              <Link to={contractHref(d)}>{d}</Link>
-            </li>
-          ))}
-        </TraceList>
-      ) : (
-        <section className="req-trace-section">
-          <h2 className="req-section-title">Open decisions</h2>
-          <p className="page-lead">
-            No OD-### IDs yet.{' '}
-            <Link to="/docs/decisions/open-decisions">Open decisions doc</Link>
-          </p>
-        </section>
       )}
 
-      <p className="req-muted">
-        Source: <code>requirements/{req.sourcePath}</code> ·{' '}
-        {listRequirements().length} requirements loaded
-      </p>
+      <SourceFooter repoPath={`requirements/${req.sourcePath}`} />
     </article>
   )
 }

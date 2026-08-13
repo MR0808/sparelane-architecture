@@ -24,10 +24,7 @@ export const navItems: NavItem[] = [
       { label: 'Implementation', to: '/architecture/implementation' },
     ],
   },
-  {
-    label: 'Design',
-    children: [{ label: 'Sequence & Detailed Diagrams', to: '/design' }],
-  },
+  { label: 'Design', to: '/design' },
   {
     label: 'Requirements',
     children: [
@@ -40,8 +37,11 @@ export const navItems: NavItem[] = [
       { label: 'Traceability', to: '/requirements/traceability' },
     ],
   },
+  { label: 'Tests', to: '/tests' },
   { label: 'Decisions', to: '/decisions' },
   { label: 'Contracts', to: '/contracts' },
+  { label: 'Security', to: '/security' },
   { label: 'Operations', to: '/operations' },
   { label: 'Implementation', to: '/implementation' },
+  { label: 'Health', to: '/health' },
 ]

@@ -2,149 +2,88 @@
 
 Unresolved items that are **not** Accepted ADRs. Organised separately from vendor-neutral architecture decisions.
 
+**Source of truth:** individual files under [`docs/decisions/open/`](./open/). This index is a catalogue only — do not duplicate decision substance here.
+
+Stable IDs (`OD-###`) are never renumbered after assignment.
+
 Implementation phase detail: [`docs/implementation/build-phases.md`](../implementation/build-phases.md).
 
----
-
-## Blocker summary
-
-### Non-blocking for development
-
-Local/CI can proceed with fakes/stubs and safe product defaults:
-
-- Consumer notification rules/copy
-- Multi-workflow-per-bill (deferred)
-- Settlement schedule/batching rules
-- Observability/SIEM vendors
-- Dual-control / break-glass (not MVP core)
-- PostgreSQL RLS vs app-only tenancy (app isolation mandatory)
-- OAuth/mTLS enterprise merchant API
-- Numeric rate limit values
-- Public ID prefix spelling
-- Payment-attempt merchant API visibility
-- Webhook endpoint management via API
-
-### Soft / partial (need defaults; not hard stop)
-
-- Retry timing/windows/maxima/quiet hours
-- Backup cardinality / wallet ordering
-- Wallet product rules (tables optional)
-- Idempotency key retention TTL
-- Webhook retry schedule bounds
-- Outbox publish mechanism (polling vs CDC)
-- Cloud / worker runtime / DB topology (local can proceed)
-- Legal retention durations (hooks can be built)
-
-### Blocks sandbox (live provider rails)
-
-- **PSP selection** (+ sandbox credentials) for live card sandbox
-- **Settlement / banking partner** for live payout sandbox
-- **Identity provider** for real shared sandbox sessions (dev auth OK for local)
-
-### Blocks pilot
-
-- PSP + **provider capability matrix** (pre-auth, idempotency keys)
-- Settlement partner for pilot payouts
-- Secrets manager product (pattern Accepted; product TBD)
-- Admin MFA / passkey approach
-- Due-date local capture clock default + merchant timezone-change policy
-
-### Blocks production money movement
-
-1. PSP + settlement partner (live)
-2. Identity provider + admin MFA
-3. Secrets manager / KMS product
-4. Queue/broker + DB hosting topology
-5. Legal retention periods (+ PCI validation program with chosen PSP method)
-6. Due-date clock + timezone-change policy
-
-### Blocks wallet only
-
-- Wallet custody / safeguarding / licensing — **not** required for non-wallet MVP
+Portal: `/decisions` and `/decisions/open/:id`.
 
 ---
 
-## Product
+## Catalogue
 
-| Decision required | Why it matters | Blocking? | Target / dependency |
+### product
+
+| ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| Exact retry timing, windows, maxima, quiet hours | Shapes Retry Service configuration | Partial — need defaults to ship recovery | Payment product config |
-| Exact due-date local capture clock time | Converts date-only due dates to UTC schedule instants | Partial — timezone semantics Accepted; clock TBD | [due-dates.md](../contracts/due-dates.md) |
-| Payment-method backup cardinality / wallet ordering | Reliability Engine inputs | Partial — ordered preference required; counts TBD | Method selection docs |
-| Wallet product rules (enablement, funding, spend) | Optional MVP capability boundaries | Partial — wallet tables optional | Wallet / regulatory |
-| Consumer notification rules and copy | Notification worker behaviour | No | Notifications product |
-| Merchant timezone change handling policy | Prevents silent reschedule of in-flight bills | Partial | due-dates.md |
-| Multi-workflow-per-bill (future) | Must not be built in MVP | No — explicitly deferred | Future ADR if needed |
+| [OD-001](./open/OD-001-retry-timing.md) | Exact retry timing, windows, maxima, quiet hours | development | open |
+| [OD-002](./open/OD-002-due-date-local-clock.md) | Exact due-date local capture clock time | pilot | open |
+| [OD-003](./open/OD-003-backup-cardinality.md) | Payment-method backup cardinality / wallet ordering | development | open |
+| [OD-004](./open/OD-004-wallet-product-rules.md) | Wallet product rules (enablement, funding, spend) | wallet-only | open |
+| [OD-005](./open/OD-005-notification-rules.md) | Consumer notification rules and copy | non-blocking | open |
+| [OD-006](./open/OD-006-timezone-change-policy.md) | Merchant timezone change handling policy | pilot | open |
+| [OD-007](./open/OD-007-multi-workflow-per-bill.md) | Multi-workflow-per-bill (future) | non-blocking | deferred |
 
----
+### payments
 
-## Payments / Banking
-
-| Decision required | Why it matters | Blocking? | Target / dependency |
+| ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| PSP selection | Tokenisation, auth/capture, webhooks | Partial — adapters can be stubbed; live rails need PSP | External provider |
-| Settlement / banking partner | Payout rails, confirmation events | Partial — settlement worker can be built against interfaces | External partner |
-| Provider capability matrix (pre-auth, idempotency keys) | Orchestrator/adapter behaviour | Partial | After PSP choice |
-| Settlement schedule / batching rules | Settlement worker batching | No | Partner + product |
+| [OD-008](./open/OD-008-psp-selection.md) | PSP selection | sandbox | open |
+| [OD-009](./open/OD-009-settlement-partner.md) | Settlement / banking partner | sandbox | open |
+| [OD-010](./open/OD-010-provider-capability-matrix.md) | Provider capability matrix (pre-auth, idempotency keys) | pilot | open |
+| [OD-011](./open/OD-011-settlement-batching.md) | Settlement schedule / batching rules | non-blocking | open |
 
----
+### regulatory
 
-## Regulatory
-
-| Decision required | Why it matters | Blocking? | Target / dependency |
+| ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| Wallet custody / safeguarding / licensing | Whether wallet is live in a jurisdiction | Yes for **wallet go-live**; No for non-wallet MVP | Legal/compliance |
-| PCI validation approach / SAQ level | Depends on PSP integration method | Partial — architecture forbids CHD; validation program TBD | After PSP + integration method |
-| Legal data retention periods | Retention categories exist; durations TBD | Partial — can implement soft-delete/archive hooks | Legal |
-| KYC/KYB evidence retention | Object storage lifecycle | Partial | Provider + legal |
+| [OD-012](./open/OD-012-wallet-custody-licensing.md) | Wallet custody / safeguarding / licensing | wallet-only | open |
+| [OD-013](./open/OD-013-pci-validation.md) | PCI validation approach / SAQ level | production | open |
+| [OD-014](./open/OD-014-legal-retention.md) | Legal data retention periods | production | open |
+| [OD-015](./open/OD-015-kyb-evidence-retention.md) | KYC/KYB evidence retention | development | open |
 
----
+### infrastructure
 
-## Infrastructure
-
-| Decision required | Why it matters | Blocking? | Target / dependency |
+| ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| Cloud provider | Hosting | Partial — local/dev can proceed | Ops |
-| Queue / event broker | Event Bus implementation | Partial — outbox pattern Accepted; broker TBD | ADR-016/017 |
-| Outbox publish mechanism (polling vs CDC) | Outbox Processor implementation | Partial | ADR-016 |
-| Physical DB topology (shared vs separate ledger DB) | Deployment | Partial — logical separation Accepted | ADR-013/016 |
-| Worker runtime (K8s/ECS/serverless/…) | Deployables | Partial | ADR-018 |
-| Observability / SIEM vendors | Ops tooling | No | Ops |
-| Regions / HA / numeric RPO-RTO | DR | Partial — sensitivity tiers Accepted | DR docs |
+| [OD-016](./open/OD-016-cloud-provider.md) | Cloud provider | development | open |
+| [OD-017](./open/OD-017-queue-broker.md) | Queue / event broker | production | open |
+| [OD-018](./open/OD-018-outbox-publish.md) | Outbox publish mechanism (polling vs CDC) | development | open |
+| [OD-019](./open/OD-019-db-topology.md) | Physical DB topology (shared vs separate ledger DB) | production | open |
+| [OD-020](./open/OD-020-worker-runtime.md) | Worker runtime (K8s/ECS/serverless/…) | development | open |
+| [OD-021](./open/OD-021-observability-siem.md) | Observability / SIEM vendors | non-blocking | open |
+| [OD-022](./open/OD-022-regions-ha.md) | Regions / HA / numeric RPO-RTO | production | open |
 
----
+### security
 
-## Security
-
-| Decision required | Why it matters | Blocking? | Target / dependency |
+| ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| Identity provider | Consumer/merchant/admin auth | Partial — auth surfaces Accepted | Authn docs |
-| MFA / passkey implementation | Admin/consumer assurance | Partial for admin go-live | Admin access |
-| Secrets product / KMS/HSM | Implements ADR-011 | Partial — pattern Accepted | ADR-011 |
-| Dual-control / break-glass workflows | Privileged financial actions | No for MVP core; needed for some ops | Admin security |
-| PostgreSQL RLS vs app-only tenancy | Defence in depth | No — app enforcement mandatory | ADR-014 |
-| OAuth/mTLS for enterprise merchant API | Auth alternatives | No | API auth TBD |
+| [OD-023](./open/OD-023-identity-provider.md) | Identity provider | sandbox | open |
+| [OD-024](./open/OD-024-mfa-passkey.md) | MFA / passkey implementation | pilot | open |
+| [OD-025](./open/OD-025-secrets-kms.md) | Secrets product / KMS/HSM | pilot | open |
+| [OD-026](./open/OD-026-dual-control-break-glass.md) | Dual-control / break-glass workflows | non-blocking | open |
+| [OD-027](./open/OD-027-rls-vs-app-tenancy.md) | PostgreSQL RLS vs app-only tenancy | non-blocking | open |
+| [OD-028](./open/OD-028-oauth-mtls-merchant-api.md) | OAuth/mTLS for enterprise merchant API | non-blocking | open |
 
----
+### api
 
-## API
-
-| Decision required | Why it matters | Blocking? | Target / dependency |
+| ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| Numeric rate limits | Edge protection | No — rate limiting capability required | Operations |
-| Idempotency key retention | Storage TTL | Partial | ADR-008 |
-| Webhook retry schedule / attempt bounds | Delivery worker | Partial — bounded retry required | ADR-009 |
-| Public ID prefix final spelling | Cosmetic if opacity preserved | No | ADR-020 |
-| Payment-attempt merchant API visibility | Future endpoint | No | OpenAPI deferred |
-| Webhook endpoint management via API | Portal-managed for now | No | Integrations |
+| [OD-029](./open/OD-029-rate-limits.md) | Numeric rate limits | non-blocking | open |
+| [OD-030](./open/OD-030-idempotency-ttl.md) | Idempotency key retention TTL | development | open |
+| [OD-031](./open/OD-031-webhook-retry-bounds.md) | Webhook retry schedule / attempt bounds | development | open |
+| [OD-032](./open/OD-032-public-id-prefixes.md) | Public ID prefix final spelling | non-blocking | open |
+| [OD-033](./open/OD-033-attempt-api-visibility.md) | Payment-attempt merchant API visibility | non-blocking | open |
+| [OD-034](./open/OD-034-webhook-endpoint-api.md) | Webhook endpoint management via API | non-blocking | open |
 
----
 
 ## Highest-priority before production cutover
 
-1. PSP + settlement partner selection (live money movement)
-2. Identity provider + admin MFA
-3. Secrets manager product
-4. Queue/broker + DB hosting topology
-5. Legal retention + wallet regulatory posture (if wallet enabled)
-6. Due-date local clock default + timezone-change policy
+1. OD-008 PSP + OD-009 settlement partner (live money movement)
+2. OD-023 Identity provider + OD-024 admin MFA
+3. OD-025 Secrets manager product
+4. OD-017 Queue/broker + OD-019 DB hosting topology
+5. OD-014 Legal retention + OD-012 wallet regulatory posture (if wallet enabled)
+6. OD-002 Due-date local clock + OD-006 timezone-change policy

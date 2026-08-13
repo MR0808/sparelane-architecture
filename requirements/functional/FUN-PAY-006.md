@@ -17,8 +17,13 @@ contracts: []
 modules:
   - Reliability Engine
   - Workers
-tests: []
+tests:
+  - E2E-PAY-003
 dependsOn: []
+openDecisions:
+  - OD-001
+designs:
+  - SEQ-PAY-005
 ---
 # FUN-PAY-006 — Scheduled retry
 

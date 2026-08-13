@@ -16,9 +16,14 @@ adrs:
 contracts: []
 modules:
   - Reliability Engine
-tests: []
+tests:
+  - E2E-PAY-002
 dependsOn:
   - FUN-PAY-003
+openDecisions:
+  - OD-003
+designs:
+  - SEQ-PAY-004
 ---
 # FUN-PAY-004 — Ordered fallback across backup methods
 

@@ -19,6 +19,9 @@ modules:
   - Reconciliation
 tests:
   - FIN-INV-06
+  - E2E-SET-003
+designs:
+  - SEQ-MONEY-005
 ---
 # FUN-SET-003 — Handle unknown payout outcomes safely
 

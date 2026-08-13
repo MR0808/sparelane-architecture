@@ -18,6 +18,7 @@ modules:
   - All merchant-scoped modules
 tests:
   - FIN-INV-08
+  - SEC-TEN-001
 ---
 # NFR-SEC-001 — Merchant tenant isolation
 

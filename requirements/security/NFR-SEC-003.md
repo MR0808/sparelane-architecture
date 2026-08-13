@@ -16,6 +16,8 @@ contracts:
 modules:
   - config/secrets
 tests: []
+openDecisions:
+  - OD-025
 ---
 # NFR-SEC-003 — Centralised secrets management
 

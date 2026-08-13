@@ -16,7 +16,10 @@ contracts:
   - docs/operations/async-processing.md
 modules:
   - Workers
-tests: []
+tests:
+  - OPS-REC-002
+designs:
+  - SEQ-OPS-003
 ---
 # NFR-REL-004 — Dead-letter queue for poison messages
 

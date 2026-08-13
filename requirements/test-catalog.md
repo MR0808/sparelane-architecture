@@ -1,26 +1,24 @@
-# Test catalog (architecture repo)
+# Test catalogue
 
-Product automated tests live in the future `sparelane-platform` repository. This catalog assigns **stable IDs** used in requirement `tests:` frontmatter, mapped to architecture-repo acceptance docs.
+Stable test specification IDs live under [`requirements/tests/`](./tests/).
 
-## Financial invariant tests (`FIN-INV-*`)
+Product automated tests will live in the future `sparelane-platform` repository. This architecture repo holds **specifications only** — not executable suites or results.
 
-Source: [docs/implementation/financial-invariant-tests.md](../docs/implementation/financial-invariant-tests.md)
+## Categories
 
-| ID | Invariant |
+| Prefix | Meaning |
 | --- | --- |
-| `FIN-INV-01` | Same payment cannot be collected twice |
-| `FIN-INV-02` | One successful collection → exactly one ledger posting |
-| `FIN-INV-03` | Journal transaction always balances |
-| `FIN-INV-04` | Failed collection cannot become settlement eligible |
-| `FIN-INV-05` | Settlement cannot be submitted twice (same instruction identity) |
-| `FIN-INV-06` | Unknown payout outcome cannot trigger blind duplicate submission |
-| `FIN-INV-07` | Ledger correction does not mutate historical entry (compensating only) |
-| `FIN-INV-08` | Merchant A can never settle against Merchant B data |
-| `FIN-INV-09` | Replay of event is idempotent (no duplicate financial effect) |
-| `FIN-INV-10` | Worker restart cannot create duplicate financial effect |
+| `FIN-INV-###` | Financial invariants |
+| `E2E-PAY-###` | End-to-end payment scenarios |
+| `E2E-SET-###` | End-to-end settlement scenarios |
+| `INT-API-###` | Merchant API integration |
+| `INT-PSP-###` | PSP / provider integration |
+| `SEC-TEN-###` | Tenant isolation |
+| `SEC-AUTH-###` | Auth / credential / signature checks |
+| `OPS-REC-###` | Ops recovery (ledger, DLQ) |
+| `CON-API-###` | Contract / OpenAPI conformance |
+| `CON-WEBHOOK-###` | Webhook contract scenarios |
 
-## MVP acceptance
+Requirement frontmatter `tests:` must reference IDs that exist under `requirements/tests/`.
 
-Broader MVP checklists (no per-bullet IDs yet): [docs/implementation/mvp-acceptance-criteria.md](../docs/implementation/mvp-acceptance-criteria.md).
-
-Prefer linking requirements to `FIN-INV-*` where financial correctness applies; otherwise leave `tests: []` until platform test IDs exist.
+Portal: `/tests` and `/tests/:id`.

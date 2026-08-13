@@ -1,8 +1,22 @@
-# Portal Mermaid Test
+---
+id: PORTAL-MERMAID-TEST
+title: Portal Mermaid Rendering Test
+type: sequence
+area: portal
+status: portal-test
+mvp: false
+likec4: []
+requirements: []
+adrs: []
+tests: []
+renderingTest: true
+---
 
-Temporary design page to prove Mermaid rendering in the custom architecture portal.
+# Portal Mermaid Rendering Test
 
-Detailed Mermaid diagrams **supplement** LikeC4 model-driven views; they do not replace them.
+Portal regression fixture to prove Mermaid rendering in the custom architecture portal. **Not** a primary engineering design artefact.
+
+Detailed Mermaid diagrams in `docs/design/` supplement LikeC4 model-driven views; they do not replace them. LikeC4 remains the architecture source of truth.
 
 ## Sequence diagram
 
@@ -22,7 +36,7 @@ sequenceDiagram
 
 ## State diagram
 
-Simplified Payment Workflow states (illustrative — authoritative state machine is in LikeC4 and `docs/payments/`):
+Simplified Payment Workflow states (illustrative — authoritative state machine is in LikeC4 and `docs/design/payments/payment-workflow-state.md`):
 
 ```mermaid
 stateDiagram-v2

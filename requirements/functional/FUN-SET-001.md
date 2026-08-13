@@ -21,6 +21,10 @@ modules:
   - Ledger
 tests:
   - FIN-INV-04
+  - E2E-SET-001
+designs:
+  - SEQ-MONEY-001
+  - STATE-MONEY-001
 ---
 # FUN-SET-001 — Ledger confirmation before settlement eligibility
 

@@ -16,7 +16,10 @@ adrs:
 contracts: []
 modules:
   - PSP adapter
-tests: []
+tests:
+  - E2E-PAY-001
+openDecisions:
+  - OD-008
 ---
 # INT-PSP-003 — Payment execution
 

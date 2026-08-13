@@ -19,6 +19,7 @@ modules:
   - Workers
 tests:
   - FIN-INV-10
+  - OPS-REC-001
 ---
 # NFR-REL-002 — Safe worker restart
 

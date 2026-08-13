@@ -15,7 +15,13 @@ adrs:
 contracts: []
 modules:
   - Settlement
-tests: []
+tests:
+  - E2E-SET-001
+openDecisions:
+  - OD-009
+designs:
+  - SEQ-MONEY-002
+  - SEQ-OPS-004
 ---
 # INT-SET-001 — Settlement instruction submission
 

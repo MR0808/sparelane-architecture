@@ -59,10 +59,11 @@ type Props = {
 }
 
 export function MarkdownDoc({ markdown }: Props) {
+  const body = markdown.replace(/^\uFEFF?---[\s\S]*?\n---\s*/, '')
   return (
     <div className="markdown-body">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
-        {markdown}
+        {body}
       </ReactMarkdown>
     </div>
   )

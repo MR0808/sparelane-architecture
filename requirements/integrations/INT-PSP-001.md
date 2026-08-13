@@ -17,6 +17,8 @@ contracts: []
 modules:
   - PSP adapter
 tests: []
+openDecisions:
+  - OD-008
 ---
 # INT-PSP-001 — Secure tokenisation capability
 

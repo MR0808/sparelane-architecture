@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-08-13T04:12:43.811Z",
+  "label": "Generated from repository state",
+  "requirements": {
+    "total": 71,
+    "mvp": 68,
+    "future": 3,
+    "blocked": 15,
+    "missingArchitecture": 0,
+    "missingTests": 43,
+    "mvpVerified": 0
+  },
+  "decisions": {
+    "adrs": 23,
+    "open": 34
+  },
+  "tests": {
+    "total": 27
+  },
+  "designs": {
+    "total": 31,
+    "sequence": 28,
+    "state": 3,
+    "invalidTraceability": 0
+  },
+  "architecture": {
+    "views": 59
+  },
+  "contracts": {
+    "openapi": "present"
+  },
+  "docs": {
+    "count": 221
+  }
+}

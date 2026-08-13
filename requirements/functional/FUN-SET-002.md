@@ -19,6 +19,12 @@ modules:
   - Settlement
 tests:
   - FIN-INV-05
+  - E2E-SET-001
+openDecisions:
+  - OD-009
+  - OD-011
+designs:
+  - SEQ-MONEY-002
 ---
 # FUN-SET-002 — Submit settlement idempotently
 

@@ -21,6 +21,9 @@ modules:
   - Settlement
 tests:
   - FIN-INV-06
+designs:
+  - SEQ-MONEY-005
+  - SEQ-OPS-001
 ---
 # NFR-REL-005 — No blind retry after unknown financial outcome
 

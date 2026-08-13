@@ -19,6 +19,8 @@ modules:
   - Payment Methods
   - PSP adapter
 tests: []
+designs:
+  - SEQ-SEC-001
 ---
 # FUN-CON-003 — Add tokenised payment method
 

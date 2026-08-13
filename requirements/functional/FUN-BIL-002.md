@@ -18,6 +18,10 @@ modules:
   - Bills
   - Reliability Engine
 tests: []
+openDecisions:
+  - OD-002
+designs:
+  - SEQ-PAY-001
 ---
 # FUN-BIL-002 — Schedule payment actions against due dates
 

@@ -19,6 +19,9 @@ contracts:
 modules:
   - Bills
 tests: []
+designs:
+  - SEQ-PAY-001
+  - SEQ-INT-001
 ---
 # FUN-BIL-001 — Ingest merchant bill events
 

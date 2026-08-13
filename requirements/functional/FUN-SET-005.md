@@ -19,6 +19,9 @@ modules:
   - Ledger
 tests:
   - FIN-INV-02
+designs:
+  - SEQ-MONEY-001
+  - SEQ-OPS-002
 ---
 # FUN-SET-005 — Exactly one ledger posting per successful collection
 

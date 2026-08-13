@@ -45,6 +45,7 @@ export function RequirementsPage() {
     status: params.get('status') ?? 'all',
     priority: params.get('priority') ?? 'all',
     mvp: (params.get('mvp') as RequirementFilters['mvp']) ?? 'all',
+    coverage: (params.get('coverage') as RequirementFilters['coverage']) ?? 'all',
     q: params.get('q') ?? '',
   }
 
@@ -103,32 +104,46 @@ export function RequirementsPage() {
       </section>
 
       <section className="req-coverage" aria-label="Coverage">
-        <h2 className="req-section-title">Traceability coverage</h2>
+        <h2 className="req-section-title">Coverage dashboard</h2>
         <ul className="req-coverage-list">
           <li>
             With architecture/flow links: {coverage.withArch}/{coverage.total}
           </li>
-          <li>
-            With ADR links: {coverage.withAdr}/{coverage.total}
-          </li>
-          <li>
-            With implementation modules: {coverage.withModules}/{coverage.total}
-          </li>
+          <li>Missing architecture: {coverage.missingArch}</li>
           <li>
             With test mapping: {coverage.withTests}/{coverage.total}
           </li>
+          <li>Missing tests: {coverage.missingTests}</li>
+          <li>Blocked by open decisions: {coverage.blocked}</li>
+          <li>Implemented but not verified: {coverage.implementedUnverified}</li>
+          <li>Accepted without Acceptance Criteria: {coverage.acceptedNoAc}</li>
           <li>
-            Accepted without Acceptance Criteria heading: {coverage.acceptedNoAc}
+            With ADR links: {coverage.withAdr}/{coverage.total}
           </li>
         </ul>
         <p>
-          <Link to="/requirements/traceability">Open traceability matrix</Link>
+          <Link to="/docs/governance/requirements-coverage">Coverage definitions</Link>
           {' · '}
-          <Link to="/docs/implementation/architecture-traceability">ADR implementation matrix</Link>
+          <Link to="/requirements/traceability">Traceability matrix</Link>
+          {' · '}
+          <Link to="/health">Portal health</Link>
         </p>
       </section>
 
       <section className="req-filters" aria-label="Filters">
+        <Select
+          label="Coverage"
+          name="coverage"
+          value={filters.coverage ?? 'all'}
+          onChange={setFilter}
+          options={[
+            { value: 'all', label: 'All' },
+            { value: 'missing-architecture', label: 'Missing architecture' },
+            { value: 'missing-test', label: 'Missing test' },
+            { value: 'blocked', label: 'Blocked' },
+            { value: 'unverified', label: 'Unverified (implemented)' },
+          ]}
+        />
         <Select
           label="Type"
           name="type"
@@ -211,32 +226,34 @@ export function RequirementsPage() {
       {grouped.map(([group, rows]) => (
         <section key={group} className="req-group">
           <h2 className="req-section-title">{group}</h2>
-          <table className="req-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Priority</th>
-                <th>MVP</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <td>
-                    <Link to={`/requirements/${r.id}`}>{r.id}</Link>
-                  </td>
-                  <td>{r.title}</td>
-                  <td>
-                    <span className={`req-pill status-${r.status}`}>{r.status}</span>
-                  </td>
-                  <td>{r.priority}</td>
-                  <td>{r.mvp ? 'MVP' : 'Future'}</td>
+          <div className="table-scroll">
+            <table className="req-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>MVP</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id}>
+                    <td>
+                      <Link to={`/requirements/${r.id}`}>{r.id}</Link>
+                    </td>
+                    <td>{r.title}</td>
+                    <td>
+                      <span className={`req-pill status-${r.status}`}>{r.status}</span>
+                    </td>
+                    <td>{r.priority}</td>
+                    <td>{r.mvp ? 'MVP' : 'Future'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       ))}
     </article>

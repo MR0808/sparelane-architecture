@@ -16,7 +16,12 @@ contracts:
   - docs/security/webhook-security.md
 modules:
   - PSP adapter
-tests: []
+tests:
+  - INT-PSP-001
+openDecisions:
+  - OD-008
+designs:
+  - SEQ-SEC-002
 ---
 # INT-PSP-005 — Authenticated provider webhooks
 

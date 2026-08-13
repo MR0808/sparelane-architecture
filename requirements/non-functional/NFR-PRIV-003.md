@@ -16,6 +16,8 @@ contracts:
 modules:
   - Data Layer
 tests: []
+designs:
+  - SEQ-DATA-002
 ---
 # NFR-PRIV-003 — Deletion and anonymisation handling
 

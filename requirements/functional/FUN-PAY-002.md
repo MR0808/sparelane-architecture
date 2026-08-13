@@ -18,6 +18,8 @@ modules:
   - PSP adapter
 tests: []
 dependsOn: []
+designs:
+  - SEQ-PAY-002
 ---
 # FUN-PAY-002 — Pre-authorise where supported
 

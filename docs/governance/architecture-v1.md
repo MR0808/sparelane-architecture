@@ -20,6 +20,11 @@
 - Implementation blueprint and build phases
 - Operational runbooks
 - Governance process (change, checklist, ADR template, review cadence)
+- Requirements catalogue with coverage and test specifications
+- Client-side global search (Ctrl/Cmd+K, MiniSearch)
+- LikeC4 deep links (`/architecture/view/:viewId`)
+- Interactive OpenAPI docs (`/contracts/api`, Scalar — documentation only)
+- Stable open-decision IDs (`OD-###`) and portal health dashboard
 
 ## What v1 does **not** mean
 

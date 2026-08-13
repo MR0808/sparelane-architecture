@@ -18,7 +18,10 @@ contracts:
 modules:
   - PSP adapter
   - Integrations
-tests: []
+tests:
+  - INT-PSP-001
+designs:
+  - SEQ-SEC-002
 ---
 # NFR-SEC-006 — Verify provider webhooks
 

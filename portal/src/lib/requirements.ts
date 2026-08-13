@@ -33,6 +33,8 @@ export type RequirementMeta = {
   dependsOn: string[]
   related: string[]
   openDecisionDocs: string[]
+  openDecisions: string[]
+  designs: string[]
 }
 
 export type Requirement = RequirementMeta & {
@@ -106,10 +108,12 @@ function normalizeKey(filePath: string): string {
 function parseRequirement(sourcePath: string, raw: string): Requirement | null {
   const base = sourcePath.split('/').pop() || ''
   if (base.toLowerCase() === 'readme.md' || base === 'test-catalog.md') return null
-  if (sourcePath.includes('/templates/')) return null
+  if (sourcePath.includes('/templates/') || sourcePath.startsWith('tests/')) return null
 
   const { data, content } = parseFrontmatter(raw)
   if (!data?.id) return null
+  // Requirement IDs only (exclude test catalogue IDs if mis-filed)
+  if (!/^(BUS|FUN|NFR|INT)-/.test(String(data.id))) return null
 
   return {
     id: String(data.id),
@@ -128,6 +132,8 @@ function parseRequirement(sourcePath: string, raw: string): Requirement | null {
     dependsOn: asStringArray(data.dependsOn),
     related: asStringArray(data.related),
     openDecisionDocs: asStringArray(data.openDecisionDocs),
+    openDecisions: asStringArray(data.openDecisions),
+    designs: asStringArray(data.designs),
     body: content.trim(),
     sourcePath,
   }
@@ -159,6 +165,7 @@ export type RequirementFilters = {
   priority?: string
   mvp?: 'true' | 'false' | 'all'
   q?: string
+  coverage?: 'all' | 'missing-architecture' | 'missing-test' | 'blocked' | 'unverified'
 }
 
 export function filterRequirements(
@@ -174,6 +181,18 @@ export function filterRequirements(
     }
     if (filters.mvp === 'true' && !r.mvp) return false
     if (filters.mvp === 'false' && r.mvp) return false
+    if (filters.coverage === 'missing-architecture') {
+      if (r.architecture.length + r.flows.length > 0) return false
+    }
+    if (filters.coverage === 'missing-test') {
+      if (r.tests.length > 0) return false
+    }
+    if (filters.coverage === 'blocked') {
+      if (r.openDecisions.length === 0) return false
+    }
+    if (filters.coverage === 'unverified') {
+      if (r.status !== 'implemented') return false
+    }
     if (filters.q) {
       const q = filters.q.toLowerCase()
       const hay = `${r.id} ${r.title} ${r.area} ${r.body}`.toLowerCase()
@@ -206,6 +225,10 @@ export function coverageSummary(items: Requirement[] = all) {
   const withAdr = items.filter((r) => r.adrs.length > 0).length
   const withModules = items.filter((r) => r.modules.length > 0).length
   const withTests = items.filter((r) => r.tests.length > 0).length
+  const missingArch = items.filter((r) => r.architecture.length + r.flows.length === 0).length
+  const missingTests = items.filter((r) => r.tests.length === 0).length
+  const blocked = items.filter((r) => r.openDecisions.length > 0).length
+  const implementedUnverified = items.filter((r) => r.status === 'implemented').length
   const acceptedNoAc = items.filter((r) => {
     if (r.status !== 'accepted') return false
     return !/##\s*Acceptance Criteria/i.test(r.body)
@@ -215,44 +238,17 @@ export function coverageSummary(items: Requirement[] = all) {
     withAdr,
     withModules,
     withTests,
+    missingArch,
+    missingTests,
+    blocked,
+    implementedUnverified,
     acceptedNoAc,
     total: items.length,
   }
 }
 
-const VIEW_TO_SECTION: Record<string, string> = {
-  architectureMap: 'overview',
-  index: 'system-context',
-  paymentEngineCore: 'payments',
-  paymentEngineExtended: 'payments',
-  fundsLedger: 'money',
-  settlement: 'money',
-  settlementCore: 'money',
-  reconciliationCore: 'money',
-  merchantIntegration: 'integrations',
-  trustBoundaries: 'security',
-  securityArchitecture: 'security',
-  pciBoundaryView: 'security',
-  privilegedAccess: 'security',
-  dataArchitecture: 'data',
-  domainData: 'data',
-  dataStores: 'data',
-  dataOwnership: 'data',
-  dataClassification: 'data',
-  productionDeployment: 'deployment',
-  runtimeProcessing: 'deployment',
-  resilienceIsolation: 'deployment',
-  implementationDeployables: 'implementation',
-  implementationModules: 'implementation',
-  experienceApi: 'overview',
-  eventsArchitecture: 'data',
-  platform: 'overview',
-}
-
 export function architectureViewHref(viewId: string): string {
-  const section = VIEW_TO_SECTION[viewId]
-  if (section) return `/architecture/${section}`
-  return `/design`
+  return `/architecture/view/${viewId}`
 }
 
 const decisionModules = import.meta.glob('../../../docs/decisions/ADR-*.md', {
@@ -280,6 +276,18 @@ export function contractHref(repoPath: string): string {
   if (repoPath.startsWith('docs/')) {
     return `/docs/${repoPath.slice(5).replace(/\.md$/, '')}`
   }
-  if (repoPath === 'contracts/openapi.yaml') return '/contracts'
+  if (repoPath === 'contracts/openapi.yaml') return '/contracts/api'
   return `/docs/${repoPath}`
+}
+
+export function openDecisionHref(id: string): string {
+  return `/decisions/open/${id}`
+}
+
+export function testHref(id: string): string {
+  return `/tests/${id}`
+}
+
+export function designHref(id: string): string {
+  return `/design/${id}`
 }

@@ -11,7 +11,8 @@ Do not introduce a database, CMS, or online editor for Phase 2.
 ```text
 requirements/
 ├── README.md                 ← this file
-├── test-catalog.md           ← FIN-INV-* mapping
+├── test-catalog.md           ← test ID index (points at tests/)
+├── tests/                    ← test specifications (FIN-INV, E2E-*, INT-*, SEC-*, OPS-*, CON-*)
 ├── business/                 ← BUS-###
 ├── functional/               ← FUN-*-###
 ├── non-functional/           ← NFR-REL / NFR-PERF / NFR-OPS / NFR-PRIV
@@ -72,7 +73,7 @@ Traceability (arrays; may be empty):
 | `adrs` | `ADR-001` … (must exist under `docs/decisions/`) |
 | `contracts` | Repo paths (`contracts/openapi.yaml`, `docs/contracts/...`) |
 | `modules` | Implementation module names (documented strings) |
-| `tests` | Test IDs from [test-catalog.md](./test-catalog.md) |
+| `tests` | Test IDs from [`tests/`](./tests/) (see [test-catalog.md](./test-catalog.md)) |
 
 Optional:
 
@@ -80,7 +81,9 @@ Optional:
 | --- | --- |
 | `dependsOn` | Other requirement IDs |
 | `related` | Other requirement IDs |
-| `openDecisionDocs` | Paths to open-decision docs (no OD-### scheme yet) |
+| `openDecisions` | Stable open-decision IDs (`OD-001` …) under `docs/decisions/open/` |
+| `designs` | Mermaid design IDs (`SEQ-*` / `STATE-*`) under `docs/design/` |
+| `openDecisionDocs` | Deprecated — prefer `openDecisions` |
 
 ---
 

@@ -18,7 +18,13 @@ modules:
   - Payment Workflows
 tests:
   - FIN-INV-01
+  - E2E-PAY-001
 dependsOn: []
+openDecisions:
+  - OD-007
+designs:
+  - STATE-PAY-001
+  - SEQ-PAY-003
 ---
 # FUN-PAY-001 — Create one payment workflow per bill
 

@@ -18,7 +18,10 @@ contracts: []
 modules:
   - Settlement
   - Reconciliation
-tests: []
+tests:
+  - E2E-SET-002
+openDecisions:
+  - OD-009
 ---
 # INT-SET-002 — Settlement status and outcomes
 
