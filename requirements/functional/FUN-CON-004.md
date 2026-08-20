@@ -4,6 +4,7 @@ title: Set primary and backup payment method priority
 type: functional
 area: consumer
 status: accepted
+implementationEvidence: sparelane-platform/docs/development/phase-b-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -39,3 +40,7 @@ Orchestration depends on a clear evaluation order (see FUN-PAY-003/004).
 ## Notes
 
 MVP consumer experience scope.
+
+## Implementation evidence (Phase B — partial)
+
+Architecture `status` remains **accepted**. Primary/backup **configuration** persisted with deterministic ordering. Reliability Engine not invoked at runtime. OD-003 cardinality still open. See [phase-b-status](../../docs/implementation/phase-b-status.md).

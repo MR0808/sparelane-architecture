@@ -4,8 +4,8 @@ title: No raw PAN or CVV storage
 type: non-functional
 area: security
 status: accepted
-implementationStatus: foundation_implemented
-implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-b-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -40,9 +40,9 @@ Security architecture baseline.
 - Requirement is reflected in security architecture/docs and ADR bindings.
 - Verification planned via security/acceptance tests in product CI (future platform repo).
 
-## Implementation evidence (Phase A)
+## Implementation evidence (Phase B)
 
-`implementationStatus: foundation_implemented`. Redaction keys and PCI contract guards exist; there is no product card vault. Raw PAN/CVV must still never be stored when payments are implemented.
+`implementationStatus: implemented` for the **Phase B slice** only. Architecture `status` remains **accepted**. No PAN/CVV application contracts or persistence; Consumer-owned token references only; provider tokens not exposed on reads. Hosted PSP card entry not implemented (OD-008). See [phase-b-status](../../docs/implementation/phase-b-status.md).
 
 ## Notes
 

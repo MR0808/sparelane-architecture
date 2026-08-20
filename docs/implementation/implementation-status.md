@@ -31,7 +31,7 @@ Test specifications keep `status: specified` until a product test is executable.
 | Phase | Architecture name | Platform status |
 | --- | --- | --- |
 | A | Platform Foundation | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-a-status](phase-a-status.md) |
-| B | Merchant + Consumer Core | **NOT STARTED** |
+| B | Merchant + Consumer Core | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-b-status](phase-b-status.md) |
 | C–I | Bill through pilot readiness | **NOT STARTED** |
 
 Canonical phase definitions remain in [build-phases](build-phases.md). Do not treat module shells or provider ports as deployed product systems.

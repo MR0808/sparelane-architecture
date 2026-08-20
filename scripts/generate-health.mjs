@@ -127,6 +127,7 @@ let missingArchitecture = 0
 let missingTests = 0
 let mvpVerified = 0
 let foundationImplemented = 0
+let productImplemented = 0
 for (const r of requirements) {
   const mvpFlag = Boolean(r.mvp)
   if (mvpFlag) mvp += 1
@@ -135,24 +136,43 @@ for (const r of requirements) {
   if (asArray(r.tests).length === 0) missingTests += 1
   if (mvpFlag && String(r.status) === 'verified') mvpVerified += 1
   if (String(r.implementationStatus) === 'foundation_implemented') foundationImplemented += 1
+  if (String(r.implementationStatus) === 'implemented') productImplemented += 1
 }
 
 const openapiExists = fs.existsSync(path.join(root, 'contracts', 'openapi.yaml'))
 
 const phaseAFile = path.join(root, 'docs', 'implementation', 'phase-a-status.md')
+const phaseBFile = path.join(root, 'docs', 'implementation', 'phase-b-status.md')
 const phaseAPresent = fs.existsSync(phaseAFile)
+const phaseBPresent = fs.existsSync(phaseBFile)
 const phaseA = phaseAPresent
   ? {
       gate: 'pass_with_documented_non_blocking_risks',
       phasesCompleted: 'A0-A9',
       nextPhase: 'B',
-      nextPhaseStatus: 'not_started',
+      nextPhaseStatus: phaseBPresent ? 'pass_with_documented_non_blocking_risks' : 'not_started',
       documented: true,
     }
   : {
       gate: 'unknown',
       phasesCompleted: '',
       nextPhase: 'B',
+      nextPhaseStatus: 'not_started',
+      documented: false,
+    }
+
+const phaseB = phaseBPresent
+  ? {
+      gate: 'pass_with_documented_non_blocking_risks',
+      phasesCompleted: 'B0-B6',
+      nextPhase: 'C',
+      nextPhaseStatus: 'not_started',
+      documented: true,
+    }
+  : {
+      gate: 'not_started',
+      phasesCompleted: '',
+      nextPhase: 'C',
       nextPhaseStatus: 'not_started',
       documented: false,
     }
@@ -169,6 +189,7 @@ const health = {
     missingTests,
     mvpVerified,
     foundationImplemented,
+    productImplemented,
   },
   decisions: {
     adrs: adrCount,
@@ -187,7 +208,10 @@ const health = {
   implementation: {
     phaseAGate: phaseA.gate,
     phasesCompleted: phaseA.phasesCompleted,
-    phaseB: phaseA.nextPhaseStatus,
+    phaseBGate: phaseB.gate,
+    phaseBPhasesCompleted: phaseB.phasesCompleted,
+    phaseB: phaseB.gate,
+    phaseC: phaseB.nextPhaseStatus,
     label: 'Generated from repository state — not live production health',
   },
 }

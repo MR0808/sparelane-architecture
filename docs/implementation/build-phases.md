@@ -27,7 +27,7 @@ Dependencies: later phases assume earlier phases deliver their foundation. Do no
 
 ## Phase B — Merchant + Consumer Core
 
-**Platform implementation:** NOT STARTED.
+**Platform implementation:** [PASS WITH DOCUMENTED NON-BLOCKING RISKS](phase-b-status.md) (B0–B6). Merchant + consumer core only — **no money movement**, not MVP acceptance.
 
 **Delivers:** merchants, consumers, connections, payment method token refs, merchant portal basics.
 

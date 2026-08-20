@@ -4,6 +4,7 @@ title: Add tokenised payment method
 type: functional
 area: consumer
 status: accepted
+implementationEvidence: sparelane-platform/docs/development/phase-b-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -40,3 +41,7 @@ PCI boundary requires tokenisation at the PSP (ADR-001/010).
 ## Notes
 
 MVP consumer experience scope.
+
+## Implementation evidence (Phase B — partial)
+
+Architecture `status` remains **accepted**. Token **reference** add path with fake PSP validate; no PAN/CVV stored. Hosted tokenisation UI and production PSP (OD-008) not implemented. Not payment execution. See [phase-b-status](../../docs/implementation/phase-b-status.md).

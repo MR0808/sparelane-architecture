@@ -4,8 +4,8 @@ title: Data minimisation
 type: non-functional
 area: privacy
 status: accepted
-implementationStatus: foundation_implemented
-implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-b-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -34,6 +34,6 @@ Privacy and financial auditability must coexist.
 - Privacy handling is documented relative to ledger immutability.
 - Logs/classification docs forbid CHD in logs.
 
-## Implementation evidence (Phase A)
+## Implementation evidence (Phase B)
 
-`implementationStatus: foundation_implemented`. Logger/AppError/audit/security-event redaction of CHD-shaped fields was demonstrated. Product data-retention/minimisation workflows are not implemented.
+`implementationStatus: implemented` for the **Phase B slice** only. Architecture `status` remains **accepted**. Portal, audit, and outbox payloads minimised — no provider tokens or unnecessary PII in Phase B events. Retention/deletion workflows not implemented. See [phase-b-status](../../docs/implementation/phase-b-status.md).

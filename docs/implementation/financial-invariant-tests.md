@@ -26,3 +26,17 @@ Implement as automated integration/e2e tests with deterministic fixtures and fak
 | FIN-INV-10 Worker restart | Same: foundation prerequisite only; not a financial E2E. |
 
 See [phase-a-status](phase-a-status.md).
+
+## Implementation evidence (Phase B)
+
+**None of FIN-INV-01–10 are product-verified.** Phase B moves no money. Payment, ledger, and settlement behaviour has not been implemented.
+
+Phase B established safe **Consumer-owned payment-method reference** ownership and configuration as a prerequisite for future collection — that is not FIN-INV verification.
+
+| ID | Phase A | Phase B |
+| --- | --- | --- |
+| FIN-INV-01–08 | Unverified | Unverified — no financial behaviour |
+| FIN-INV-09 Idempotent replay | Foundation prerequisite on non-financial fixture | Unchanged — not financial E2E |
+| FIN-INV-10 Worker restart | Foundation prerequisite on non-financial fixture | Unchanged — not financial E2E |
+
+See [phase-b-status](phase-b-status.md).

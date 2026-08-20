@@ -29,6 +29,8 @@ Denied with no data leakage.
 
 ## Implementation status
 
-`specified` — product tenant-isolation E2E is not complete.
+`specified` — full MVP tenant-isolation verification is not complete.
 
 Phase A demonstrated a **foundation prerequisite** (Merchant A cannot read Merchant B synthetic fixture data).
+
+Phase B (B6) adds **local product isolation evidence** for merchant/connection/payment-method IDOR paths (`sparelane-platform/tests/e2e/phase-b/boundaries.test.ts`). This is not `product_verified` and does not mark this spec verified. See [phase-b-status](../../docs/implementation/phase-b-status.md).

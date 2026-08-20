@@ -29,3 +29,5 @@ Reliability Engine inputs
 ## Notes
 
 Unresolved item tracked separately from Accepted ADRs. See the [open decisions index](../open-decisions.md).
+
+Phase B implemented a **default priority convention** (first payment method → primary; later methods append). Reliability Engine runtime selection and backup cardinality caps remain open — see [phase-b-status](../../implementation/phase-b-status.md).

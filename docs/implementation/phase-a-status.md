@@ -137,7 +137,7 @@ Foundation necessary for safe financial processing exists. Real payment → ledg
 
 ## Next phase
 
-[Phase B — Merchant + Consumer Core](build-phases.md) is **NOT STARTED**. Canonical deliverables: merchants, consumers, connections, payment method token refs, merchant portal basics. Stub/dev auth is allowed locally.
+[Phase B — Merchant + Consumer Core](build-phases.md) is **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — see [phase-b-status](phase-b-status.md). [Phase C — Bill Ingestion](build-phases.md) is **NOT STARTED**.
 
 ## Platform evidence (do not copy)
 

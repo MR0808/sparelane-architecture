@@ -4,8 +4,8 @@ title: Merchant tenant isolation
 type: non-functional
 area: security
 status: accepted
-implementationStatus: foundation_implemented
-implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-b-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -37,9 +37,9 @@ ADR-014; FIN-INV-08.
 - Requirement is reflected in security architecture/docs and ADR bindings.
 - Verification planned via security/acceptance tests in product CI (future platform repo).
 
-## Implementation evidence (Phase A)
+## Implementation evidence (Phase B)
 
-`implementationStatus: foundation_implemented`. Architecture `status` remains **accepted**. Tenant-scoped persistence and API principal checks were demonstrated on a synthetic fixture — not merchant product IDOR/e2e. SEC-TEN-001 remains `specified`.
+`implementationStatus: implemented` for the **Phase B slice** only. Architecture `status` remains **accepted**. Cross-merchant connection/resource isolation with 404 deny convention demonstrated in B6 (`tests/e2e/phase-b/`). SEC-TEN-001 remains `specified` — not `product_verified`. Full MVP tenant-isolation E2E still future work. See [phase-b-status](../../docs/implementation/phase-b-status.md).
 
 ## Notes
 

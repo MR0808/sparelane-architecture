@@ -4,6 +4,7 @@ title: Onboard merchant
 type: functional
 area: merchant
 status: accepted
+implementationEvidence: sparelane-platform/docs/development/phase-b-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -35,3 +36,7 @@ Onboarding establishes tenant identity and integration configuration.
 ## Notes
 
 MVP merchant integration scope.
+
+## Implementation evidence (Phase B — partial)
+
+Architecture `status` remains **accepted**. Merchant tenant + creator membership exist. No KYB, Merchant API credentials, or webhook config. Initial merchant status `DRAFT` is onboarding convention, not live approval. See [phase-b-status](../../docs/implementation/phase-b-status.md).

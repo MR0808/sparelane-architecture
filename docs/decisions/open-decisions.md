@@ -6,7 +6,7 @@ Unresolved items that are **not** Accepted ADRs. Organised separately from vendo
 
 Stable IDs (`OD-###`) are never renumbered after assignment.
 
-Implementation phase detail: [`docs/implementation/build-phases.md`](../implementation/build-phases.md). Phase A foundation status: [`docs/implementation/phase-a-status.md`](../implementation/phase-a-status.md).
+Implementation phase detail: [`docs/implementation/build-phases.md`](../implementation/build-phases.md). Phase A foundation status: [`docs/implementation/phase-a-status.md`](../implementation/phase-a-status.md). Phase B merchant/consumer core: [`docs/implementation/phase-b-status.md`](../implementation/phase-b-status.md).
 
 Portal: `/decisions` and `/decisions/open/:id`.
 
@@ -24,6 +24,21 @@ Phase A implemented **abstractions and local fakes**. It did **not** resolve ven
 | Does not block local Phase B | Stub/dev auth and fakes are allowed by [build-phases](../implementation/build-phases.md) |
 
 No OD is marked resolved by Phase A.
+
+---
+
+## Phase B impact
+
+Phase B implemented **merchant/consumer core with local fakes**. It did **not** resolve vendor, production-topology, or money-movement ODs.
+
+| Effect | Open decisions |
+| --- | --- |
+| Remains OPEN | All catalogue items unless listed below |
+| Local fakes / stubs; still OPEN | OD-023 IdP, OD-008 PSP / hosted tokenisation, OD-015 KYB, OD-017 broker, OD-025 KMS, OD-019 topology |
+| Phase B drift clarifications (not resolved) | OD-003 backup cardinality — default priority convention exists; caps/wallet ordering still open. Reconnect-after-revoke semantics — unique pair constraint; no OD created (product/schema clarification) |
+| Does not block local Phase C | Stub `/v1`, fake auth, token-reference path per [build-phases](../implementation/build-phases.md) |
+
+No OD is marked resolved by Phase B.
 
 ---
 

@@ -2,7 +2,20 @@
 
 Objective criteria for MVP readiness. All financial invariant tests must pass.
 
-These criteria are **not** satisfied by Phase A. Phase A is platform foundation only ([phase-a-status](phase-a-status.md)).
+These criteria are **not** satisfied by Phase A or Phase B alone. Phase A is platform foundation only ([phase-a-status](phase-a-status.md)). Phase B is merchant/consumer core only — **no money movement** ([phase-b-status](phase-b-status.md)).
+
+## Phase B prerequisite evidence (not MVP pass)
+
+Phase B provides **local implementation evidence** for some prerequisites below. Overall MVP acceptance is **not** met.
+
+| Criterion area | Phase B evidence | Still missing |
+| --- | --- | --- |
+| Merchant exists / onboarding foundation | Partial — tenant + membership; no KYB/credentials | Sandbox/live credentials; full onboarding |
+| Consumer exists | Partial — explicit profile + portal auth | Production IdP |
+| Connection exists | Partial — explicit ACTIVE/REVOKED | Bill presentation |
+| Tokenised methods without CHD | Partial — token refs + PCI guards; fake PSP | Hosted tokenisation; live PSP |
+| Cross-tenant isolation | Local product tests (B6) | Full MVP security suite |
+| Payment / ledger / settlement / webhooks | — | Entire sections below |
 
 ## Merchant
 

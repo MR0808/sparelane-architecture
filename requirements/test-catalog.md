@@ -6,6 +6,8 @@ Product automated tests will live in `sparelane-platform`. This architecture rep
 
 Phase A recorded **foundation prerequisites** on some specs (`implementationProgress: foundation_prerequisite`) without marking financial/product tests verified. See [phase-a-status](../docs/implementation/phase-a-status.md).
 
+Phase B adds **local product isolation evidence** for SEC-TEN-001 aligned paths only — spec status remains `specified`. See [phase-b-status](../docs/implementation/phase-b-status.md).
+
 ## Categories
 
 | Prefix | Meaning |

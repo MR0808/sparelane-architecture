@@ -19,6 +19,7 @@
 - Deployment and resilience design
 - Implementation blueprint and build phases
 - Phase A platform foundation status (not product completeness)
+- Phase B merchant + consumer core status (no money movement; not MVP acceptance)
 - Operational runbooks
 - Operational runbooks
 - Governance process (change, checklist, ADR template, review cadence)
@@ -34,4 +35,4 @@ This does **not** mean every technology or vendor decision is final.
 
 [Open decisions](../decisions/open-decisions.md) remain authoritative for unresolved product, provider, regulatory and infrastructure choices. Diagrams tagged `#proposed` are directional, not procurement commitments.
 
-Implementation of the product lives in a separate application repository (`sparelane-platform` per implementation blueprint), guided by — but not replaced by — this portal. Phase A in that repository is platform foundation only; see [phase-a-status](../implementation/phase-a-status.md).
+Implementation of the product lives in a separate application repository (`sparelane-platform` per implementation blueprint), guided by — but not replaced by — this portal. Phase A is platform foundation only; see [phase-a-status](../implementation/phase-a-status.md). Phase B is merchant + consumer core only — no money movement; see [phase-b-status](../implementation/phase-b-status.md).

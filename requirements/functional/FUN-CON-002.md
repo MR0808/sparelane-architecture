@@ -4,6 +4,7 @@ title: Connect to a merchant
 type: functional
 area: consumer
 status: accepted
+implementationEvidence: sparelane-platform/docs/development/phase-b-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -37,3 +38,7 @@ Connection is the link between consumer identity and merchant billing relationsh
 ## Notes
 
 MVP consumer experience scope.
+
+## Implementation evidence (Phase B — partial)
+
+Architecture `status` remains **accepted**. Explicit `MerchantConnection` ACTIVE/REVOKED lifecycle with consent demonstrated. No bill presentation. Connection does not grant payment-method authority. See [phase-b-status](../../docs/implementation/phase-b-status.md).

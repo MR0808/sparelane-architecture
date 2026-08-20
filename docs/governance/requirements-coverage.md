@@ -59,6 +59,8 @@ Do not use `implemented` for Phase A foundation. Use `implementationStatus: foun
 
 Optional `implementationStatus: foundation_implemented` means platform infrastructure evidence exists; product behaviour is not claimed. Portal coverage lists a count of these requirements.
 
+`implementationStatus: implemented` means a **product slice** exists in platform code (Phase B security/privacy examples). That is not MVP verified unless `status: verified`.
+
 ---
 
 ## MVP vs Future

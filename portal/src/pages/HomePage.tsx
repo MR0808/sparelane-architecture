@@ -9,7 +9,11 @@ const cards = [
   { to: '/contracts', title: 'Contracts', blurb: 'OpenAPI, webhooks, money and time' },
   { to: '/security', title: 'Security', blurb: 'Trust, PCI, security requirements' },
   { to: '/operations', title: 'Operations', blurb: 'Deployables, resilience, runbooks' },
-  { to: '/implementation', title: 'Implementation', blurb: 'Blueprint, Phase A status, build phases' },
+  {
+    to: '/implementation',
+    title: 'Implementation',
+    blurb: 'Blueprint, Phase A/B status, build phases',
+  },
   { to: '/health', title: 'Health', blurb: 'Static architecture/docs health' },
 ]
 
@@ -25,7 +29,11 @@ export function HomePage() {
       <p className="page-lead">
         Phase A platform foundation:{' '}
         <Link to="/docs/implementation/phase-a-status">PASS WITH DOCUMENTED NON-BLOCKING RISKS</Link>
-        . Phase B product foundations: NOT STARTED.
+        . Phase B merchant + consumer core:{' '}
+        <Link to="/docs/implementation/phase-b-status">
+          PASS WITH DOCUMENTED NON-BLOCKING RISKS
+        </Link>{' '}
+        (no money movement). Phase C not started.
       </p>
 
       <div className="card-grid">
@@ -56,6 +64,9 @@ export function HomePage() {
         </li>
         <li>
           <Link to="/docs/implementation/phase-a-status">Phase A implementation status</Link>
+        </li>
+        <li>
+          <Link to="/docs/implementation/phase-b-status">Phase B implementation status</Link>
         </li>
       </ul>
     </article>
