@@ -31,6 +31,9 @@ export function TestDetailPage() {
       <div className="req-meta-row">
         <span className="req-pill">{t.type}</span>
         <span className="req-pill">{t.status}</span>
+        {t.implementationProgress ? (
+          <span className="req-pill impl-foundation_implemented">{t.implementationProgress.replaceAll('_', ' ')}</span>
+        ) : null}
         <span className="req-pill">{t.mvp ? 'MVP' : 'Future'}</span>
       </div>
       <MarkdownDoc markdown={t.body} />

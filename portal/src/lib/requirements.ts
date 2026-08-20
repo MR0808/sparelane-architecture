@@ -12,6 +12,19 @@ export type RequirementStatus =
   | 'deferred'
   | 'rejected'
 
+export type ImplementationStatus =
+  | 'designed'
+  | 'foundation_implemented'
+  | 'implemented'
+  | 'verified'
+
+export const IMPLEMENTATION_STATUS_LABEL: Record<ImplementationStatus, string> = {
+  designed: 'designed',
+  foundation_implemented: 'foundation implemented',
+  implemented: 'product implemented',
+  verified: 'verified',
+}
+
 export type RequirementPriority = 'must' | 'should' | 'could' | 'wont'
 
 export type RequirementType = 'business' | 'functional' | 'non-functional' | 'integration'
@@ -35,6 +48,8 @@ export type RequirementMeta = {
   openDecisionDocs: string[]
   openDecisions: string[]
   designs: string[]
+  implementationStatus: ImplementationStatus
+  implementationEvidence: string
 }
 
 export type Requirement = RequirementMeta & {
@@ -47,6 +62,24 @@ const modules = import.meta.glob('../../../requirements/**/*.md', {
   import: 'default',
   eager: true,
 }) as Record<string, string>
+
+function normalizeImplementationStatus(
+  reqStatus: unknown,
+  impl: unknown,
+): ImplementationStatus {
+  const raw = String(impl ?? '').trim()
+  if (
+    raw === 'designed' ||
+    raw === 'foundation_implemented' ||
+    raw === 'implemented' ||
+    raw === 'verified'
+  ) {
+    return raw
+  }
+  if (reqStatus === 'verified') return 'verified'
+  if (reqStatus === 'implemented') return 'implemented'
+  return 'designed'
+}
 
 function asStringArray(value: unknown): string[] {
   if (value == null) return []
@@ -134,6 +167,8 @@ function parseRequirement(sourcePath: string, raw: string): Requirement | null {
     openDecisionDocs: asStringArray(data.openDecisionDocs),
     openDecisions: asStringArray(data.openDecisions),
     designs: asStringArray(data.designs),
+    implementationStatus: normalizeImplementationStatus(data.status, data.implementationStatus),
+    implementationEvidence: String(data.implementationEvidence ?? ''),
     body: content.trim(),
     sourcePath,
   }
@@ -165,7 +200,8 @@ export type RequirementFilters = {
   priority?: string
   mvp?: 'true' | 'false' | 'all'
   q?: string
-  coverage?: 'all' | 'missing-architecture' | 'missing-test' | 'blocked' | 'unverified'
+  coverage?: 'all' | 'missing-architecture' | 'missing-test' | 'blocked' | 'unverified' | 'foundation'
+  implementationStatus?: string
 }
 
 export function filterRequirements(
@@ -192,6 +228,12 @@ export function filterRequirements(
     }
     if (filters.coverage === 'unverified') {
       if (r.status !== 'implemented') return false
+    }
+    if (filters.coverage === 'foundation') {
+      if (r.implementationStatus !== 'foundation_implemented') return false
+    }
+    if (filters.implementationStatus && filters.implementationStatus !== 'all') {
+      if (r.implementationStatus !== filters.implementationStatus) return false
     }
     if (filters.q) {
       const q = filters.q.toLowerCase()
@@ -229,6 +271,9 @@ export function coverageSummary(items: Requirement[] = all) {
   const missingTests = items.filter((r) => r.tests.length === 0).length
   const blocked = items.filter((r) => r.openDecisions.length > 0).length
   const implementedUnverified = items.filter((r) => r.status === 'implemented').length
+  const foundationImplemented = items.filter(
+    (r) => r.implementationStatus === 'foundation_implemented',
+  ).length
   const acceptedNoAc = items.filter((r) => {
     if (r.status !== 'accepted') return false
     return !/##\s*Acceptance Criteria/i.test(r.body)
@@ -242,6 +287,7 @@ export function coverageSummary(items: Requirement[] = all) {
     missingTests,
     blocked,
     implementedUnverified,
+    foundationImplemented,
     acceptedNoAc,
     total: items.length,
   }

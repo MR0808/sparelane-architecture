@@ -3,6 +3,7 @@ id: OPS-REC-001
 title: Ledger posting recovery
 type: operations
 status: specified
+implementationProgress: foundation_prerequisite
 relatedRequirements:
   - FUN-SET-005
   - NFR-REL-001
@@ -31,4 +32,6 @@ Recovery succeeds; invariants hold.
 
 ## Implementation status
 
-`specified`
+`specified` — ledger posting recovery product flow is **not** implemented.
+
+Phase A demonstrated outbox/DLQ **infrastructure** only.

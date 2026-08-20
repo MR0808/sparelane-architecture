@@ -4,6 +4,8 @@ title: Merchant tenant isolation
 type: non-functional
 area: security
 status: accepted
+implementationStatus: foundation_implemented
+implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -34,6 +36,10 @@ ADR-014; FIN-INV-08.
 
 - Requirement is reflected in security architecture/docs and ADR bindings.
 - Verification planned via security/acceptance tests in product CI (future platform repo).
+
+## Implementation evidence (Phase A)
+
+`implementationStatus: foundation_implemented`. Architecture `status` remains **accepted**. Tenant-scoped persistence and API principal checks were demonstrated on a synthetic fixture — not merchant product IDOR/e2e. SEC-TEN-001 remains `specified`.
 
 ## Notes
 

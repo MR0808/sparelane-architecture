@@ -3,6 +3,7 @@ id: FIN-INV-09
 title: Idempotent event replay
 type: financial-invariant
 status: specified
+implementationProgress: foundation_prerequisite
 relatedRequirements:
   - NFR-REL-001
 mvp: true
@@ -29,4 +30,6 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — automated in future `sparelane-platform` CI.
+`specified` — product financial E2E is **not** executable.
+
+Phase A demonstrated a **foundation prerequisite** (duplicate delivery on a non-financial `FoundationOperation` fixture). That is not FIN-INV-09 verification.

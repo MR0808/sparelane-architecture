@@ -4,6 +4,8 @@ title: Idempotent async consumers
 type: non-functional
 area: reliability
 status: accepted
+implementationStatus: foundation_implemented
+implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -36,6 +38,10 @@ Reliability patterns from ADR-016/017 and financial invariants.
 
 - Behaviour is covered by financial invariant tests and/or resilience docs.
 - Runbooks exist for operator response where applicable.
+
+## Implementation evidence (Phase A)
+
+`implementationStatus: foundation_implemented`. Durable `ProcessedEvent` + duplicate delivery on a non-financial fixture. FIN-INV-09 is not a verified financial E2E.
 
 ## Notes
 

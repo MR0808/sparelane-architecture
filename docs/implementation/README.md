@@ -2,7 +2,7 @@
 
 **Status:** Current  
 **Owner:** Engineering (TBD)  
-**Last Reviewed:** 2026-08-13  
+**Last Reviewed:** 2026-08-20  
 **Related ADRs:** ADR-001–023 (via [traceability](architecture-traceability.md))  
 **Related Views:** `10 Implementation /*`
 
@@ -49,6 +49,8 @@ Phase 9 engineering blueprint for `sparelane-platform`. **Does not** implement t
 
 ## Build plan & acceptance
 
+- [Implementation status](implementation-status.md) — designed vs foundation vs product vs verified
+- [Phase A status](phase-a-status.md) — platform foundation gate
 - [Build phases A–I](build-phases.md)
 - [MVP acceptance criteria](mvp-acceptance-criteria.md)
 - [Architecture traceability](architecture-traceability.md)

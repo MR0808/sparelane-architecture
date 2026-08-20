@@ -51,6 +51,14 @@ Requirements with status `implemented` that are not yet `verified`. Useful for t
 
 Portal filter: **Unverified**.
 
+Do not use `implemented` for Phase A foundation. Use `implementationStatus: foundation_implemented`.
+
+---
+
+## Foundation implemented
+
+Optional `implementationStatus: foundation_implemented` means platform infrastructure evidence exists; product behaviour is not claimed. Portal coverage lists a count of these requirements.
+
 ---
 
 ## MVP vs Future

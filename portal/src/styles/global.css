@@ -498,9 +498,14 @@ pre {
   color: #4b5563;
 }
 
-.req-pill.status-rejected {
-  background: #fdecec;
-  color: var(--danger);
+.req-pill.impl-foundation_implemented {
+  background: #e8f0fe;
+  color: #1a56db;
+}
+
+.req-pill.impl-designed {
+  background: #f3f4f6;
+  color: #4b5563;
 }
 
 .req-meta-row {

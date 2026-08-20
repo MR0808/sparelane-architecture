@@ -22,8 +22,15 @@ const STATUSES = new Set([
   'deferred',
   'rejected',
 ])
+const IMPLEMENTATION_STATUSES = new Set([
+  'designed',
+  'foundation_implemented',
+  'implemented',
+  'verified',
+])
 const PRIORITIES = new Set(['must', 'should', 'could', 'wont'])
 const TYPES = new Set(['business', 'functional', 'non-functional', 'integration'])
+const TEST_PROGRESS = new Set(['foundation_prerequisite', 'product_verified'])
 const REQUIRED = ['id', 'title', 'type', 'area', 'status', 'priority', 'mvp']
 
 const failures = []
@@ -186,6 +193,8 @@ for (const file of files) {
 
   if (data.type && !TYPES.has(String(data.type))) fail(rel, `invalid type '${data.type}'`)
   if (data.status && !STATUSES.has(String(data.status))) fail(rel, `invalid status '${data.status}'`)
+  if (data.implementationStatus && !IMPLEMENTATION_STATUSES.has(String(data.implementationStatus)))
+    fail(rel, `invalid implementationStatus '${data.implementationStatus}'`)
   if (data.priority && !PRIORITIES.has(String(data.priority)))
     fail(rel, `invalid priority '${data.priority}'`)
   if (typeof data.mvp !== 'boolean') fail(rel, `mvp must be boolean true|false`)
@@ -249,6 +258,9 @@ for (const file of testFiles) {
   const tid = String(data.id || '')
   const base = path.basename(file, '.md')
   if (tid && base !== tid) fail(rel, `filename '${base}' must match id '${tid}'`)
+  if (data.implementationProgress && !TEST_PROGRESS.has(String(data.implementationProgress))) {
+    fail(rel, `invalid implementationProgress '${data.implementationProgress}'`)
+  }
   for (const rid of asArray(data.relatedRequirements)) {
     if (!byId.has(rid)) fail(rel, `related requirement not found: ${rid}`)
   }

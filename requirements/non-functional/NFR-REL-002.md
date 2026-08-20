@@ -4,6 +4,8 @@ title: Safe worker restart
 type: non-functional
 area: reliability
 status: accepted
+implementationStatus: foundation_implemented
+implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -36,6 +38,6 @@ Reliability patterns from ADR-016/017 and financial invariants.
 - Behaviour is covered by financial invariant tests and/or resilience docs.
 - Runbooks exist for operator response where applicable.
 
-## Notes
+## Implementation evidence (Phase A)
 
-Numerical SLOs remain TBD where not yet decided.
+`implementationStatus: foundation_implemented`. Worker restart + redelivery on a non-financial fixture. FIN-INV-10 is not a verified financial E2E.

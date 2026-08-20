@@ -4,6 +4,8 @@ title: Alerting for critical failures
 type: non-functional
 area: operations
 status: accepted
+implementationStatus: foundation_implemented
+implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -32,6 +34,6 @@ Operations readiness for MVP architecture.
 - Corresponding operations docs exist and are linked.
 - Alerting/runbook coverage reviewed in ops readiness.
 
-## Notes
+## Implementation evidence (Phase A)
 
-Do not invent numeric SLOs still marked TBD.
+`implementationStatus: foundation_implemented`. Metric names for backlog/failures exist. Hosted alerting/SIEM remains OD-021. Product payment/ledger/webhook alerting is not verified.

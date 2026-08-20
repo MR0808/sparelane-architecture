@@ -2,7 +2,7 @@
 
 **Status:** Current  
 **Owner:** Architecture (TBD)  
-**Last Reviewed:** 2026-08-13  
+**Last Reviewed:** 2026-08-20  
 **Related ADRs:** ADR-001–023  
 **Related Views:** `01 Overview / Architecture Map`
 
@@ -107,7 +107,7 @@ Do not over-tag. Open vendor choices stay in [open decisions](decisions/open-dec
 | --- | --- |
 | **Purpose** | Engineering blueprint for `sparelane-platform` |
 | **Primary views** | `10 Implementation /*` |
-| **Docs** | [docs/implementation/](implementation/README.md) |
+| **Docs** | [docs/implementation/](implementation/README.md), [implementation status](implementation/implementation-status.md), [Phase A](implementation/phase-a-status.md) |
 | **ADRs** | ADR-016–019 (deploy/async); all ADRs via [traceability](implementation/architecture-traceability.md) |
 
 ## Operations

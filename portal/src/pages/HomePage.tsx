@@ -9,7 +9,7 @@ const cards = [
   { to: '/contracts', title: 'Contracts', blurb: 'OpenAPI, webhooks, money and time' },
   { to: '/security', title: 'Security', blurb: 'Trust, PCI, security requirements' },
   { to: '/operations', title: 'Operations', blurb: 'Deployables, resilience, runbooks' },
-  { to: '/implementation', title: 'Implementation', blurb: 'Build blueprint and phases' },
+  { to: '/implementation', title: 'Implementation', blurb: 'Blueprint, Phase A status, build phases' },
   { to: '/health', title: 'Health', blurb: 'Static architecture/docs health' },
 ]
 
@@ -21,6 +21,11 @@ export function HomePage() {
         Sparelane&apos;s architecture, solution design, technical decisions, contracts, requirements,
         operations guidance, and implementation blueprint. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> to
         search.
+      </p>
+      <p className="page-lead">
+        Phase A platform foundation:{' '}
+        <Link to="/docs/implementation/phase-a-status">PASS WITH DOCUMENTED NON-BLOCKING RISKS</Link>
+        . Phase B product foundations: NOT STARTED.
       </p>
 
       <div className="card-grid">
@@ -50,7 +55,7 @@ export function HomePage() {
           <Link to="/contracts/api">Merchant API (OpenAPI)</Link>
         </li>
         <li>
-          <Link to="/docs/architecture-principles">Architecture Principles</Link>
+          <Link to="/docs/implementation/phase-a-status">Phase A implementation status</Link>
         </li>
       </ul>
     </article>

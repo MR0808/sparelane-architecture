@@ -3,6 +3,7 @@ id: OPS-REC-002
 title: DLQ safe replay
 type: operations
 status: specified
+implementationProgress: foundation_prerequisite
 relatedRequirements:
   - NFR-REL-004
 relatedFlows:
@@ -30,4 +31,6 @@ Recovery succeeds; invariants hold.
 
 ## Implementation status
 
-`specified`
+`specified` — product DLQ replay for financial poison messages is **not** implemented.
+
+Phase A demonstrated in-memory DLQ infrastructure only.

@@ -2,7 +2,27 @@
 
 Maps Accepted ADRs → design docs → implementation modules → verification.
 
-**Complementary artefact:** requirement-centric traceability is generated from requirement markdown frontmatter in the portal (`/requirements/traceability`). Prefer updating requirement metadata for behaviour↔view↔test links; keep this document focused on **ADR → module → verification**. Do not maintain two conflicting hand-copied requirement matrices. See also [requirements README](../../requirements/README.md).
+**Complementary artefacts:**
+
+- Requirement-centric traceability is generated from requirement markdown frontmatter in the portal (`/requirements/traceability`). Prefer updating requirement metadata for behaviour↔view↔test links; keep this document focused on **ADR → module → verification**.
+- Platform **foundation** evidence for Phase A is recorded in [phase-a-status](phase-a-status.md) and [implementation-status](implementation-status.md). Path references point at `sparelane-platform`; this repo does not copy those tests.
+
+Distinguish:
+
+Architecture decision → Requirement → Design → Implementation phase → Implementation evidence → Test evidence
+
+| Layer | Phase A example |
+| --- | --- |
+| Architecture decision | ADR-016 / ADR-017 (outbox + at-least-once) |
+| Requirement | NFR-REL-001 (`status: accepted`) |
+| Design | Outbox blueprint, async processing |
+| Implementation phase | A5 / A9 |
+| Implementation evidence | Foundation outbox + idempotent consumer in platform |
+| Test evidence | Architecture spec FIN-INV-09 remains `specified`; foundation prerequisite only |
+
+**Implemented** and **verified** in requirement `status` mean **product** claims. Phase A uses `implementationStatus: foundation_implemented` instead.
+
+See also [requirements README](../../requirements/README.md).
 
 | ADR | Design docs | Implementation module(s) | Verification |
 | --- | --- | --- | --- |
@@ -37,7 +57,8 @@ Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-a
 | Item | Status |
 | --- | --- |
 | All ADR-001–023 | Covered above — no missing ADR rows |
-| Automated product tests | Live in `sparelane-platform` (future); this repo documents required cases |
+| Phase A platform foundation | Recorded — [phase-a-status](phase-a-status.md). Not product implementation. |
+| Automated product tests | Specs in this repo; product suites in `sparelane-platform` when product exists. FIN-INV not verified. |
 | Wallet licensing | Open decision — blocks wallet go-live only; ADR path TBD if custody model changes architecture |
 | Vendor adapters | Interfaces specified; concrete PSP/bank adapters await open decisions |
 | Numeric product knobs (retry windows, rate limits) | Config/open decisions — not ADR gaps |

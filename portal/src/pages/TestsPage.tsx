@@ -58,6 +58,7 @@ export function TestsPage() {
                 <th>ID</th>
                 <th>Title</th>
                 <th>Status</th>
+                <th>Implementation</th>
                 <th>MVP</th>
               </tr>
             </thead>
@@ -70,6 +71,15 @@ export function TestsPage() {
                   <td>{t.title}</td>
                   <td>
                     <span className="req-pill">{t.status}</span>
+                  </td>
+                  <td>
+                    {t.implementationProgress ? (
+                      <span className="req-pill impl-foundation_implemented">
+                        {t.implementationProgress.replaceAll('_', ' ')}
+                      </span>
+                    ) : (
+                      '—'
+                    )}
                   </td>
                   <td>{t.mvp ? 'MVP' : 'Future'}</td>
                 </tr>

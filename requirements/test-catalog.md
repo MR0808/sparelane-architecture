@@ -2,7 +2,9 @@
 
 Stable test specification IDs live under [`requirements/tests/`](./tests/).
 
-Product automated tests will live in the future `sparelane-platform` repository. This architecture repo holds **specifications only** — not executable suites or results.
+Product automated tests will live in `sparelane-platform`. This architecture repo holds **specifications only** — not executable suites or live CI results.
+
+Phase A recorded **foundation prerequisites** on some specs (`implementationProgress: foundation_prerequisite`) without marking financial/product tests verified. See [phase-a-status](../docs/implementation/phase-a-status.md).
 
 ## Categories
 

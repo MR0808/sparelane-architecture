@@ -4,6 +4,8 @@ title: Correlated logs and traces
 type: non-functional
 area: operations
 status: accepted
+implementationStatus: foundation_implemented
+implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -31,6 +33,6 @@ Operations readiness for MVP architecture.
 - Corresponding operations docs exist and are linked.
 - Alerting/runbook coverage reviewed in ops readiness.
 
-## Notes
+## Implementation evidence (Phase A)
 
-Do not invent numeric SLOs still marked TBD.
+`implementationStatus: foundation_implemented`. Request/correlation IDs and traces exist for the synthetic foundation path, not a product payment journey.

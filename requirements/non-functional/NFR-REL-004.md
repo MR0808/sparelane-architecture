@@ -4,6 +4,8 @@ title: Dead-letter queue for poison messages
 type: non-functional
 area: reliability
 status: accepted
+implementationStatus: foundation_implemented
+implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -36,6 +38,6 @@ Reliability patterns from ADR-016/017 and financial invariants.
 - Behaviour is covered by financial invariant tests and/or resilience docs.
 - Runbooks exist for operator response where applicable.
 
-## Notes
+## Implementation evidence (Phase A)
 
-Numerical SLOs remain TBD where not yet decided.
+`implementationStatus: foundation_implemented`. In-memory DLQ and unknown-outcome routing exist. Broker DLQ is OD-017. Product replay UI is not implemented.

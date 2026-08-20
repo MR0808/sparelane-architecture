@@ -12,6 +12,15 @@ export function HealthPage() {
       <p className="health-banner">Generated from repository state</p>
       <div className="card-grid">
         <div className="info-card">
+          <strong>Platform implementation</strong>
+          <span>Phase A — Platform Foundation</span>
+          <span>Phase A gate: {health.implementation?.phaseAGate ?? 'unknown'}</span>
+          <span>Sub-phases: {health.implementation?.phasesCompleted ?? 'A0-A9'}</span>
+          <span>Phase B: {health.implementation?.phaseB ?? 'not_started'}</span>
+          <span>Not live production health</span>
+          <Link to="/docs/implementation/phase-a-status">Phase A status</Link>
+        </div>
+        <div className="info-card">
           <strong>Requirements</strong>
           <span>{health.requirements.total} total</span>
           <span>
@@ -21,6 +30,7 @@ export function HealthPage() {
           <span>Missing architecture: {health.requirements.missingArchitecture}</span>
           <span>Missing tests: {health.requirements.missingTests}</span>
           <span>MVP verified: {health.requirements.mvpVerified}</span>
+          <span>Foundation implemented (NFR evidence): {health.requirements.foundationImplemented ?? 0}</span>
           <Link to="/requirements">Open requirements</Link>
         </div>
         <div className="info-card">

@@ -2,6 +2,8 @@
 
 Objective criteria for MVP readiness. All financial invariant tests must pass.
 
+These criteria are **not** satisfied by Phase A. Phase A is platform foundation only ([phase-a-status](phase-a-status.md)).
+
 ## Merchant
 
 - Merchant can be onboarded

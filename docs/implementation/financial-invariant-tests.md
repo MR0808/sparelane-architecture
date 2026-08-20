@@ -14,3 +14,15 @@
 10. Worker restart cannot create duplicate financial effect.
 
 Implement as automated integration/e2e tests with deterministic fixtures and fake provider adapters.
+
+## Implementation evidence (Phase A)
+
+**None of FIN-INV-01–10 are product-verified.** Payment, ledger, and settlement behaviour has not been implemented.
+
+| ID | Phase A |
+| --- | --- |
+| FIN-INV-01–08 | Unverified. Requires product financial behaviour. |
+| FIN-INV-09 Idempotent replay | Foundation prerequisite demonstrated on a non-financial synthetic fixture. Spec remains `specified`. |
+| FIN-INV-10 Worker restart | Same: foundation prerequisite only; not a financial E2E. |
+
+See [phase-a-status](phase-a-status.md).

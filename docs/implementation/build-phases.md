@@ -8,6 +8,8 @@ Dependencies: later phases assume earlier phases deliver their foundation. Do no
 
 ## Phase A — Platform Foundation
 
+**Platform implementation:** [PASS WITH DOCUMENTED NON-BLOCKING RISKS](phase-a-status.md) (A0–A9). Foundation only — not MVP product acceptance.
+
 **Delivers:** repo scaffold, CI, config/secrets patterns, observability scaffolding, auth foundation, merchant tenancy model, DB foundation (operational + ledger logical schemas).
 
 **Depends on:** nothing (architecture Accepted).
@@ -25,9 +27,13 @@ Dependencies: later phases assume earlier phases deliver their foundation. Do no
 
 ## Phase B — Merchant + Consumer Core
 
+**Platform implementation:** NOT STARTED.
+
 **Delivers:** merchants, consumers, connections, payment method token refs, merchant portal basics.
 
 **Depends on:** A.
+
+Engineering may further decompose this same scope (identity composition, merchant domain, consumer profile, connections, token-reference priority, UI foundations, B exit gate). That granularity is planning detail only; it does not replace this phase’s deliverables.
 
 **Open decisions**
 

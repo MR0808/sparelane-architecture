@@ -4,6 +4,8 @@ title: Centralised secrets management
 type: non-functional
 area: security
 status: accepted
+implementationStatus: foundation_implemented
+implementationEvidence: sparelane-platform/docs/development/phase-a-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -33,6 +35,10 @@ Security architecture baseline.
 
 - Requirement is reflected in security architecture/docs and ADR bindings.
 - Verification planned via security/acceptance tests in product CI (future platform repo).
+
+## Implementation evidence (Phase A)
+
+`implementationStatus: foundation_implemented`. `SecretString` and no secrets in git. Production KMS/secrets **product** remains OD-025.
 
 ## Notes
 

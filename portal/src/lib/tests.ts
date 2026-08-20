@@ -54,6 +54,7 @@ export type TestSpec = {
   mvp: boolean
   relatedRequirements: string[]
   relatedFlows: string[]
+  implementationProgress: string
   body: string
   sourcePath: string
 }
@@ -79,6 +80,7 @@ for (const [key, raw] of Object.entries(modules)) {
     mvp: Boolean(data.mvp),
     relatedRequirements: asArray(data.relatedRequirements),
     relatedFlows: asArray(data.relatedFlows),
+    implementationProgress: String(data.implementationProgress ?? ''),
     body: content.trim(),
     sourcePath: `requirements/tests/${base}`,
   })

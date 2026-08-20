@@ -29,3 +29,5 @@ Outbox Processor implementation
 ## Notes
 
 Unresolved item tracked separately from Accepted ADRs. See the [open decisions index](../open-decisions.md).
+
+Phase A implemented a **polling** outbox publisher as local foundation evidence. That does not select polling vs CDC for production. Status remains `open`.

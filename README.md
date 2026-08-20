@@ -62,7 +62,7 @@ The static site artifact for Pages is `dist/` (stock staged from `dist-stock` un
 | Start | [START-HERE](docs/START-HERE.md) |
 | Principles | [architecture-principles](docs/architecture-principles.md) · [glossary](docs/glossary.md) |
 | Decisions | [decisions](docs/decisions/README.md) · [register](docs/decisions/decision-register.md) · [open](docs/decisions/open-decisions.md) |
-| Implementation | [implementation](docs/implementation/README.md) |
+| Implementation | [implementation](docs/implementation/README.md) · [status](docs/implementation/implementation-status.md) · [Phase A](docs/implementation/phase-a-status.md) |
 | Security | [security](docs/security/README.md) |
 | Operations | [operations](docs/operations/README.md) · [runbooks](docs/operations/runbooks/README.md) |
 | Data | [data](docs/data/README.md) |

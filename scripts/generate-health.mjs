@@ -126,6 +126,7 @@ let blocked = 0
 let missingArchitecture = 0
 let missingTests = 0
 let mvpVerified = 0
+let foundationImplemented = 0
 for (const r of requirements) {
   const mvpFlag = Boolean(r.mvp)
   if (mvpFlag) mvp += 1
@@ -133,9 +134,28 @@ for (const r of requirements) {
   if (asArray(r.architecture).length + asArray(r.flows).length === 0) missingArchitecture += 1
   if (asArray(r.tests).length === 0) missingTests += 1
   if (mvpFlag && String(r.status) === 'verified') mvpVerified += 1
+  if (String(r.implementationStatus) === 'foundation_implemented') foundationImplemented += 1
 }
 
 const openapiExists = fs.existsSync(path.join(root, 'contracts', 'openapi.yaml'))
+
+const phaseAFile = path.join(root, 'docs', 'implementation', 'phase-a-status.md')
+const phaseAPresent = fs.existsSync(phaseAFile)
+const phaseA = phaseAPresent
+  ? {
+      gate: 'pass_with_documented_non_blocking_risks',
+      phasesCompleted: 'A0-A9',
+      nextPhase: 'B',
+      nextPhaseStatus: 'not_started',
+      documented: true,
+    }
+  : {
+      gate: 'unknown',
+      phasesCompleted: '',
+      nextPhase: 'B',
+      nextPhaseStatus: 'not_started',
+      documented: false,
+    }
 
 const health = {
   generatedAt: new Date().toISOString(),
@@ -148,6 +168,7 @@ const health = {
     missingArchitecture,
     missingTests,
     mvpVerified,
+    foundationImplemented,
   },
   decisions: {
     adrs: adrCount,
@@ -163,6 +184,12 @@ const health = {
   architecture: { views: views.size },
   contracts: { openapi: openapiExists ? 'present' : 'missing' },
   docs: { count: docCount },
+  implementation: {
+    phaseAGate: phaseA.gate,
+    phasesCompleted: phaseA.phasesCompleted,
+    phaseB: phaseA.nextPhaseStatus,
+    label: 'Generated from repository state — not live production health',
+  },
 }
 
 const outDir = path.join(root, 'portal', 'src', 'generated')

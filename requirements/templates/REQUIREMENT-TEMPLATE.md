@@ -4,6 +4,7 @@ title: Short descriptive title
 type: functional
 area: payments
 status: draft
+implementationStatus: designed
 priority: must
 mvp: true
 architecture:

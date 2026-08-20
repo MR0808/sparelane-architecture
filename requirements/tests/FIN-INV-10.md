@@ -3,6 +3,7 @@ id: FIN-INV-10
 title: Safe worker restart
 type: financial-invariant
 status: specified
+implementationProgress: foundation_prerequisite
 relatedRequirements:
   - NFR-REL-002
 mvp: true
@@ -29,4 +30,6 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — automated in future `sparelane-platform` CI.
+`specified` — product financial E2E is **not** executable.
+
+Phase A demonstrated a **foundation prerequisite** (worker restart/redelivery on a non-financial fixture). That is not FIN-INV-10 verification.

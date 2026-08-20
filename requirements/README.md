@@ -84,6 +84,8 @@ Optional:
 | `openDecisions` | Stable open-decision IDs (`OD-001` …) under `docs/decisions/open/` |
 | `designs` | Mermaid design IDs (`SEQ-*` / `STATE-*`) under `docs/design/` |
 | `openDecisionDocs` | Deprecated — prefer `openDecisions` |
+| `implementationStatus` | `designed` \| `foundation_implemented` \| `implemented` \| `verified` (omit = designed) |
+| `implementationEvidence` | Path/note in `sparelane-platform` (not validated as a local file) |
 
 ---
 
@@ -100,6 +102,10 @@ Optional:
 | `rejected` | Will not do |
 
 Do **not** auto-infer status from git or CI.
+
+`status: implemented` / `verified` means **product** implementation. Phase A foundation uses `implementationStatus: foundation_implemented` while keeping `status: accepted`.
+
+See [implementation status vocabulary](../docs/implementation/implementation-status.md).
 
 ---
 

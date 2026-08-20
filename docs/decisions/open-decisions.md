@@ -6,9 +6,24 @@ Unresolved items that are **not** Accepted ADRs. Organised separately from vendo
 
 Stable IDs (`OD-###`) are never renumbered after assignment.
 
-Implementation phase detail: [`docs/implementation/build-phases.md`](../implementation/build-phases.md).
+Implementation phase detail: [`docs/implementation/build-phases.md`](../implementation/build-phases.md). Phase A foundation status: [`docs/implementation/phase-a-status.md`](../implementation/phase-a-status.md).
 
 Portal: `/decisions` and `/decisions/open/:id`.
+
+---
+
+## Phase A impact
+
+Phase A implemented **abstractions and local fakes**. It did **not** resolve vendor or production-topology ODs.
+
+| Effect | Open decisions |
+| --- | --- |
+| Remains OPEN | All catalogue items unless listed below |
+| Implementation evidence; still OPEN | OD-018 — local **polling** outbox publisher exists; CDC vs polling is not decided |
+| Local fakes constrain nothing | OD-008 PSP, OD-009 settlement partner, OD-023 IdP, OD-017 broker, OD-019 DB topology, OD-025 KMS, OD-016 cloud, OD-021 SIEM |
+| Does not block local Phase B | Stub/dev auth and fakes are allowed by [build-phases](../implementation/build-phases.md) |
+
+No OD is marked resolved by Phase A.
 
 ---
 

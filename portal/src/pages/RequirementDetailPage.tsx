@@ -72,6 +72,9 @@ export function RequirementDetailPage() {
         <h1 className="page-title">{req.title}</h1>
         <div className="req-meta-row">
           <span className={`req-pill status-${req.status}`}>{req.status}</span>
+          <span className={`req-pill impl-${req.implementationStatus}`}>
+            {req.implementationStatus.replaceAll('_', ' ')}
+          </span>
           <span className="req-pill">{req.priority}</span>
           <span className="req-pill">{req.mvp ? 'MVP' : 'Future'}</span>
           <span className="req-pill">
@@ -79,6 +82,11 @@ export function RequirementDetailPage() {
           </span>
         </div>
       </header>
+      {req.implementationEvidence ? (
+        <p className="req-muted">
+          Platform evidence: <code>{req.implementationEvidence}</code>
+        </p>
+      ) : null}
 
       <div className="markdown-body req-body">
         <MarkdownDoc markdown={req.body} />

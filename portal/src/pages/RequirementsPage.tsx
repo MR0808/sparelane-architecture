@@ -116,6 +116,7 @@ export function RequirementsPage() {
           <li>Missing tests: {coverage.missingTests}</li>
           <li>Blocked by open decisions: {coverage.blocked}</li>
           <li>Implemented but not verified: {coverage.implementedUnverified}</li>
+          <li>Foundation implemented (not product): {coverage.foundationImplemented}</li>
           <li>Accepted without Acceptance Criteria: {coverage.acceptedNoAc}</li>
           <li>
             With ADR links: {coverage.withAdr}/{coverage.total}
@@ -142,6 +143,7 @@ export function RequirementsPage() {
             { value: 'missing-test', label: 'Missing test' },
             { value: 'blocked', label: 'Blocked' },
             { value: 'unverified', label: 'Unverified (implemented)' },
+            { value: 'foundation', label: 'Foundation implemented' },
           ]}
         />
         <Select
@@ -233,6 +235,7 @@ export function RequirementsPage() {
                   <th>ID</th>
                   <th>Title</th>
                   <th>Status</th>
+                  <th>Implementation</th>
                   <th>Priority</th>
                   <th>MVP</th>
                 </tr>
@@ -246,6 +249,11 @@ export function RequirementsPage() {
                     <td>{r.title}</td>
                     <td>
                       <span className={`req-pill status-${r.status}`}>{r.status}</span>
+                    </td>
+                    <td>
+                      <span className={`req-pill impl-${r.implementationStatus}`}>
+                        {r.implementationStatus.replaceAll('_', ' ')}
+                      </span>
                     </td>
                     <td>{r.priority}</td>
                     <td>{r.mvp ? 'MVP' : 'Future'}</td>
