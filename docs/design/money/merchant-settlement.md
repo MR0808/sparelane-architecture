@@ -18,6 +18,7 @@ adrs:
   - ADR-004
   - ADR-026
   - ADR-027
+  - ADR-028
 tests:
   - E2E-SET-001
   - FIN-INV-05
@@ -27,9 +28,9 @@ tests:
 
 ## Purpose
 
-After ledger confirmation, settlement-worker creates a per-collection Settlement obligation (PENDING), evaluates eligibility (→ ELIGIBLE or remain PENDING), then — in later phases — optional batching and banking instruction. Partner acknowledgement is **not** SETTLED.
+After ledger confirmation, settlement-worker creates a per-collection Settlement obligation (PENDING), evaluates eligibility (→ ELIGIBLE or remain PENDING), then — in F1 — resolves payout destination, creates one SettlementInstruction, and submits via provider-neutral port (Fake locally). Partner acknowledgement is **not** SETTLED.
 
-Binding policy: [ADR-027](../../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md).
+Binding policy: [ADR-027](../../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md), [ADR-028](../../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md).
 
 ## Preconditions
 
@@ -45,10 +46,9 @@ sequenceDiagram
     participant Bus as Event Bus
     participant SW as settlement-worker
     participant Led as Ledger Service
-    participant Mer as Merchant / KYB port
-    participant Batch as Settlement Batch Service
-    participant Inst as Settlement Instruction Service
-    participant Bank as Banking / Settlement Partner
+    participant Mer as Merchant / KYB / Destination
+    participant Inst as Settlement Instruction
+    participant Bank as SettlementProvider (Fake / partner)
 
     Bus->>SW: LedgerPostingConfirmed
     SW->>Led: Load collection journal + payable CREDIT
@@ -60,20 +60,28 @@ sequenceDiagram
         SW->>SW: Remain PENDING
     end
 
-    Note over SW,Bank: F0 stops here — no batch, instruction, or bank call
+    Note over SW,Bank: F0 stops here
 
-    opt Post-F0 batching applies
-        SW->>Batch: Group ELIGIBLE settlements
-        Batch-->>SW: BATCHED
-    end
-
-    opt Post-F0 execution
-        SW->>Inst: Request settlement instruction
-        Inst->>Bank: Submit settlement instruction
-        SW->>SW: → SUBMITTED
-        Bank-->>Inst: Ack receipt / processing
-        SW->>SW: → PROCESSING
-        Note over SW,Bank: Acknowledgement != SETTLED
+    Note over SW,Bank: F1 — no SettlementBatch
+    Bus->>SW: SettlementEligible
+    SW->>Mer: Resolve default destination + recheck merchant/KYB/destination
+    alt Pre-submit gate fail
+        SW->>SW: Remain ELIGIBLE (hold) — no FAILED
+    else Gates pass
+        SW->>Inst: TX A CreateSettlementInstruction CREATED
+        Inst-->>SW: SettlementInstructionCreated
+        SW->>Bank: submitSettlementInstruction (idempotency key)
+        alt accepted
+            SW->>SW: TX B → SUBMITTED + SettlementSubmitted
+            Note over SW: F1 end — not SETTLED
+        else rejected
+            SW->>SW: TX B → FAILED + SettlementFailed
+        else technical_error
+            SW->>SW: Retry same instruction/key (bounded)
+        else unknown_outcome
+            SW->>SW: TX B → SUBMITTED + OUTCOME_UNKNOWN hold
+            SW->>Bank: lookupSettlementInstruction (no new key)
+        end
     end
 ```
 
@@ -81,16 +89,18 @@ sequenceDiagram
 
 - Must not create Settlement unless workflow COLLECTED and ledger posting CONFIRMED.
 - One Settlement per `payment_workflow_id` (unique).
-- Amount = journal merchant payable CREDIT (gross); not aggregate balance.
-- Ack / PROCESSING is not terminal SETTLED.
+- One SettlementInstruction per Settlement (unique); amount = Settlement gross.
+- Ack / SUBMITTED / PROCESSING is not terminal SETTLED.
 - Settlement lifecycle is separate from Payment Workflow (ADR-006).
+- No MVP batching (ADR-028).
 
 ## Failure notes
 
 - Merchant/KYB ineligible → remain PENDING (not FAILED).
-- Partner unavailable → RETRY_PENDING / outage path (SEQ-OPS-004) — post-F0.
-- Unknown outcome after submit → SEQ-MONEY-005 (do not blind resubmit) — post-F0.
+- Missing/invalid destination at submit → remain ELIGIBLE hold (not FAILED).
+- Partner unavailable → RETRY_PENDING / outage path (SEQ-OPS-004).
+- Unknown outcome after submit → SEQ-MONEY-005 (do not blind resubmit).
 
 ## Related
 
-LikeC4: `merchantSettlement`. STATE-MONEY-001. ADR-027.
+LikeC4: `merchantSettlement`. STATE-MONEY-001. ADR-027. ADR-028.

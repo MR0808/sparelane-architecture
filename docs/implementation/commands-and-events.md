@@ -19,8 +19,11 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `ConfirmLedgerPosting` | Payment Workflows / Ops | PENDING → CONFIRMED after durable journal |
 | `CreateSettlement` | Settlement | After `LedgerPostingConfirmed`; 1:1 workflow; initial PENDING ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)) |
 | `EvaluateSettlementEligibility` | Settlement | PENDING → ELIGIBLE when merchant/KYB/journal gates pass; else remain PENDING |
-| `SubmitSettlementInstruction` | Settlement | Provider idempotency (post-F0) |
-| `ReconcileSettlement` | Reconciliation / Settlement | |
+| `CreateSettlementInstruction` | Settlement | F1: 1:1 Settlement; amount = Settlement gross ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
+| `ExecuteSettlementInstruction` | Settlement | Provider submit outside TX; idempotency key = instruction business_reference |
+| `SubmitSettlementInstruction` | Settlement | Alias/legacy name for execute path — prefer `ExecuteSettlementInstruction` |
+| `LookupSettlementInstruction` | Settlement | Unknown-outcome / recovery lookup (same key) |
+| `ReconcileSettlement` | Reconciliation / Settlement | F2+; SETTLED only after evidence |
 | `DeliverMerchantWebhook` | Webhooks | Signed delivery |
 | `NotifyConsumer` | Notifications | Email/SMS |
 
@@ -38,10 +41,13 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `PaymentFailed` | Terminal workflow failure |
 | `LedgerPostingConfirmed` | Journal durable + operational CONFIRMED; settlement-worker may create Settlement |
 | `SettlementCreated` | Settlement row exists at PENDING (obligation recorded) |
-| `SettlementEligible` | PENDING → ELIGIBLE; domain-ready for later batch/instruction |
-| `SettlementSubmitted` | Instruction submitted |
-| `SettlementSettled` | Confirmed + reconciled |
+| `SettlementEligible` | PENDING → ELIGIBLE; F1 may create/execute instruction |
+| `SettlementInstructionCreated` | Instruction CREATED (not yet provider-accepted) |
+| `SettlementSubmitted` | ELIGIBLE → SUBMITTED after provider accepted **or** unknown hold; **not** SETTLED; F1 handoff |
+| `SettlementSettled` | Confirmed + reconciled (F2+) |
 | `SettlementFailed` | External failure; payment remains COLLECTED |
 | `WebhookDeliveryFailed` | Delivery attempt failed / terminal |
 
 Internal names need not equal merchant webhook types (`payment.collected`, etc.).
+
+F1 does **not** emit batch events (`BatchCreated`, etc.).

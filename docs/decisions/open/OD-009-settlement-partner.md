@@ -29,3 +29,5 @@ Payout rails, confirmation events
 ## Notes
 
 Unresolved item tracked separately from Accepted ADRs. See the [open decisions index](../open-decisions.md).
+
+**F1 consequence ([ADR-028](../ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)):** local/CI uses **FakeSettlementProvider** only to prove execution semantics. This OD remains open for real partner selection. Production live money must fail closed without an approved configured provider — no silent Fake fallback.

@@ -27,7 +27,11 @@ Exercise under success, replay, and restart:
 - Merchant A journal must not create Settlement for Merchant B
 - Eligibility evaluation must not read/write cross-tenant settlement rows
 
-Full payout-path isolation completes with instruction/reconciliation phases; F0 must already enforce create/eligibility isolation ([ADR-027](../../docs/decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)).
+Full payout-path isolation completes with instruction phase ([ADR-028](../../docs/decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)):
+
+- Settlement / destination / instruction / provider request must share merchant scope
+- Cross-merchant destination public id must be rejected (financial-integrity failure)
+- F0 must already enforce create/eligibility isolation ([ADR-027](../../docs/decisions/ADR-027-settlement-obligation-eligibility-cardinality.md))
 
 ## Expected result
 
@@ -35,4 +39,4 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — Architecture policy frozen for F0 create/eligibility isolation. Full product verification Phase F+. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).
+`specified` — Architecture policy frozen for F0 create/eligibility and F1 destination/instruction isolation. Full product verification Phase F+. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).

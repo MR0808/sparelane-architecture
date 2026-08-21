@@ -77,14 +77,45 @@ Semantics (binding MVP):
 | Status | Meaning |
 | --- | --- |
 | PENDING | Obligation recorded; eligibility not yet satisfied (not bank-pending) |
-| ELIGIBLE | Domain-ready for later batch/instruction |
-| BATCHED / SUBMITTED / PROCESSING | Post-F0 execution path |
-| SETTLED | Terminal happy path; requires reconciliation (not ack alone) |
-| FAILED | External execution / definitive negative recon — **recoverable** via `RETRY_PENDING` when permitted; **not** merchant temporary ineligibility |
+| ELIGIBLE | Domain-ready for instruction; F1 may submit after destination/KYB recheck ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
+| BATCHED | Future optional grouping only — **not used in F1** |
+| SUBMITTED | Provider accepted instruction **or** unknown outcome held for lookup — **not** SETTLED |
+| PROCESSING | Partner async in-progress after SUBMITTED (optional F1 Fake lookup; not SETTLED) |
+| SETTLED | Terminal happy path; requires reconciliation (not ack alone) — **F2+** |
+| FAILED | External execution / definitive negative recon — **recoverable** via `RETRY_PENDING` when permitted; **not** merchant temporary ineligibility or pre-submit gate failure |
 | RETRY_PENDING | Bounded external retry scheduled |
 | CANCELLED | Terminal; product cancel triggers deferred beyond F0 |
 
-Merchant/KYB blocks → remain `PENDING`, never auto-`FAILED`.
+Merchant/KYB/destination pre-submit blocks → remain `PENDING` (eligibility) or `ELIGIBLE` (execution hold), never auto-`FAILED`.
+
+## SettlementInstructionStatus
+
+```text
+CREATED
+ACCEPTED
+REJECTED
+TECHNICAL_ERROR
+OUTCOME_UNKNOWN
+```
+
+| Status | Meaning |
+| --- | --- |
+| CREATED | Instruction persisted; provider not yet successfully accepted |
+| ACCEPTED | Provider accepted/created transfer instruction |
+| REJECTED | Provider explicit business rejection |
+| TECHNICAL_ERROR | Known no-send technical failure (retry same key) |
+| OUTCOME_UNKNOWN | Submit may have succeeded; reconcile/lookup required — **no** blind resubmit |
+
+## MerchantPayoutDestinationStatus
+
+```text
+UNVERIFIED
+ACTIVE
+INACTIVE
+REVOKED
+```
+
+Submit-eligible only when `ACTIVE` and `verified_at` is set ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)).
 
 ## BillIngestionStatus
 

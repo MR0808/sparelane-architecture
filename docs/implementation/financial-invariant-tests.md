@@ -81,3 +81,16 @@ See [phase-d-status](phase-d-status.md). Platform detail: `sparelane-platform/do
 ## Architecture gate (settlement obligation)
 
 [ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md) freezes MVP settlement obligation cardinality (1:1 workflow), amount source (gross payable CREDIT), PENDING→ELIGIBLE, merchant/KYB gates. Platform F0 may implement against that ADR. This does **not** mark FIN-INV-04/05/08 product_verified; F0 proves domain obligation uniqueness and eligibility holds — not bank-transfer exactly-once.
+
+## Architecture gate (settlement execution)
+
+[ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) freezes MVP execution: no batching; payout destination token; 1:1 instruction; provider taxonomy; Fake F1 ends at SUBMITTED. Platform F1 may implement against that ADR. Evidence expectations:
+
+| ID | F1 expectation |
+| --- | --- |
+| FIN-INV-04 | Regression — instruction must not duplicate Settlement obligation |
+| FIN-INV-05 | Local Fake: one instruction → one logical transfer under duplicate/concurrent/crash replay — **not** real-bank exactly-once |
+| FIN-INV-06 | Unknown → OUTCOME_UNKNOWN hold; no blind resubmit |
+| FIN-INV-08 | Destination + instruction + provider request merchant isolation |
+
+This does **not** mark those invariants `product_verified`.

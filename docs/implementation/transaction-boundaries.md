@@ -60,6 +60,28 @@ No bank calls. No ledger writes.
 
 Idempotent on redelivery of `LedgerPostingConfirmed`: unique `payment_workflow_id` ensures one Settlement.
 
-## Settlement instruction submit
+## Settlement instruction submit (F1 — [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md))
 
-Record instruction + idempotency key before/with provider submit handling; unknown outcomes must not blind-duplicate ([settlement idempotency](../money/settlement-idempotency.md)). Post-F0.
+**No open DB TX across provider network.**
+
+### Operational TX A — prepare
+
+1. Recheck merchant status + `APPROVED_FOR_SETTLEMENT` + default destination (ACTIVE+verified, same merchant+currency)
+2. Insert SettlementInstruction (`CREATED`, unique `settlement_id`, `business_reference = settlement-instruction:{settlementPublicId}`)
+3. OCC/state guard on Settlement still ELIGIBLE
+4. Outbox `SettlementInstructionCreated`
+
+### Provider call (outside TX)
+
+`submitSettlementInstruction` with idempotency key = instruction `business_reference`.
+
+### Operational TX B — result
+
+| Outcome | Persist |
+| --- | --- |
+| `accepted` | Instruction ACCEPTED + provider ref; Settlement ELIGIBLE→SUBMITTED; Outbox `SettlementSubmitted` |
+| `rejected` | Instruction REJECTED; Settlement → FAILED; Outbox `SettlementFailed` |
+| `technical_error` | Instruction TECHNICAL_ERROR; Settlement remains ELIGIBLE; bounded same-key retry |
+| `unknown_outcome` | Instruction OUTCOME_UNKNOWN + `reconciliation_required`; Settlement → SUBMITTED; no second instruction |
+
+Unknown recovery uses `lookupSettlementInstruction` with the **same** key — never a new instruction. F1 does not post settlement CoA journals and does not mark SETTLED.

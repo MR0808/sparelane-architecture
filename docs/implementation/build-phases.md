@@ -113,22 +113,24 @@ Product config (backup cardinality) is **Partial** — [OD-003](../decisions/ope
 
 **Binding obligation/eligibility:** [ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md). Gate: [phase-f0-settlement-decision-gate](./phase-f0-settlement-decision-gate.md).
 
+**Binding execution/instruction:** [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md). Gate: [phase-f1-settlement-execution-decision-gate](./phase-f1-settlement-execution-decision-gate.md).
+
 **Engineering sub-phases (local):**
 
 | Slice | Scope |
 | --- | --- |
 | **F0** | `LedgerPostingConfirmed` → create Settlement PENDING → evaluate → ELIGIBLE; unique per workflow; no batch/instruction/bank |
-| **F1** | Optional batching + SettlementInstruction + fake settlement adapter |
-| **F2+** | Reconciliation, unknown outcome, SETTLED |
+| **F1** | Payout destination + 1:1 SettlementInstruction + FakeSettlementProvider; ELIGIBLE → SUBMITTED; no batch; no SETTLED; no settlement CoA |
+| **F2+** | Reconciliation → SETTLED; settlement accounting; unknown full recovery; optional production batching |
 
 **Open decisions**
 
 | Stage | Blocks? | Items |
 | --- | --- | --- |
 | Local F0 | No | Fake KYB / `APPROVED_FOR_SETTLEMENT` |
-| Local F1 | No | Fake settlement adapter |
-| Sandbox | **Yes** for live payout sandbox | Settlement/banking partner ([OD-009](../decisions/open/OD-009-settlement-partner.md)) |
-| Pilot / Production money | **Yes** | Partner + batch cadence ([OD-011](../decisions/open/OD-011-settlement-batching.md)) + fee/net policy |
+| Local F1 | No | Fake settlement adapter + Fake destinations ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
+| Sandbox | **Yes** for live payout sandbox | Settlement/banking partner ([OD-009](../decisions/open/OD-009-settlement-partner.md)) + payout CoA |
+| Pilot / Production money | **Yes** | Partner + fee/net + settlement CoA + reconciliation; batch cadence ([OD-011](../decisions/open/OD-011-settlement-batching.md)) only if aggregation enabled |
 
 ---
 

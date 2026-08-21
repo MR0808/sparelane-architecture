@@ -15,20 +15,24 @@ mvp: true
 
 ## Purpose
 
-Verify settlement lifecycle path `unknownSettlementOutcome`.
+Verify settlement lifecycle path `unknownSettlementOutcome` ([ADR-028](../../docs/decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)).
 
 ## Preconditions
 
-- Collected funds posted to ledger where required.
-- Fake settlement partner scripted.
+- Collected funds posted to ledger where required; Settlement ELIGIBLE with destination.
+- Fake settlement partner scripted to return `unknown_outcome` then lookup truth.
 
 ## Scenario
 
-Execute settlement path for unknown settlement outcome.
+1. ExecuteSettlementInstruction → provider `unknown_outcome`
+2. Assert Settlement SUBMITTED + instruction OUTCOME_UNKNOWN + reconcile hold
+3. Assert no second instruction / no new idempotency key / not FAILED / not SETTLED
+4. Lookup with same key adopts provider truth without duplicate transfer
+5. Cross-checks: merchant/KYB/destination recheck blocks; cross-merchant destination rejected
 
 ## Expected result
 
-Settlement state machine and reconciliation behaviour match ADRs. Post-F0 / instruction phase ([ADR-027](../../docs/decisions/ADR-027-settlement-obligation-eligibility-cardinality.md) F0 stops before instruction).
+Unknown path matches ADR-028. Blind resubmit forbidden.
 
 ## Implementation status
 

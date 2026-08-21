@@ -13,6 +13,7 @@ flows:
   - settlementFailure
 adrs:
   - ADR-006
+  - ADR-028
 contracts: []
 modules:
   - Settlement
@@ -29,15 +30,22 @@ designs:
 
 When settlement payout outcome is unknown, Sparelane must not blindly resubmit; it must reconcile via provider lookup/status before further action.
 
+Binding ([ADR-028](../../docs/decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)):
+
+- Persist Settlement **SUBMITTED** + instruction **OUTCOME_UNKNOWN** + reconcile hold
+- Do not create a new instruction, change idempotency key, switch provider, mark FAILED to force retry, or mark SETTLED
+- Call `lookupSettlementInstruction` with the same key / provider ref
+
 ## Rationale
 
-FIN-INV-06 and NFR-REL-005.
+FIN-INV-06 and NFR-REL-005; ADR-028 unknown taxonomy.
 
 ## Acceptance Criteria
 
 - Unknown outcomes enter a safe holding/reconcile path.
 - No automatic duplicate settlement submission on timeout alone.
+- Lookup precedes any safe retry; same instruction identity retained.
 
 ## Notes
 
-Money movement MVP.
+Money movement MVP. F1 Fake may implement lookup; full SETTLED reconciliation is F2+.

@@ -59,11 +59,13 @@ Must not create Settlement unless payment workflow `COLLECTED` and ledger postin
 
 Initial status: **PENDING**. F0: create PENDING then evaluate → ELIGIBLE or remain PENDING.
 
-`FAILED` is **not** terminal (may → `RETRY_PENDING`). Merchant/KYB ineligibility must not transition to `FAILED`.
+`FAILED` is **not** terminal (may → `RETRY_PENDING`). Merchant/KYB/destination ineligibility must not transition to `FAILED`.
 
-`SETTLED` requires reconciliation evidence; ack alone is invalid.
+`SETTLED` requires reconciliation evidence; ack alone is invalid ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)).
 
-Must not `SUBMITTED` unless payment workflow `COLLECTED` and ledger posting `CONFIRMED`.
+**F1 MVP:** skip BATCHED; ELIGIBLE → SUBMITTED on provider `accepted` or on `unknown_outcome` (with instruction `OUTCOME_UNKNOWN` + reconcile hold). F1 happy-path end = **SUBMITTED**. PROCESSING optional via later lookup; SETTLED is F2+.
+
+Must not `SUBMITTED` unless payment workflow `COLLECTED`, ledger posting `CONFIRMED`, and pre-submit gates (merchant, KYB, destination) pass.
 
 ---
 

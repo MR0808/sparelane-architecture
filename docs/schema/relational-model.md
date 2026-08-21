@@ -293,39 +293,59 @@ Not the merchant customer master.
 | PK | `id` |
 | Public | `public_id` (`set_...`) UNIQUE |
 | Tenant | `merchant_id` NOT NULL (immutable; matches workflow merchant) |
-| FKs | `payment_workflow_id` NOT NULL **UNIQUE**; `settlement_batch_id` nullable (set only when later batched) |
+| FKs | `payment_workflow_id` NOT NULL **UNIQUE**; `settlement_batch_id` nullable (**unused in F1**; set only if future batching) |
 | Identity | `business_reference` UNIQUE = `settlement:{paymentWorkflowPublicId}` |
-| Fields | `status` (initial `PENDING`), `amount_minor` (> 0, immutable), `currency` (immutable), `merchant_reconciliation_reference`, `submitted_at`, `settled_at`; optional `eligibility_blocked_reason` |
+| Fields | `status` (initial `PENDING`), `amount_minor` (> 0, immutable), `currency` (immutable), `merchant_reconciliation_reference`, `submitted_at`, `settled_at`; optional `eligibility_blocked_reason` / execution hold reason |
 | Indexes | `(merchant_id, status)`, `public_id`, unique `payment_workflow_id`, unique `business_reference` |
 | Amount | Gross merchant payable CREDIT from ADR-026 journal `payment-collection:{paymentWorkflowPublicId}` (must equal Bill `amount_minor`) |
 | Gate | Create only when source collection `ledger_posting_status = CONFIRMED` and journal validates; ELIGIBLE only after merchant status + `APPROVED_FOR_SETTLEMENT` |
-| Aggregation | Not via multi-workflow FK; optional later grouping through `settlement_batches` |
+| Aggregation | Not via multi-workflow FK; optional later grouping through `settlement_batches` (**not F1** — [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
+
+---
+
+## merchant_payout_destinations
+
+**Purpose:** Merchant-owned verified payout destination **token/reference** ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)). Owned by **Merchants** module — not Settlement.
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| Public | `public_id` (`mpd_...`) UNIQUE |
+| Tenant | `merchant_id` NOT NULL (immutable) |
+| Fields | `provider`, `provider_destination_ref` (opaque; e.g. `dest_test_…` for Fake), `currency`, `status` (`UNVERIFIED` \| `ACTIVE` \| `INACTIVE` \| `REVOKED`), `verified_at`, `is_default`, timestamps |
+| Constraints | At most one default per `(merchant_id, currency)` where `is_default = true` |
+| Secrets | **No** raw bank account / BSB / routing on this table in MVP |
+| Submit gate | ACTIVE + `verified_at` set; Settlement.merchant_id must equal destination.merchant_id |
 
 ---
 
 ## settlement_batches
 
-**Purpose:** Optional **execution** grouping of ELIGIBLE settlements (not F0; cadence [OD-011](../decisions/open/OD-011-settlement-batching.md)). Must not mix currencies unless a future ADR allows.
+**Purpose:** Optional **future** execution grouping of ELIGIBLE settlements (cadence [OD-011](../decisions/open/OD-011-settlement-batching.md)). **Not used on MVP F1 path** ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)). Must not mix currencies unless a future ADR allows.
 
 | Aspect | Design |
 | --- | --- |
 | PK | `id` |
 | Public | `public_id` (`sbatch_...`) |
 | Fields | `status`, `scheduled_for`, timestamps |
+| F1 | Table may exist; **no** create/membership/submit path |
 
 ---
 
 ## settlement_instructions
 
-**Purpose:** External partner instruction.
+**Purpose:** External partner transfer instruction for **one** Settlement ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)).
 
 | Aspect | Design |
 | --- | --- |
 | PK | `id` |
-| Public | `public_id` (`sinstr_...`) |
-| FKs | `settlement_id` and/or `settlement_batch_id` |
-| Fields | `idempotency_key` UNIQUE, `provider`, `provider_instruction_ref`, `status`, `submitted_at` |
+| Public | `public_id` (`sinstr_...`) UNIQUE |
+| FKs | `settlement_id` NOT NULL **UNIQUE** (MVP: one active instruction per Settlement); `settlement_batch_id` NULL / unused in F1; `merchant_payout_destination_id` NOT NULL |
+| Identity | `business_reference` UNIQUE = `settlement-instruction:{settlementPublicId}` |
+| Idempotency | External provider key = `business_reference` (also stored as `idempotency_key` UNIQUE if persisted separately — must be identical) |
+| Fields | `amount_minor` (= Settlement.amount_minor), `currency` (= Settlement.currency), `provider`, `provider_destination_ref` snapshot, `provider_instruction_ref`, `status` (`CREATED` \| `ACCEPTED` \| `REJECTED` \| `TECHNICAL_ERROR` \| `OUTCOME_UNKNOWN`), `reconciliation_required`, `submitted_at` |
 | Unique (nullable) | `(provider, provider_instruction_ref)` |
+| Raw bank | **Forbidden** on this row |
 
 ---
 
@@ -399,10 +419,12 @@ See [idempotency-storage.md](./idempotency-storage.md).
 2. `(merchant_id, operation, idempotency_key)` UNIQUE on API idempotency  
 3. `(payment_workflow_id, sequence_number)` UNIQUE on attempts  
 4. `journal_transactions.business_reference` UNIQUE  
-5. `settlement_instructions.idempotency_key` UNIQUE  
-6. `(provider, provider_event_id)` UNIQUE on provider receipts  
-7. No PAN/CVV columns; `api_credentials.secret_hash` only  
-8. Settlement progression gated on ledger posting confirmation  
+5. `settlement_instructions.settlement_id` UNIQUE (MVP one instruction per Settlement — ADR-028)  
+6. `settlement_instructions.business_reference` / `idempotency_key` UNIQUE (= `settlement-instruction:{settlementPublicId}`)  
+7. `(provider, provider_event_id)` UNIQUE on provider receipts  
+8. At most one default `merchant_payout_destinations` per `(merchant_id, currency)`  
+9. No PAN/CVV columns; no raw bank account/BSB on settlement instructions; `api_credentials.secret_hash` only  
+10. Settlement progression gated on ledger posting confirmation; SETTLED gated on reconciliation (not provider ack)  
 
 ---
 

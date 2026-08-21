@@ -738,16 +738,14 @@ views {
 
   dynamic view merchantSettlement {
     title '09 Flows / Money Movement / Merchant Settlement'
-    description 'Eligible payable funds move through Settlement Service, optional batching and Settlement Instruction to the banking partner. Initial acknowledgement is not SETTLED.'
+    description 'After ADR-027 eligibility, F1 resolves payout destination and submits one SettlementInstruction via SettlementProvider (Fake locally). No MVP batching. Acknowledgement is SUBMITTED, not SETTLED (ADR-028).'
 
-    sparelane.events.eventBus -> sparelane.settlementPlatform.settlementService 'settlement eligible after ledger posting confirmed'
-    sparelane.settlementPlatform.settlementService -> sparelane.fundsPlatform.balanceService 'reads eligible merchant payable'
-    sparelane.settlementPlatform.settlementService -> sparelane.fundsPlatform.ledgerService 'verifies payable against ledger'
-    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementBatchService 'groups settlements when batching applies'
-    sparelane.settlementPlatform.settlementBatchService -> sparelane.settlementPlatform.settlementInstructionService 'requests settlement instruction'
-    sparelane.settlementPlatform.settlementInstructionService -> bankingPartner.settlementRail 'submits settlement instruction'
-    bankingPartner.settlementRail -> sparelane.settlementPlatform.settlementInstructionService 'acknowledges receipt / processing'
-    sparelane.settlementPlatform.settlementService -> sparelane.events.eventBus 'publishes settlement SUBMITTED / PROCESSING'
+    sparelane.events.eventBus -> sparelane.settlementPlatform.settlementService 'SettlementEligible after ledger posting confirmed'
+    sparelane.settlementPlatform.settlementService -> sparelane.fundsPlatform.ledgerService 'verifies payable against collection journal'
+    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementInstructionService 'creates one SettlementInstruction (no batch in F1)'
+    sparelane.settlementPlatform.settlementInstructionService -> bankingPartner.settlementRail 'submits settlement instruction with stable idempotency key'
+    bankingPartner.settlementRail -> sparelane.settlementPlatform.settlementInstructionService 'accepted / rejected / technical_error / unknown_outcome'
+    sparelane.settlementPlatform.settlementService -> sparelane.events.eventBus 'publishes SettlementSubmitted (not SETTLED)'
   }
 
   dynamic view settlementConfirmation {

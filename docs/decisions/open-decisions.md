@@ -109,9 +109,23 @@ Architecture [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.m
 | --- | --- |
 | **Resolved (no prior OD id)** | 1:1 Settlement per confirmed collection; amount = ADR-026 payable CREDIT (gross); PENDING→ELIGIBLE; merchant status table; KYB/`APPROVED_FOR_SETTLEMENT`; business identity; uniqueness |
 | Narrowed (not resolved) | [OD-011](./open/OD-011-settlement-batching.md) — **role** of batching = optional later execution grouping; cadence/schedule still open |
-| Remains OPEN | [OD-009](./open/OD-009-settlement-partner.md) partner; fee/reserve netting; settlement execution CoA; payout-destination model details; [OD-015](./open/OD-015-kyb-evidence-retention.md) evidence retention |
+| Remains OPEN | [OD-009](./open/OD-009-settlement-partner.md) partner; fee/reserve netting; settlement execution CoA; [OD-015](./open/OD-015-kyb-evidence-retention.md) evidence retention |
 
 Do not treat ADR-027 as selecting a banking partner or inventing fee netting.
+
+---
+
+## Phase F1 settlement execution decision gate
+
+Architecture [ADR-028](./ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) freezes MVP **execution / destination / instruction** policy that blocked platform F1:
+
+| Effect | Detail |
+| --- | --- |
+| **Resolved (no prior OD id)** | No MVP batching; MerchantPayoutDestination token model; default per merchant+currency; 1:1 instruction; gross amount; idempotency key; provider taxonomy; SUBMITTED end; unknown hold; Fake-only F1; no settlement journal in F1 |
+| Narrowed (not resolved) | [OD-011](./open/OD-011-settlement-batching.md) — F1 does not batch; future production aggregation cadence still open |
+| Remains OPEN | [OD-009](./open/OD-009-settlement-partner.md) real partner; fee/reserve netting; settlement execution CoA (blocks production money); reconciliation → SETTLED (F2+); [OD-015](./open/OD-015-kyb-evidence-retention.md) |
+
+Do not treat ADR-028 as selecting a banking partner, inventing payout CoA, or marking SETTLED on provider ack.
 
 ---
 

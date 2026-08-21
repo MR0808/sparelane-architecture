@@ -135,7 +135,7 @@ Dr Settlement Clearing
 Cr Processor / Bank Clearing (or equivalent)
 ```
 
-Settlement / payout legs remain TBD with accounting advice (beyond ADR-026).
+Settlement / payout legs remain TBD with accounting advice (beyond ADR-026). [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) allows F1 Fake provider submission **without** a settlement journal; production money requires payout CoA + reconciliation.
 
 ## Ledger Invariants
 

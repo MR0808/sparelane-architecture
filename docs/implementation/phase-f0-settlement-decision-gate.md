@@ -19,4 +19,4 @@ SettlementBatch, SettlementInstruction, bank/provider calls, fee netting, settle
 
 ## Still TBD (not F0 blockers)
 
-OD-009 partner, OD-011 batch cadence, fee/reserve netting (production net-payout blocker), settlement execution CoA, payout-destination model details.
+OD-009 partner, OD-011 future batch cadence, fee/reserve netting (production net-payout blocker), settlement execution CoA. Payout destination MVP model: [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) / [phase-f1-settlement-execution-decision-gate](./phase-f1-settlement-execution-decision-gate.md).

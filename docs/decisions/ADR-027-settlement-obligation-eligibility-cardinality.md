@@ -192,7 +192,7 @@ Platform consequence if no persistence exists yet: store a merchant-scoped verif
 
 **ELIGIBLE does not require** a validated payout destination.
 
-Payout destination is checked later before instruction submit (`SUBMITTED` path / F1+). Missing destination must not invent eligibility failure as terminal FAILED in F0.
+Payout destination is checked later before instruction submit (`SUBMITTED` path / F1). Binding destination model: [ADR-028](./ADR-028-settlement-execution-payout-destination-instruction-idempotency.md). Missing destination must not invent eligibility failure as terminal FAILED in F0.
 
 ### 12. Currency
 
@@ -293,12 +293,13 @@ F0 proves **one Settlement domain obligation**. It does **not** prove **one bank
 ### 20. Deferred (explicitly open)
 
 - OD-009 settlement partner
-- OD-011 batch schedule/cadence
+- OD-011 batch schedule/cadence (further narrowed by ADR-028: no MVP batching)
 - Settlement CoA (Dr payable / Cr cash or clearing) at execution time
 - Fee/reserve/net payout policy
-- Payout destination persistence model details
 - Product CANCELLED triggers
 - Refund/chargeback interaction with open Settlements
+
+Payout destination MVP persistence/selection/verification: **resolved in ADR-028** (vendor onboarding mechanics may remain open with OD-009).
 
 ## Consequences
 

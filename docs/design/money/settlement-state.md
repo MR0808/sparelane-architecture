@@ -17,6 +17,7 @@ adrs:
   - ADR-005
   - ADR-006
   - ADR-027
+  - ADR-028
 tests:
   - E2E-SET-001
   - E2E-SET-003
@@ -27,13 +28,14 @@ tests:
 
 ## Purpose
 
-Legal settlement lifecycle states and transitions from `docs/schema/state-transitions.md` and `docs/money/settlement-state-machine.md`. Separate from Payment Workflow. Obligation/eligibility: [ADR-027](../../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md).
+Legal settlement lifecycle states and transitions from `docs/schema/state-transitions.md` and `docs/money/settlement-state-machine.md`. Separate from Payment Workflow. Obligation/eligibility: [ADR-027](../../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md). Execution: [ADR-028](../../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md).
 
 ## Preconditions
 
 - Settlement creation requires Payment Workflow COLLECTED and ledger posting CONFIRMED.
 - Initial status PENDING; ELIGIBLE after merchant/KYB gates.
-- Batching is optional; providers may skip BATCHED. F0 does not create batches.
+- Batching is optional and **not used in F1**; providers may skip BATCHED.
+- Provider accepted → SUBMITTED; SETTLED only after reconciliation (F2+).
 
 ## Mermaid
 
@@ -44,8 +46,8 @@ stateDiagram-v2
     PENDING --> ELIGIBLE
     PENDING --> CANCELLED
 
-    ELIGIBLE --> BATCHED
-    ELIGIBLE --> SUBMITTED
+    ELIGIBLE --> BATCHED: future batching only
+    ELIGIBLE --> SUBMITTED: F1 accepted or unknown hold
     ELIGIBLE --> CANCELLED
 
     BATCHED --> SUBMITTED
@@ -55,7 +57,7 @@ stateDiagram-v2
     SUBMITTED --> FAILED
     SUBMITTED --> RETRY_PENDING
 
-    PROCESSING --> SETTLED
+    PROCESSING --> SETTLED: F2+ recon only
     PROCESSING --> FAILED
     PROCESSING --> RETRY_PENDING
 
@@ -73,15 +75,17 @@ stateDiagram-v2
 
 - Must not create/SUBMIT unless payment COLLECTED and ledger CONFIRMED.
 - One Settlement per payment workflow (unique).
-- Merchant/KYB block → remain PENDING (not FAILED).
-- Ack alone is not SETTLED; SETTLED needs reconciliation.
+- One SettlementInstruction per Settlement (F1); same key on technical retry.
+- Merchant/KYB block → remain PENDING (not FAILED); destination pre-submit fail → remain ELIGIBLE hold.
+- Ack alone is not SETTLED; F1 ends at SUBMITTED.
 - Settlement FAILED does not reverse consumer COLLECTED.
 - FAILED is recoverable via RETRY_PENDING when permitted (not unconditionally terminal).
+- Unknown outcome → SUBMITTED + instruction OUTCOME_UNKNOWN — not FAILED.
 
 ## Failure notes
 
-- Invalid: Payment not COLLECTED → SUBMITTED; SETTLED → SUBMITTED without reversal design; FAILED → SETTLED without confirmation + recon; ineligibility → FAILED.
+- Invalid: Payment not COLLECTED → SUBMITTED; SETTLED → SUBMITTED without reversal design; FAILED → SETTLED without confirmation + recon; ineligibility → FAILED; unknown → FAILED to force retry.
 
 ## Related
 
-Payment workflow remains COLLECTED during settlement failure/outage. SEQ-MONEY-002.
+Payment workflow remains COLLECTED during settlement failure/outage. SEQ-MONEY-002. ADR-028.

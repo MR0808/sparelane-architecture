@@ -33,6 +33,7 @@ Quick-reference governance index for ADR-001 through ADR-027.
 | [ADR-025](./ADR-025-payment-retry-timing-budget-and-recovery-window.md) | MVP retry timings, budget, due clock, cutoff, Retry Now, timezone freeze | Accepted | Payments | ADR-024; resolves OD-001/002/006 | D5 Retry Service / ScheduledJob / cutoff |
 | [ADR-026](./ADR-026-collection-ledger-posting-minimal-coa.md) | MVP collection journal CoA slice (Dr processor clearing / Cr merchant payable) | Accepted | Money / Ledger | ADR-004/005/013/016/021 | Platform E1 PaymentCollected → journal → CONFIRMED |
 | [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.md) | MVP settlement obligation 1:1 workflow; gross payable amount; PENDING→ELIGIBLE; KYB gate | Accepted | Money / Settlement | ADR-005/006/026 | Platform F0 LedgerPostingConfirmed → Settlement |
+| [ADR-028](./ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) | MVP settlement execution: no batching; payout destination token; 1:1 instruction; provider taxonomy; Fake F1 ends SUBMITTED | Accepted | Money / Settlement | ADR-006/017/026/027 | Platform F1 ELIGIBLE → instruction → Fake submit |
 
 ## Complementary pairs (not duplicates)
 
@@ -43,7 +44,8 @@ Quick-reference governance index for ADR-001 through ADR-027.
 | ADR-009 / ADR-023 | Delivery semantics/security vs curation of external event contract |
 | ADR-013 / ADR-016 | Logical separation vs consistency mechanism between the stores |
 | ADR-026 / ADR-027 | Collection journal CoA vs settlement obligation/eligibility policy |
+| ADR-027 / ADR-028 | Settlement obligation/eligibility vs instruction execution / destination / idempotency |
 
 ## None superseded or rejected
 
-No ADRs in 001–027 are Superseded or Rejected at this gate. ADR-026 freezes collection CoA; ADR-027 freezes settlement obligation/eligibility. Broader fee/settlement CoA and partner selection remain open.
+No ADRs in 001–028 are Superseded or Rejected at this gate. ADR-026 freezes collection CoA; ADR-027 freezes settlement obligation/eligibility; ADR-028 freezes MVP execution/instruction without SETTLED or production payout CoA. Broader fee/settlement CoA and partner selection remain open.

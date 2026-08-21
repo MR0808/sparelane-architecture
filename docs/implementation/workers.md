@@ -24,10 +24,12 @@ Each worker:
 
 | Concern | Binding |
 | --- | --- |
-| Consumes | `LedgerPostingConfirmed` (F0) |
+| Consumes | `LedgerPostingConfirmed` (F0); `SettlementEligible` / instruction commands (F1) |
 | Creates | Settlement PENDING (1:1 workflow) per [ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md) |
 | Evaluates | Merchant status + `APPROVED_FOR_SETTLEMENT`; may emit `SettlementEligible` |
+| F1 owns | Destination resolve/recheck; CreateSettlementInstruction; ExecuteSettlementInstruction; persist provider result; lookup on unknown ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
 | F0 must not | Create batch, create/send SettlementInstruction, call bank/provider, mutate ledger |
-| Later | Batching, instruction submit, reconciliation handlers |
+| F1 must not | SettlementBatch path; SETTLED; settlement CoA journal; real provider without OD-009; Fake fallback in production live money |
+| Later (F2+) | Reconciliation → SETTLED; settlement accounting; business retry |
 
-Gate: [phase-f0-settlement-decision-gate](./phase-f0-settlement-decision-gate.md).
+Gates: [phase-f0-settlement-decision-gate](./phase-f0-settlement-decision-gate.md), [phase-f1-settlement-execution-decision-gate](./phase-f1-settlement-execution-decision-gate.md).

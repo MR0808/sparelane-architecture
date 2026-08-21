@@ -30,11 +30,15 @@ Business reference: `settlement:{paymentWorkflowPublicId}`.
 
 ### Settlement Batch
 
-Optional **execution** grouping of ELIGIBLE settlements (merchant + currency + window). Not a mandatory parent. **Not created in F0.** Cadence remains [OD-011](../decisions/open/OD-011-settlement-batching.md).
+Optional **future** execution grouping of ELIGIBLE settlements (merchant + currency + window). Not a mandatory parent. **Not created in F0 or F1.** Cadence remains [OD-011](../decisions/open/OD-011-settlement-batching.md). MVP F1 uses **no batching** ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)).
 
 ### Settlement Instruction
 
-External instruction to the banking/settlement partner. Not financial SoT (ledger is). **Not created/sent in F0.**
+External instruction to the banking/settlement partner. Not financial SoT (ledger is). **F1:** at most one active instruction per Settlement; amount = Settlement gross; provider key = `settlement-instruction:{settlementPublicId}` ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)).
+
+### Merchant payout destination
+
+Merchant-owned provider token/reference (`merchant_payout_destinations`). Default per merchant+currency; ACTIVE+verified required before submit. Raw bank details not stored on instructions.
 
 ---
 
@@ -52,7 +56,7 @@ Confirmed merchant payable obligation is recorded as a Settlement, but eligibili
 
 ### ELIGIBLE
 
-Domain eligibility passed (ledger confirmed, journal valid, merchant status, KYB/`APPROVED_FOR_SETTLEMENT`, currency, no duplicate). Ready for later batch/instruction — **not** submitted.
+Domain eligibility passed (ledger confirmed, journal valid, merchant status, KYB/`APPROVED_FOR_SETTLEMENT`, currency, no duplicate). Ready for instruction — **not** submitted. F1 rechecks merchant/KYB/destination immediately before provider call.
 
 **Typical trigger:** Settlement eligibility evaluation succeeds (PENDING→ELIGIBLE).
 
@@ -60,25 +64,25 @@ Domain eligibility passed (ledger confirmed, journal valid, merchant status, KYB
 
 ### BATCHED
 
-Settlement grouped into a Settlement Batch where batching applies (post-F0).
+Settlement grouped into a Settlement Batch where **future** batching applies. **Not used in F1.**
 
-**Typical trigger:** Settlement Batch Service groups eligible items.
+**Typical trigger:** Settlement Batch Service groups eligible items (post-F1).
 
 **Terminal:** No
 
 ### SUBMITTED
 
-Settlement Instruction submitted to the banking/settlement partner (post-F0).
+Settlement Instruction accepted by the partner **or** submit outcome unknown and held for lookup ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)). **F1 happy-path end state.** Not SETTLED.
 
-**Typical trigger:** Settlement Instruction Service submit accepted locally.
+**Typical trigger:** Provider `accepted` or `unknown_outcome` after ExecuteSettlementInstruction.
 
 **Terminal:** No
 
 ### PROCESSING
 
-Partner acknowledged/accepted for processing; final settlement not confirmed.
+Partner async in-progress after SUBMITTED; final settlement not confirmed. Optional F1 Fake lookup; SETTLED still requires reconciliation (F2+).
 
-**Typical trigger:** Provider acknowledgement / in-progress status.
+**Typical trigger:** Lookup/webhook indicates processing.
 
 **Important:** Acknowledgement alone is not `SETTLED`.
 
@@ -96,7 +100,7 @@ Confirmed through the banking/payment partner **and** reconciled to the required
 
 Provider reports failure or reconciliation determines settlement did not complete (**external execution** path).
 
-**Not used for:** merchant temporarily SUSPENDED, KYB blocked, or missing payout destination — those remain PENDING (or later hold).
+**Not used for:** merchant temporarily SUSPENDED, KYB blocked, or missing/invalid payout destination — those remain PENDING (eligibility) or ELIGIBLE with execution hold ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)).
 
 Consumer payment remains `COLLECTED`. Do not reverse consumer collection merely because merchant settlement failed.
 
