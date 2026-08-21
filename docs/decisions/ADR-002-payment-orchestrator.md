@@ -20,7 +20,7 @@ The orchestrator:
 - consults Payment State Machine, Reliability Engine, Decline Classification and Retry Service
 - initiates attempts through rail adapters
 - emits payment lifecycle events
-- determines `COLLECTED` vs terminal `FAILED`
+- determines `COLLECTED` vs `RETRY_PENDING` vs `ACTION_REQUIRED` vs terminal `FAILED` using [ADR-024](./ADR-024-payment-recovery-ordering-and-exhaustion.md)
 
 The orchestrator is **not**:
 

@@ -79,7 +79,7 @@ sequenceDiagram
 ## Failure notes
 
 - Provider timeout → treat as unknown; reconcile before duplicate pre-auth (see SEQ-OPS-001).
-- Hard decline may move workflow to ACTION_REQUIRED or FAILED per Reliability Engine rules.
+- Hard decline may move workflow to ACTION_REQUIRED (or FAILED when recovery window closed) per [ADR-024](../../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md).
 
 ## Related
 

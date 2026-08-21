@@ -13,6 +13,8 @@ flows:
 adrs:
   - ADR-002
   - ADR-017
+  - ADR-024
+  - ADR-025
 contracts: []
 modules:
   - Reliability Engine
@@ -20,8 +22,7 @@ modules:
 tests:
   - E2E-PAY-003
 dependsOn: []
-openDecisions:
-  - OD-001
+openDecisions: []
 designs:
   - SEQ-PAY-005
 ---
@@ -37,9 +38,12 @@ Scheduled retries complement Retry Now and fallback.
 
 ## Acceptance Criteria
 
-- Retries are bounded (see NFR-REL-003).
+- Retries are bounded per [ADR-025](../../docs/decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md): max **3** same-method scheduled ordinals; delays **+6h / +24h / +48h**; shared RETRYABLE/TECHNICAL budget; no quiet hours in MVP.
+- Orchestrator decides **whether** `RETRY_PENDING` applies ([ADR-024](../../docs/decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)); Retry Service decides **when** (ADR-025).
 - Scheduled retry does not bypass duplicate-collection protections.
+- Same-method scheduled retry is used when no immediate eligible backup remains (RETRYABLE) or for known no-charge TECHNICAL_ERROR — not while UNKNOWN reconciliation is pending.
+- Durable `ScheduledJob` / `PaymentRetryDue` with stable logical identity; duplicate due handling creates one attempt.
 
 ## Notes
 
-Payment Reliability Engine MVP.
+Payment Reliability Engine MVP. Platform Phase D5.

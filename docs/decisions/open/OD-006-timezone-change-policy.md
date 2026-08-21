@@ -3,9 +3,10 @@ id: OD-006
 title: Merchant timezone change handling policy
 category: product
 blockingStage: pilot
-status: open
+status: resolved
 related:
   - docs/contracts/due-dates.md
+  - docs/decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md
 ---
 
 # OD-006 — Merchant timezone change handling policy
@@ -24,8 +25,15 @@ Prevents silent reschedule of in-flight bills
 
 ## Status
 
-`open`
+`resolved`
 
-## Notes
+## Resolution
 
-Unresolved item tracked separately from Accepted ADRs. See the [open decisions index](../open-decisions.md).
+Resolved by [ADR-025](../ADR-025-payment-retry-timing-budget-and-recovery-window.md) (Accepted):
+
+- Existing `ScheduledJob.scheduledFor` UTC values are **immutable** on merchant timezone change
+- Workflow freezes merchant IANA timezone at creation for dueExecutionInstant / cutoffAt
+- New bills/workflows use the new merchant timezone
+- No silent recalculation of pending financial schedules
+
+Historical OD retained; do not delete.

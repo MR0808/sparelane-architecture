@@ -3,7 +3,7 @@
 **Status:** Current  
 **Owner:** Architecture (TBD)  
 **Last Reviewed:** 2026-08-13  
-**Related ADRs:** ADR-001–023  
+**Related ADRs:** ADR-001–025  
 **Related Views:** —
 
 ## Accepted vs open
@@ -23,7 +23,7 @@ Do not treat open decisions as Accepted architecture. Do not implement against a
 
 ## Indexes
 
-- [Decision register](decision-register.md) — ADR-001–023 status and consequences
+- [Decision register](decision-register.md) — ADR-001–025 status and consequences
 - [Open decisions](open-decisions.md) — TBDs with blocker summary
 - [Architecture traceability](../implementation/architecture-traceability.md) — ADR → docs → modules → tests
 
@@ -54,3 +54,5 @@ Do not treat open decisions as Accepted architecture. Do not implement against a
 | [ADR-021](./ADR-021-money-representation.md) | Decimal-Safe Monetary Representation | Accepted |
 | [ADR-022](./ADR-022-versioned-external-contracts.md) | Versioned External Contracts | Accepted |
 | [ADR-023](./ADR-023-curated-external-events.md) | External Events Are Curated Contracts | Accepted |
+| [ADR-024](./ADR-024-payment-recovery-ordering-and-exhaustion.md) | Payment Recovery Ordering and Exhaustion Policy | Accepted |
+| [ADR-025](./ADR-025-payment-retry-timing-budget-and-recovery-window.md) | Payment Retry Timing, Budget and Recovery Window | Accepted |

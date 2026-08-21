@@ -10,7 +10,10 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `StartPaymentWorkflow` | Payment Workflows | Usually implied by CreateBill |
 | `PerformPreauthorisation` | Payment Workflows | Where rail supports |
 | `ExecutePaymentAttempt` | Payment Workflows / Attempts | Creates attempt + PSP call |
-| `SchedulePaymentRetry` | Payment Workflows | Retry Service timing |
+| `SchedulePaymentRetry` | Payment Workflows / Retry Service | ADR-025 timing → ScheduledJob |
+| `HandlePaymentRetryDue` | Payment Orchestrator | Reload; budget/cutoff; new attempt + execute cmd |
+| `ConsumerRetryNow` | Payment Orchestrator | ADR-025 ordinal consume + cancel job |
+| `EvaluateRecoveryCutoff` | Payment Orchestrator / Retry Service | cutoffAt → FAILED when guards clear |
 | `ApplyProviderPaymentResult` | Payment Workflows | From verified provider event |
 | `PostCollectionLedgerEntry` | Ledger | Idempotent by business_reference |
 | `ConfirmLedgerPosting` | Payment Workflows / Ops | Marks posting confirmed |
@@ -28,6 +31,8 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `PaymentWorkflowStarted` | Workflow active |
 | `PaymentAttemptCreated` | New attempt |
 | `PaymentAttemptDeclined` | Declined with classification |
+| `PaymentRetryScheduled` | Durable retry job accepted |
+| `PaymentRetryDue` | Scheduled retry time reached |
 | `PaymentCollected` | Workflow COLLECTED (+ outbox for ledger) |
 | `PaymentFailed` | Terminal workflow failure |
 | `LedgerPostingConfirmed` | Journal posted; settlement may become eligible |

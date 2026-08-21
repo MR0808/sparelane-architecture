@@ -13,6 +13,7 @@ flows:
   - scheduledRetry
 adrs:
   - ADR-002
+  - ADR-024
 contracts: []
 modules:
   - Reliability Engine
@@ -31,8 +32,10 @@ Classification prevents blind retries and guides fallback.
 
 ## Acceptance Criteria
 
-- Decline classes are persisted on attempts.
-- Retry/fallback decisions are driven by classification policy.
+- Decline classes are persisted on attempts (`RETRYABLE` | `NON_RETRYABLE` | `TECHNICAL_ERROR` | `UNKNOWN`).
+- Retry/fallback decisions are driven by classification policy ([ADR-024](../../docs/decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)).
+- Classification may be attached write-once after the attempt is already `DECLINED`/`ERROR` with null classification.
+- Decline Classification does not call the Retry Service or PSP.
 
 ## Notes
 

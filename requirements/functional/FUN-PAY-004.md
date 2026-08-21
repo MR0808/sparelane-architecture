@@ -13,6 +13,7 @@ flows:
   - paymentRecovery
 adrs:
   - ADR-002
+  - ADR-024
 contracts: []
 modules:
   - Reliability Engine
@@ -29,7 +30,7 @@ designs:
 
 ## Requirement
 
-On eligible primary failure, Sparelane must attempt ordered backup payment methods according to decline classification and policy.
+On eligible primary failure, Sparelane must attempt ordered backup payment methods according to decline classification and [ADR-024](../../docs/decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md) recovery policy.
 
 ## Rationale
 
@@ -39,6 +40,8 @@ Backup recovery is a core reliability behaviour (BUS-005).
 
 - Backup order matches consumer-configured priority.
 - Ineligible methods are skipped without counting as successful collection.
+- After `RETRYABLE` or `NON_RETRYABLE` on the current method, an eligible backup is attempted immediately before any same-method scheduled retry (ADR-024).
+- Declines do not globally revoke the stored PaymentMethod.
 
 ## Notes
 

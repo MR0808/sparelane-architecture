@@ -57,18 +57,37 @@ No OD is marked resolved by Phase C alone.
 
 ---
 
+## Phase D impact (architecture decision gate)
+
+Architecture [ADR-024](./ADR-024-payment-recovery-ordering-and-exhaustion.md) resolves the **qualitative** recovery-policy questions that blocked platform D4.
+
+Architecture [ADR-025](./ADR-025-payment-retry-timing-budget-and-recovery-window.md) resolves the **numeric** retry/cutoff/clock questions that blocked platform D5:
+
+| Effect | Detail |
+| --- | --- |
+| Resolved (no separate OD) | Soft-declined method before vs after backups — **MVP default: try eligible backups immediately first** (ADR-024) |
+| Resolved (no separate OD) | Automatic method/retry-budget exhaustion → **`ACTION_REQUIRED`**; **`FAILED`** when recovery window/cutoff closed (ADR-024) |
+| **Resolved** | [OD-001](./open/OD-001-retry-timing.md) → ADR-025 (3 retries; 6h/24h/48h; no quiet hours; 7-day cutoff) |
+| **Resolved** | [OD-002](./open/OD-002-due-date-local-clock.md) → ADR-025 (09:00 merchant-local) |
+| **Resolved** | [OD-006](./open/OD-006-timezone-change-policy.md) → ADR-025 (keep stored UTC schedules; freeze workflow TZ) |
+| Remains OPEN | [OD-003](./open/OD-003-backup-cardinality.md) backup cardinality / wallet ordering caps |
+
+Do not create duplicate ODs for soft-before-backup, ACTION_REQUIRED-vs-FAILED, or MVP retry timings — those are Accepted ADR-024 / ADR-025.
+
+---
+
 ## Catalogue
 
 ### product
 
 | ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| [OD-001](./open/OD-001-retry-timing.md) | Exact retry timing, windows, maxima, quiet hours | development | open |
-| [OD-002](./open/OD-002-due-date-local-clock.md) | Exact due-date local capture clock time | pilot | open |
+| [OD-001](./open/OD-001-retry-timing.md) | Exact retry timing, windows, maxima, quiet hours | development | resolved |
+| [OD-002](./open/OD-002-due-date-local-clock.md) | Exact due-date local capture clock time | pilot | resolved |
 | [OD-003](./open/OD-003-backup-cardinality.md) | Payment-method backup cardinality / wallet ordering | development | open |
 | [OD-004](./open/OD-004-wallet-product-rules.md) | Wallet product rules (enablement, funding, spend) | wallet-only | open |
 | [OD-005](./open/OD-005-notification-rules.md) | Consumer notification rules and copy | non-blocking | open |
-| [OD-006](./open/OD-006-timezone-change-policy.md) | Merchant timezone change handling policy | pilot | open |
+| [OD-006](./open/OD-006-timezone-change-policy.md) | Merchant timezone change handling policy | pilot | resolved |
 | [OD-007](./open/OD-007-multi-workflow-per-bill.md) | Multi-workflow-per-bill (future) | non-blocking | deferred |
 
 ### payments
@@ -131,4 +150,4 @@ No OD is marked resolved by Phase C alone.
 3. OD-025 Secrets manager product
 4. OD-017 Queue/broker + OD-019 DB hosting topology
 5. OD-014 Legal retention + OD-012 wallet regulatory posture (if wallet enabled)
-6. OD-002 Due-date local clock + OD-006 timezone-change policy
+6. ~~OD-002 Due-date local clock + OD-006 timezone-change policy~~ → **resolved by ADR-025**

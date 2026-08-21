@@ -13,13 +13,13 @@ flows:
   - scheduledRetry
 adrs:
   - ADR-002
+  - ADR-025
 contracts: []
 modules:
   - Bills
   - Reliability Engine
 tests: []
-openDecisions:
-  - OD-002
+openDecisions: []
 designs:
   - SEQ-PAY-001
 ---
@@ -36,8 +36,10 @@ Due-date-aware scheduling is required for recurring bill reliability.
 ## Acceptance Criteria
 
 - Eligible bills produce scheduled payment actions before/at due policy windows.
+- Due execution uses **09:00** frozen merchant IANA timezone on `dueDate` ([ADR-025](../../docs/decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md)).
 - Scheduling respects workflow state and does not double-schedule conflicting collections.
+- Merchant timezone changes do not silently move already-persisted `ScheduledJob` UTC times.
 
 ## Notes
 
-Exact schedule knobs may remain open decisions.
+Exact MVP clock/cutoff defaults are ADR-025. Future merchant overrides within ADR bounds are optional product work.

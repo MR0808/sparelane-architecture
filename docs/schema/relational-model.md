@@ -213,6 +213,7 @@ Not the merchant customer master.
 | Unique | `(payment_workflow_id, sequence_number)` |
 | Unique (nullable) | `(provider, provider_transaction_id)` |
 | Forbidden | PAN, CVV |
+| Classification | `decline_classification` may be null until Decline Classification runs. Write-once attach after `DECLINED`/`ERROR` is permitted ([ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)): null→value; same value idempotent; conflicting value rejected. Do not rewrite status/provider outcome via classification attach. |
 
 ---
 

@@ -2,7 +2,10 @@
 
 Conceptual end-to-end lifecycle for Sparelane payment reliability, stopping at successful collection / settlement eligibility.
 
-Sparelane does not guarantee payment. If all eligible methods and retries fail, the merchant is notified and resumes normal collection.
+Sparelane does not guarantee payment. If recovery is terminally exhausted within the recovery window, the merchant is notified and resumes normal collection.
+
+Binding recovery policy: [ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md).
+Binding retry timings / cutoff / Retry Now: [ADR-025](../decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md).
 
 ## Lifecycle overview
 
@@ -14,8 +17,9 @@ Bill received
 → Method selection
 → Payment attempt
 → Provider response
-→ Fallback and/or scheduled retry as permitted
-→ Consumer intervention when required
+→ Decline Classification (normalised classes)
+→ Orchestrator recovery decision (ADR-024)
+→ Backup attempt and/or RETRY_PENDING and/or ACTION_REQUIRED
 → Successful collection (COLLECTED)
 → Ledger update
 → Settlement eligibility
@@ -24,7 +28,14 @@ Bill received
 or
 
 ```text
-... recovery exhausted
+... automatic recovery exhausted (window still open)
+→ ACTION_REQUIRED (consumer may remediate)
+```
+
+or
+
+```text
+... recovery window / cutoff exhausted (or other terminal trigger)
 → Payment workflow FAILED
 → Consumer notification
 → Merchant webhook
@@ -55,7 +66,7 @@ Pre-authorisation success ≠ collection.
 
 ### 5. Method selection
 
-Reliability Engine applies deterministic MVP rules using Payment Method Priority Service data and prior attempt outcomes.
+Reliability Engine applies deterministic MVP rules using Payment Method Priority Service data, prior attempt outcomes, and Orchestrator-supplied exclusions.
 
 See [payment-method-selection.md](payment-method-selection.md).
 
@@ -67,41 +78,64 @@ Orchestrator creates a new Payment Attempt and invokes Card Adapter or Wallet Pa
 
 PSP webhooks (or synchronous responses) enter via Webhook Ingress, become internal events, and are applied idempotently by the Orchestrator.
 
-Decline Classification normalises soft/hard/technical/unknown outcomes.
+Decline Classification normalises soft/hard/technical/unknown outcomes. Classification may be attached write-once after the attempt is already `DECLINED` / `ERROR` ([ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)).
 
-### 8. Fallback
+### 8. Orchestrator recovery decision
 
-If immediate fallback is permitted, Reliability Engine selects the next eligible method and Orchestrator creates another attempt.
+Payment Orchestrator (not Decline Classification, not Retry Service) applies [ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md):
 
-### 9. Scheduled retry
+```text
+decline / error / unknown / captured
+→ classify if needed
+→ decide: COLLECTED | try backup | RETRY_PENDING | ACTION_REQUIRED | FAILED | reconcile
+```
 
-If retryable and no useful immediate fallback remains, Retry Service schedules a later `PaymentRetryDue`. Orchestrator later creates a **new** attempt.
+### 9. Fallback
 
-See [retry-policy.md](retry-policy.md).
+If immediate fallback is permitted (`RETRYABLE` or `NON_RETRYABLE` with an eligible backup), Reliability Engine selects the next eligible method and Orchestrator creates another attempt. Soft-declined methods are skipped in the immediate walk so backups are tried first.
 
-### 10. Consumer intervention
+### 10. Scheduled retry
 
-Workflow may enter `ACTION_REQUIRED`. Consumer can update methods and/or use Retry Now. Manual retry is still subject to state validation and idempotency.
+If retryable (or technical known no-charge) and no useful immediate fallback remains (or policy forbids backup-for-technical), and retry budget remains: workflow → `RETRY_PENDING`.
 
-### 11. Successful collection
+```text
+RETRY_PENDING
+→ Retry Service persists ScheduledJob (PaymentRetryDue) per ADR-025 delays
+→ PaymentRetryDue fires
+→ Orchestrator reloads state → PAYMENT_PENDING
+→ new same-method PaymentAttempt
+→ ExecutePaymentAttempt command (PSP remains D3)
+```
+
+See [retry-policy.md](retry-policy.md) and [ADR-025](../decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md).
+
+### 11. Consumer intervention
+
+When automatic recovery cannot continue but remediation is possible: workflow → `ACTION_REQUIRED`. Consumer can update methods and/or use **Retry Now** (ADR-025: consumes next permitted ordinal; cancels pending ScheduledJob; no extra budget). Manual retry is still subject to state validation and idempotency. UNKNOWN/reconciliation pending blocks Retry Now.
+
+### 12. Successful collection
 
 On capture/wallet success:
 
 - attempt → `CAPTURED`
 - workflow → `COLLECTED`
-- ledger records collected funds
-- `PaymentSucceeded` (or equivalent) is emitted
-- settlement becomes eligible
+- ledger records collected funds (Phase E)
+- `PaymentCollected` (canonical) / curated merchant webhook as applicable
+- settlement becomes eligible after ledger posting confirmed
 
-### 12. Final payment failure
+### 13. Final payment failure
 
-When methods and retries are exhausted:
+When `now >= cutoffAt` (dueDate + 7 days @ 09:00 frozen TZ) **and** ADR-025 guards clear (no UNKNOWN pending; no in-flight attempt):
 
-- workflow → `FAILED`
-- notify consumer as required
-- notify merchant
-- no settlement eligibility
+```text
+RETRY_PENDING | ACTION_REQUIRED | idle PAYMENT_PENDING
+→ FAILED
+→ PaymentFailed (once)
+→ notify consumer / merchant
+→ no settlement eligibility
+```
 
+Cutoff does **not** terminalize while UNKNOWN reconciliation is pending or an attempt is in flight.
 ## References
 
 - [Payment state machine](payment-state-machine.md)
@@ -111,6 +145,7 @@ When methods and retries are exhausted:
 - [ADR-001 PSP tokenisation](../decisions/ADR-001-psp-tokenisation.md)
 - [ADR-002 Payment Orchestrator](../decisions/ADR-002-payment-orchestrator.md)
 - [ADR-003 Workflow vs Attempt](../decisions/ADR-003-payment-workflow-vs-attempt.md)
+- [ADR-024 Recovery ordering and exhaustion](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)
 
 ## Out of scope here
 

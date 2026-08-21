@@ -1,6 +1,6 @@
 # Architecture Decision Register
 
-Quick-reference governance index for ADR-001 through ADR-023.
+Quick-reference governance index for ADR-001 through ADR-025.
 
 **Accepted** ADRs are binding implementation constraints unless superseded by a later ADR.
 
@@ -29,6 +29,8 @@ Quick-reference governance index for ADR-001 through ADR-023.
 | [ADR-021](./ADR-021-money-representation.md) | Decimal-safe money; no float | Accepted | Schema / API | OpenAPI; currency exponent map | API decimal string; DB minor units |
 | [ADR-022](./ADR-022-versioned-external-contracts.md) | Versioned external contracts | Accepted | API / Webhooks | `/v1` OpenAPI | Breaking changes need new major |
 | [ADR-023](./ADR-023-curated-external-events.md) | Curated external webhook events | Accepted | Integrations | ADR-009 | Not raw internal domain events |
+| [ADR-024](./ADR-024-payment-recovery-ordering-and-exhaustion.md) | MVP recovery ordering + exhaustion (backup-before-soft-retry; ACTION_REQUIRED before FAILED) | Accepted | Payments | ADR-002, ADR-003; timings in ADR-025 | D4 orchestrator decision table; D5 schedules when |
+| [ADR-025](./ADR-025-payment-retry-timing-budget-and-recovery-window.md) | MVP retry timings, budget, due clock, cutoff, Retry Now, timezone freeze | Accepted | Payments | ADR-024; resolves OD-001/002/006 | D5 Retry Service / ScheduledJob / cutoff |
 
 ## Complementary pairs (not duplicates)
 
@@ -41,4 +43,4 @@ Quick-reference governance index for ADR-001 through ADR-023.
 
 ## None superseded or rejected
 
-No ADRs in 001–023 are Superseded or Rejected at this gate.
+No ADRs in 001–024 are Superseded or Rejected at this gate. ADR-024 clarifies prior TBD prose in payment-method-selection / retry docs; it does not supersede ADR-002.

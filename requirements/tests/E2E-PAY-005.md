@@ -5,8 +5,12 @@ type: e2e
 status: specified
 relatedRequirements:
   - FUN-CON-006
+  - FUN-PAY-006
 relatedFlows:
   - consumerRetryNow
+relatedAdrs:
+  - ADR-024
+  - ADR-025
 mvp: true
 ---
 
@@ -14,20 +18,28 @@ mvp: true
 
 ## Purpose
 
-Eligible Retry Now creates a new attempt without duplicate collection.
+Eligible Retry Now creates a new attempt without duplicate collection, consuming the next ADR-025 scheduled ordinal and cancelling any pending ScheduledJob.
 
 ## Preconditions
 
 - Merchant and consumer fixtures connected; bill eligible for payment.
+- Workflow in `RETRY_PENDING` (with future ScheduledJob) or `ACTION_REQUIRED` with eligible method.
+- Window open; no UNKNOWN pending; no in-flight attempt.
 - Fake PSP returns scripted outcomes.
 
 ## Scenario
 
-Drive the `consumerRetryNow` dynamic flow end-to-end.
+1. Consumer submits Retry Now with idempotency key.
+2. Pending `PaymentRetryDue` job is cancelled/superseded.
+3. Exactly one new PaymentAttempt is created; ExecutePaymentAttempt command emitted.
+4. Duplicate Retry Now / concurrent click → one attempt.
+5. Race: Retry Now vs scheduled due → one attempt.
+6. Later original scheduled job → no-op.
+7. Rejected when UNKNOWN pending, terminal states, or budget exhausted with no eligible method.
 
 ## Expected result
 
-Workflow and attempt states match architecture; merchant/consumer outcomes consistent.
+Workflow and attempt states match ADR-025; no extra budget; no duplicate provider-bound command from stale job.
 
 ## Implementation status
 

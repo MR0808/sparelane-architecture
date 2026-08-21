@@ -39,4 +39,4 @@ Reliability patterns from ADR-016/017 and financial invariants.
 
 ## Implementation evidence (Phase A)
 
-`implementationStatus: foundation_implemented`. Bounded **infrastructure** retry exists. Product payment/webhook/settlement retry windows remain OD-001.
+`implementationStatus: foundation_implemented`. Bounded **infrastructure** retry exists. Product payment retry windows are Accepted in [ADR-025](../../docs/decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md) (max 3; 6h/24h/48h; 7-day cutoff). Webhook/settlement numeric bounds may remain separate ODs.

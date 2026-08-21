@@ -23,5 +23,6 @@ Protections for money-movement correctness and abuse resistance.
 - **Reconciliation** of provider, ledger and merchant references
 - **Audit trail** for sensitive payment and settlement actions
 - **Scoped permissions** for financial and privileged operations
+- **Recovery policy** ([ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)): no blind retry/backup while UNKNOWN; workflow-scoped method exclusions (no global card revocation from a single decline); terminal states not silently overwritten; late success after FAILED is reconciliation/integrity, not auto-COLLECTED
 
 See also money-domain docs under [`docs/money/`](../money/).

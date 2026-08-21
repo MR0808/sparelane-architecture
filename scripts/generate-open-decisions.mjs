@@ -10,14 +10,14 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const outDir = path.join(root, 'docs', 'decisions', 'open')
 fs.mkdirSync(outDir, { recursive: true })
 
-/** @type {Array<{id:string,slug:string,title:string,category:string,blockingStage:string,why:string,status:string,related:string[]}>} */
+/** @type {Array<{id:string,slug:string,title:string,category:string,blockingStage:string,why:string,status:string,related:string[],resolvedBy?:string}>} */
 const decisions = [
-  { id: 'OD-001', slug: 'retry-timing', title: 'Exact retry timing, windows, maxima, quiet hours', category: 'product', blockingStage: 'development', why: 'Shapes Retry Service configuration', status: 'open', related: ['docs/payments/payment-lifecycle.md'] },
-  { id: 'OD-002', slug: 'due-date-local-clock', title: 'Exact due-date local capture clock time', category: 'product', blockingStage: 'pilot', why: 'Converts date-only due dates to UTC schedule instants', status: 'open', related: ['docs/contracts/due-dates.md'] },
+  { id: 'OD-001', slug: 'retry-timing', title: 'Exact retry timing, windows, maxima, quiet hours', category: 'product', blockingStage: 'development', why: 'Shapes Retry Service configuration', status: 'resolved', related: ['docs/payments/payment-lifecycle.md', 'docs/decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md'], resolvedBy: 'ADR-025' },
+  { id: 'OD-002', slug: 'due-date-local-clock', title: 'Exact due-date local capture clock time', category: 'product', blockingStage: 'pilot', why: 'Converts date-only due dates to UTC schedule instants', status: 'resolved', related: ['docs/contracts/due-dates.md', 'docs/decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md'], resolvedBy: 'ADR-025' },
   { id: 'OD-003', slug: 'backup-cardinality', title: 'Payment-method backup cardinality / wallet ordering', category: 'product', blockingStage: 'development', why: 'Reliability Engine inputs', status: 'open', related: ['docs/payments/payment-method-selection.md'] },
   { id: 'OD-004', slug: 'wallet-product-rules', title: 'Wallet product rules (enablement, funding, spend)', category: 'product', blockingStage: 'wallet-only', why: 'Optional MVP capability boundaries', status: 'open', related: [] },
   { id: 'OD-005', slug: 'notification-rules', title: 'Consumer notification rules and copy', category: 'product', blockingStage: 'non-blocking', why: 'Notification worker behaviour', status: 'open', related: [] },
-  { id: 'OD-006', slug: 'timezone-change-policy', title: 'Merchant timezone change handling policy', category: 'product', blockingStage: 'pilot', why: 'Prevents silent reschedule of in-flight bills', status: 'open', related: ['docs/contracts/due-dates.md'] },
+  { id: 'OD-006', slug: 'timezone-change-policy', title: 'Merchant timezone change handling policy', category: 'product', blockingStage: 'pilot', why: 'Prevents silent reschedule of in-flight bills', status: 'resolved', related: ['docs/contracts/due-dates.md', 'docs/decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md'], resolvedBy: 'ADR-025' },
   { id: 'OD-007', slug: 'multi-workflow-per-bill', title: 'Multi-workflow-per-bill (future)', category: 'product', blockingStage: 'non-blocking', why: 'Must not be built in MVP', status: 'deferred', related: [] },
   { id: 'OD-008', slug: 'psp-selection', title: 'PSP selection', category: 'payments', blockingStage: 'sandbox', why: 'Tokenisation, auth/capture, webhooks', status: 'open', related: ['docs/decisions/ADR-001-psp-tokenisation.md'] },
   { id: 'OD-009', slug: 'settlement-partner', title: 'Settlement / banking partner', category: 'payments', blockingStage: 'sandbox', why: 'Payout rails, confirmation events', status: 'open', related: ['docs/decisions/ADR-006-separate-settlement-lifecycle.md'] },
@@ -49,9 +49,18 @@ const decisions = [
 ]
 
 for (const d of decisions) {
+  const outPath = path.join(outDir, `${d.id}-${d.slug}.md`)
+  // Preserve hand-written Resolution sections for resolved ODs.
+  if (d.status === 'resolved' && fs.existsSync(outPath)) {
+    continue
+  }
   const relatedYaml = d.related.length
     ? d.related.map((r) => `  - ${r}`).join('\n')
     : '[]'
+  const notes =
+    d.status === 'resolved' && d.resolvedBy
+      ? `Resolved by [${d.resolvedBy}](../${d.resolvedBy}-payment-retry-timing-budget-and-recovery-window.md). Historical OD retained; do not delete.`
+      : 'Unresolved item tracked separately from Accepted ADRs. See the [open decisions index](../open-decisions.md).'
   const body = `---
 id: ${d.id}
 title: ${d.title}
@@ -82,9 +91,9 @@ ${d.why}
 
 ## Notes
 
-Unresolved item tracked separately from Accepted ADRs. See the [open decisions index](../open-decisions.md).
+${notes}
 `
-  fs.writeFileSync(path.join(outDir, `${d.id}-${d.slug}.md`), body, 'utf8')
+  fs.writeFileSync(outPath, body, 'utf8')
 }
 
 const byCat = new Map()
@@ -127,7 +136,7 @@ ${rows.map((d) => `| [${d.id}](./open/${d.id}-${d.slug}.md) | ${d.title} | ${d.b
 3. ${'OD-025'} Secrets manager product
 4. ${'OD-017'} Queue/broker + ${'OD-019'} DB hosting topology
 5. ${'OD-014'} Legal retention + ${'OD-012'} wallet regulatory posture (if wallet enabled)
-6. ${'OD-002'} Due-date local clock + ${'OD-006'} timezone-change policy
+6. ~~OD-002 / OD-006~~ resolved by ADR-025
 `
 
 fs.writeFileSync(path.join(root, 'docs', 'decisions', 'open-decisions.md'), index, 'utf8')

@@ -77,9 +77,9 @@ A Payment Workflow is created when a merchant bill is accepted into Sparelane an
 
 ### RETRY_PENDING
 
-**Meaning:** No immediate eligible fallback remains (or product rules defer action); a future retry is scheduled.
+**Meaning:** No useful immediate fallback remains under [ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md); a future same-method retry is intended. D4 may enter this state; D5 schedules the due time per [ADR-025](../decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md) (max 3; delays 6h/24h/48h).
 
-**Typical trigger:** Soft/retryable failure + Retry Service schedule accepted.
+**Typical trigger:** `RETRYABLE` with no eligible backup and retry budget remaining; or `TECHNICAL_ERROR` (known no-charge) with retry budget remaining.
 
 **Permitted next:** `PAYMENT_PENDING`, `ACTION_REQUIRED`, `FAILED`, `CANCELLED`
 
@@ -87,9 +87,9 @@ A Payment Workflow is created when a merchant bill is accepted into Sparelane an
 
 ### ACTION_REQUIRED
 
-**Meaning:** Consumer or merchant intervention is needed before Sparelane can usefully continue (for example update card, fund wallet, or manually retry).
+**Meaning:** Automatic recovery cannot usefully continue **now**, but consumer or merchant intervention could restore recoverability within the recovery window (for example update card, add method, fund wallet, or Retry Now).
 
-**Typical trigger:** Hard method failure with remaining recovery window, or policy requiring consumer action.
+**Typical trigger:** No eligible backup after `NON_RETRYABLE`; or retry budget exhausted after soft/technical paths; automatic recovery exhausted while the recovery window remains open ([ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)).
 
 **Permitted next:** `PAYMENT_PENDING`, `RETRY_PENDING`, `FAILED`, `CANCELLED`
 
@@ -99,7 +99,7 @@ A Payment Workflow is created when a merchant bill is accepted into Sparelane an
 
 **Meaning:** Consumer funds for this bill have been successfully collected. Ledger posting is then confirmed asynchronously (outbox); settlement eligibility requires posting confirmation (not COLLECTED alone).
 
-**Typical trigger:** Successful capture / wallet collection recorded against a Payment Attempt.
+**Typical trigger:** Successful capture / wallet collection recorded against a Payment Attempt; Orchestrator applies collect transition.
 
 **Permitted next:** none for payment workflow (settlement proceeds on a separate lifecycle)
 
@@ -107,9 +107,11 @@ A Payment Workflow is created when a merchant bill is accepted into Sparelane an
 
 ### FAILED
 
-**Meaning:** All eligible methods and permitted retries are exhausted within the recovery window. Sparelane stops attempting collection and returns control to the merchant's normal collection process.
+**Meaning:** Terminal. No further automatic **or expected consumer** recovery under MVP policy for this workflow (typically recovery window / due-date cutoff exhausted, merchant cancellation, or other explicit unrecoverable condition). Sparelane returns control to the merchant's normal collection process.
 
-**Typical trigger:** Orchestrator determines irrecoverable failure.
+**Typical trigger:** Cutoff / window processor or Orchestrator determines terminal failure per [ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md) and [ADR-025](../decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md) (`now >= cutoffAt`, UNKNOWN/in-flight guards clear). **Not** triggered solely by exhausting the immediate backup walk while the window remains open (that is `ACTION_REQUIRED`).
+
+Legal entry from cutoff (when guards clear): `RETRY_PENDING` → `FAILED`, `ACTION_REQUIRED` → `FAILED`, and idle `PAYMENT_PENDING` → `FAILED`.
 
 **Permitted next:** none
 
@@ -167,11 +169,11 @@ Provider authorised funds or validated the method (including successful pre-auth
 
 ### DECLINED
 
-Provider declined the attempt. Classification (soft/hard/technical/unknown) is recorded separately.
+Provider declined the attempt. Classification (`RETRYABLE` / `NON_RETRYABLE` / …) is recorded on the attempt (may be attached write-once after the decline transition — [ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)).
 
 ### ERROR
 
-Technical/provider/transport failure prevented a definitive payment outcome.
+Technical/provider/transport failure with a **known no-charge** outcome (distinct from UNKNOWN / ambiguous timeout). Classification `TECHNICAL_ERROR` is recorded separately / write-once as needed.
 
 ### CANCELLED
 

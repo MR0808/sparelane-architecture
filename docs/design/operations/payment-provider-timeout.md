@@ -14,6 +14,7 @@ requirements:
 adrs:
   - ADR-002
   - ADR-017
+  - ADR-024
 tests:
   - OPS-REC-001
   - INT-PSP-001
@@ -23,7 +24,7 @@ tests:
 
 ## Purpose
 
-PSP timeout yields unknown outcome. Do **not** blindly duplicate the payment request; reconcile via provider query or verified webhook before safe workflow continuation.
+PSP timeout yields unknown outcome. Do **not** blindly duplicate the payment request; reconcile via provider query or verified webhook before safe workflow continuation ([ADR-024](../../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)).
 
 ## Preconditions
 
@@ -48,6 +49,7 @@ sequenceDiagram
     Card->>PSP: Authorise / capture
     PSP--xCard: Timeout / unknown outcome
     Orch->>ODB: Record attempt unknown — no blind duplicate
+    Note over Orch: ADR-024 - remain PAYMENT_PENDING - no backup - no FAILED or COLLECTED
 
     alt Provider query available
         Orch->>PSP: Reconcile via provider query
@@ -66,6 +68,8 @@ sequenceDiagram
 - No blind duplicate payment submission.
 - Unknown remains unknown until query or verified webhook.
 - Idempotent provider keys used where supported.
+- Workflow stays `PAYMENT_PENDING` while reconciliation is pending (no new workflow enum).
+- After reconcile, apply ADR-024 to the resolved outcome.
 
 ## Failure notes
 
@@ -73,4 +77,4 @@ sequenceDiagram
 
 ## Related
 
-LikeC4: `paymentProviderTimeout`. Parallel to SEQ-MONEY-005 for settlement.
+LikeC4: `paymentProviderTimeout`. Parallel to SEQ-MONEY-005 for settlement. ADR-024.

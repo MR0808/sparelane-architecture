@@ -14,6 +14,7 @@ requirements:
 adrs:
   - ADR-002
   - ADR-003
+  - ADR-024
 tests:
   - E2E-PAY-002
   - E2E-PAY-003
@@ -23,13 +24,13 @@ tests:
 
 ## Purpose
 
-Primary card fails with a classifiable decline; Reliability Engine selects the next eligible backup; a **new** Payment Attempt succeeds. The failed attempt is not mutated into success.
+Primary card fails with a classifiable decline; per [ADR-024](../../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md) Orchestrator excludes the current method from immediate selection when appropriate; Reliability Engine selects the next eligible backup; a **new** Payment Attempt succeeds. The failed attempt is not mutated into success.
 
 ## Preconditions
 
 - Workflow is PAYMENT_PENDING (or recovering within the same due window).
-- Primary attempt has a terminal failure (DECLINED / ERROR) that is soft/recoverable for fallback.
-- At least one backup method remains eligible.
+- Primary attempt has a terminal failure (`DECLINED`) classified `RETRYABLE` or `NON_RETRYABLE`.
+- At least one backup method remains eligible for the immediate walk.
 
 ## Mermaid
 
@@ -54,9 +55,11 @@ sequenceDiagram
     Orch->>Att: Mark primary attempt DECLINED
     Note over Att: Failed attempt is terminal — do not mutate to CAPTURED
 
-    Orch->>Dec: Classify soft vs hard
-    Dec-->>Orch: Soft / fallback eligible
-    Orch->>Rel: Next eligible method
+    Orch->>Dec: Classify decline
+    Dec-->>Orch: RETRYABLE or NON_RETRYABLE
+    Orch->>Att: Attach classification write-once if needed
+    Note over Orch: ADR-024 - soft exclude from immediate walk - hard workflow-scoped exclude
+    Orch->>Rel: Next eligible method (with exclusions)
     Rel-->>Orch: Backup card
 
     Orch->>Att: Create new backup attempt
@@ -74,12 +77,14 @@ sequenceDiagram
 - Retries and fallbacks create new attempt rows.
 - Terminal attempts (DECLINED, ERROR, CAPTURED, CANCELLED) are immutable success/failure history.
 - Only CAPTURED attempt supports workflow COLLECTED.
+- Soft RETRYABLE does **not** retry the same method immediately when a backup is eligible (ADR-024 OPTION B).
 
 ## Failure notes
 
-- No eligible backup → scheduled retry or ACTION_REQUIRED / FAILED (SEQ-PAY-005 / SEQ-PAY-006).
-- Hard decline on all methods → complete failure path.
+- No eligible backup after RETRYABLE + retry budget remains → SEQ-PAY-005 (`RETRY_PENDING`).
+- No eligible backup after NON_RETRYABLE, or retry budget exhausted → `ACTION_REQUIRED` (ADR-024), not automatic FAILED.
+- Recovery window closed → SEQ-PAY-006 (`FAILED`).
 
 ## Related
 
-LikeC4: `backupRecovery`. ADR-003 workflow vs attempt.
+LikeC4: `backupRecovery`. ADR-003 workflow vs attempt. ADR-024 recovery ordering.

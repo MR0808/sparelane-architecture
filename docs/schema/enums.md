@@ -40,6 +40,8 @@ TECHNICAL_ERROR
 UNKNOWN
 ```
 
+Persisted on `PaymentAttempt.decline_classification`. May be set on the transition into `DECLINED` / `ERROR`, or attached **write-once** afterwards when null ([ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)): null → value; same value idempotent; conflicting value rejected. Does not rewrite attempt status or provider outcome fields.
+
 ## LedgerPostingStatus
 
 Tracks Operational↔Ledger consistency ([ADR-016](../decisions/ADR-016-operational-ledger-consistency.md)):

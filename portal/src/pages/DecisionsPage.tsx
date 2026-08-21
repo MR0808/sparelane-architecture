@@ -39,7 +39,7 @@ export function DecisionsPage() {
         <h2 className="req-section-title">Accepted ADRs</h2>
         <ul className="link-list">
           <li>
-            <Link to="/docs/decisions/decision-register">Decision register (ADR-001–023)</Link>
+            <Link to="/docs/decisions/decision-register">Decision register (ADR-001–024)</Link>
           </li>
           <li>
             <Link to="/docs/decisions/README">Decisions index</Link>

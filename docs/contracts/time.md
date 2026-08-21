@@ -12,12 +12,13 @@
 
 ## Merchant timezone / due-date semantics
 
-See **[due-dates.md](./due-dates.md)** (binding).
+See **[due-dates.md](./due-dates.md)** (binding) and **[ADR-025](../decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md)**.
 
 Summary:
 
-- Merchant configured business timezone (IANA)
-- `dueDate` is date-only; scheduling interprets it in that timezone
+- Merchant configured business timezone (IANA); workflows freeze timezone at create
+- `dueDate` is date-only; scheduling interprets it in that frozen timezone
+- Due execution clock MVP default: **09:00** local
+- Recovery cutoff MVP default: **dueDate + 7 calendar days @ 09:00** local
 - Execution timestamps UTC
-- Exact due-date capture clock time remains configurable/TBD
-- Timezone changes must not silently reinterpret already scheduled financial actions
+- Timezone changes must not silently move existing `ScheduledJob` UTC times or frozen cutoffs
