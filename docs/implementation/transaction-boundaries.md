@@ -26,21 +26,40 @@ Ledger write happens later.
 
 ## Ledger posting
 
-**One Ledger DB transaction** (idempotent):
+Split into two independently idempotent transactions (no XA/2PC). Canonical collection substance: [ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md).
 
-1. Check unique `business_reference` (e.g. collection for workflow)
-2. Insert Journal Transaction
-3. Insert balanced Journal Entries
-4. Persist posting result / emit confirmation path back to operational state
+### Ledger DB transaction
 
-## Settlement creation
+1. Resolve/ensure canonical accounts (processor clearing + merchant payable)
+2. Check unique `business_reference` = `payment-collection:{paymentWorkflowPublicId}`
+3. Insert Journal Transaction (`transaction_type = collection`)
+4. Insert balanced Journal Entries (Dr clearing / Cr payable; Bill `amount_minor`)
 
-**Operational transaction (after ledger confirmed):**
+### Operational DB confirmation transaction (after journal durable)
 
-1. Verify ledger eligibility / posting confirmed
-2. Insert Settlement
-3. Outbox event if async continuation needed
+1. Verify expected journal exists and substance matches ADR-026
+2. Transition `ledger_posting_status` PENDING → **CONFIRMED** (`ConfirmLedgerPosting`)
+3. Insert Outbox Event `LedgerPostingConfirmed`
+
+Crash after ledger commit before confirmation: redelivery finds existing journal (`already_applied`) then confirms.
+## Settlement creation (F0 — [ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md))
+
+**Operational transaction 1 — create obligation (after ledger confirmed):**
+
+1. Verify workflow `COLLECTED` + `ledger_posting_status = CONFIRMED` + ADR-026 journal (payable CREDIT = Bill amount)
+2. Insert Settlement (`PENDING`, unique `payment_workflow_id`, `business_reference = settlement:{paymentWorkflowPublicId}`)
+3. Insert Outbox Event `SettlementCreated`
+
+No bank calls. No ledger writes.
+
+**Operational transaction 2 — eligibility (same or later worker pass):**
+
+1. Evaluate merchant status + `APPROVED_FOR_SETTLEMENT` + currency/gates
+2. If pass: transition PENDING → ELIGIBLE (OCC/version) + Outbox `SettlementEligible`
+3. If fail temporary: leave PENDING (no FAILED)
+
+Idempotent on redelivery of `LedgerPostingConfirmed`: unique `payment_workflow_id` ensures one Settlement.
 
 ## Settlement instruction submit
 
-Record instruction + idempotency key before/with provider submit handling; unknown outcomes must not blind-duplicate ([settlement idempotency](../money/settlement-idempotency.md)).
+Record instruction + idempotency key before/with provider submit handling; unknown outcomes must not blind-duplicate ([settlement idempotency](../money/settlement-idempotency.md)). Post-F0.

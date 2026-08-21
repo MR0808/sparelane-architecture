@@ -13,6 +13,7 @@ flows:
 adrs:
   - ADR-004
   - ADR-021
+  - ADR-026
 contracts:
   - docs/contracts/money.md
 modules:
@@ -26,14 +27,17 @@ tests:
 
 Every journal transaction must balance (sum of debits equals sum of credits) in minor units.
 
+The MVP collection template ([ADR-026](../../docs/decisions/ADR-026-collection-ledger-posting-minimal-coa.md)) is two equal legs and must satisfy this invariant with no exemption.
+
 ## Rationale
 
-Double-entry ledger (ADR-004).
+Double-entry ledger (ADR-004); collection CoA (ADR-026).
 
 ## Acceptance Criteria
 
 - Unbalanced journals are rejected.
 - Money representation follows ADR-021.
+- Collection journals (Dr clearing / Cr payable) balance at Bill `amount_minor`.
 
 ## Notes
 

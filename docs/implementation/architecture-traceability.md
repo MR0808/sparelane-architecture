@@ -56,6 +56,8 @@ See also [requirements README](../../requirements/README.md).
 | ADR-023 Curated external events | [webhook-events](../contracts/webhook-events.md), [event-envelope](../contracts/event-envelope.md) | Webhooks | No raw internal dump to merchants |
 | ADR-024 Recovery ordering / exhaustion | [payment-method-selection](../payments/payment-method-selection.md), [retry-policy](../payments/retry-policy.md), SEQ-PAY-004/005/006 | Payment Orchestrator, Decline Classification, Reliability Engine, Retry Service (D5 timing) | D4 decision table; E2E-PAY-002/003/004; no blind UNKNOWN retry |
 | ADR-025 Retry timing / budget / cutoff | [retry-policy](../payments/retry-policy.md), [due-dates](../contracts/due-dates.md), SEQ-PAY-005/006/007 | Retry Service, DurableScheduler, Orchestrator due/cutoff/Retry Now | D5; E2E-PAY-003/004/005; OD-001/002/006 resolved |
+| ADR-026 Collection CoA / posting template | [ledger-model](../money/ledger-model.md), SEQ-MONEY-001, SEQ-OPS-002 | Ledger consumer; ConfirmLedgerPosting | Unblocks platform E1; FIN-INV-02/03 mapping |
+| ADR-027 Settlement obligation / eligibility | [settlement-state-machine](../money/settlement-state-machine.md), SEQ-MONEY-002, STATE-MONEY-001 | settlement-worker; CreateSettlement; EvaluateSettlementEligibility | Unblocks platform F0; FIN-INV-04/08 mapping; FIN-INV-05 deferred to instruction |
 
 Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-acceptance-criteria](mvp-acceptance-criteria.md), [build-phases](build-phases.md).
 
@@ -63,7 +65,7 @@ Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-a
 
 | Item | Status |
 | --- | --- |
-| All ADR-001–024 | Covered above — no missing ADR rows |
+| All ADR-001–027 | Covered above — no missing ADR rows |
 | Phase A platform foundation | Recorded — [phase-a-status](phase-a-status.md). Not product implementation. |
 | Phase B merchant/consumer core | Recorded — [phase-b-status](phase-b-status.md). No money movement; payment/ledger/settlement not implemented. |
 | Phase C bill ingestion | Recorded — [phase-c-status](phase-c-status.md). No money movement; payment attempts/PSP/ledger/settlement not implemented. |

@@ -28,7 +28,7 @@ Execute settlement path for unknown settlement outcome.
 
 ## Expected result
 
-Settlement state machine and reconciliation behaviour match ADRs.
+Settlement state machine and reconciliation behaviour match ADRs. Post-F0 / instruction phase ([ADR-027](../../docs/decisions/ADR-027-settlement-obligation-eligibility-cardinality.md) F0 stops before instruction).
 
 ## Implementation status
 

@@ -65,6 +65,14 @@ Example conceptual form for successful collection (format not mandatory):
 payment-collection:<paymentWorkflowId>
 ```
 
+**Binding MVP format ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)):**
+
+```text
+payment-collection:{paymentWorkflowPublicId}
+```
+
+where `{paymentWorkflowPublicId}` is the Payment Workflow opaque public id (`pay_…`).
+
 Do not maintain a redundant parallel `ledger_posting_keys` table unless an implementation ADR justifies it; unique `business_reference` is sufficient.
 ---
 

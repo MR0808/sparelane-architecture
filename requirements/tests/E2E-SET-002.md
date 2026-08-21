@@ -27,7 +27,7 @@ Execute settlement path for settlement failure.
 
 ## Expected result
 
-Settlement state machine and reconciliation behaviour match ADRs.
+Settlement state machine and reconciliation behaviour match ADRs ([ADR-027](../../docs/decisions/ADR-027-settlement-obligation-eligibility-cardinality.md): merchant ineligibility ≠ FAILED; FAILED is external-execution path).
 
 ## Implementation status
 

@@ -32,8 +32,7 @@ Sparelane uses a **double-entry financial ledger** as the authoritative record o
 
 - higher implementation and operational complexity than a single balance table
 - requires disciplined idempotent posting and compensating-entry practices
-- needs accounting/regulatory advice for final chart of accounts and custody treatment
-
+- needs accounting/regulatory advice for **remaining** chart of accounts and custody treatment beyond the MVP collection slice ([ADR-026](./ADR-026-collection-ledger-posting-minimal-coa.md))
 ## Alternatives Considered
 
 1. **Derive balances only from payment workflow statuses** — rejected; insufficient for settlement, audit and provider reconciliation.

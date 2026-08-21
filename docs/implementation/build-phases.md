@@ -88,18 +88,20 @@ Product config (backup cardinality) is **Partial** — [OD-003](../decisions/ope
 
 ## Phase E — Ledger
 
-**Platform implementation:** **NOT STARTED**.
+**Platform implementation:** E0 (domain/invariants) **PASS**; E1 (PaymentCollected → journal) **blocked until ADR-026** — now **unblocked** by Accepted [ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md). Full Phase E not complete until collection posting + FIN-INV evidence land.
 
 **Delivers:** journal, collection posting, derived balances, financial invariant tests.
 
 **Depends on:** D (successful collection path).
 
+**Binding collection CoA:** ADR-026 (Dr processor clearing / Cr merchant payable; gross Bill amount; PENDING→CONFIRMED).
+
 **Open decisions**
 
 | Stage | Blocks? | Items |
 | --- | --- | --- |
-| Local–Pilot | Soft | Shared vs separate ledger DB topology |
-| Production | Partial | Physical DB topology confirmed |
+| Local–Pilot | Soft | Shared vs separate ledger DB topology ([OD-019](../decisions/open/OD-019-db-topology.md)) |
+| Production | Partial | Physical DB topology confirmed; broader CoA beyond collection still TBD |
 
 ---
 
@@ -109,13 +111,24 @@ Product config (backup cardinality) is **Partial** — [OD-003](../decisions/ope
 
 **Depends on:** E (posting confirmed before eligibility).
 
+**Binding obligation/eligibility:** [ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md). Gate: [phase-f0-settlement-decision-gate](./phase-f0-settlement-decision-gate.md).
+
+**Engineering sub-phases (local):**
+
+| Slice | Scope |
+| --- | --- |
+| **F0** | `LedgerPostingConfirmed` → create Settlement PENDING → evaluate → ELIGIBLE; unique per workflow; no batch/instruction/bank |
+| **F1** | Optional batching + SettlementInstruction + fake settlement adapter |
+| **F2+** | Reconciliation, unknown outcome, SETTLED |
+
 **Open decisions**
 
 | Stage | Blocks? | Items |
 | --- | --- | --- |
-| Local | No | Fake settlement adapter |
-| Sandbox | **Yes** for live payout sandbox | Settlement/banking partner |
-| Pilot / Production money | **Yes** | Partner + schedule/batching rules |
+| Local F0 | No | Fake KYB / `APPROVED_FOR_SETTLEMENT` |
+| Local F1 | No | Fake settlement adapter |
+| Sandbox | **Yes** for live payout sandbox | Settlement/banking partner ([OD-009](../decisions/open/OD-009-settlement-partner.md)) |
+| Pilot / Production money | **Yes** | Partner + batch cadence ([OD-011](../decisions/open/OD-011-settlement-batching.md)) + fee/net policy |
 
 ---
 

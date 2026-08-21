@@ -13,7 +13,7 @@ mvp: true
 
 ## Purpose
 
-Failed collection cannot become settlement eligible.
+Failed collection cannot become settlement eligible. Confirmed collection creates at most one Settlement obligation ([ADR-027](../../docs/decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)).
 
 ## Preconditions
 
@@ -22,7 +22,15 @@ Failed collection cannot become settlement eligible.
 
 ## Scenario
 
-Exercise the invariant under success, replay, and restart conditions as applicable.
+Exercise under success, replay, and restart:
+
+- FAILED / non-COLLECTED workflow → no Settlement
+- COLLECTED without CONFIRMED posting → no Settlement
+- CONFIRMED collection → exactly one Settlement; duplicate confirmation idempotent
+- Concurrent confirmation → one Settlement (`payment_workflow_id` unique)
+- Amount/currency match journal payable CREDIT; merchant isolation
+- Blocked merchant/KYB → Settlement PENDING (not ELIGIBLE, not FAILED)
+- F0 path creates no SettlementInstruction and mutates no ledger
 
 ## Expected result
 
@@ -30,4 +38,4 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — Partial prerequisite — FAILED workflows create no Settlement rows (collection path). Settlement eligibility product test remains Phase F+. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md) Phase D section.
+`specified` — Architecture policy frozen (ADR-027). Platform F0 not yet implemented. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).

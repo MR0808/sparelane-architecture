@@ -2,19 +2,24 @@
 
 Financial payouts must tolerate retries, timeouts and delayed provider events without paying merchants twice.
 
+Binding obligation identity: [ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md).
+
 ## 1. Settlement creation
 
-A Payment Workflow that reaches `COLLECTED` must not generate duplicate merchant settlement obligations.
+A Payment Workflow that reaches `COLLECTED` with `ledger_posting_status = CONFIRMED` must not generate duplicate merchant settlement obligations.
 
-Conceptual protections:
+Binding protections:
 
-- stable settlement identity keyed to payment workflow / bill / merchant reference
-- Settlement Service create is idempotent for the same source event
-- ledger payable consumption is guarded so the same obligation cannot be settled twice
+- stable settlement identity: `business_reference = settlement:{paymentWorkflowPublicId}`
+- DB uniqueness: `settlements.payment_workflow_id` UNIQUE
+- Settlement create is idempotent for redelivered `LedgerPostingConfirmed`
+- F0 proves **one Settlement domain obligation**; it does **not** prove one bank transfer
+
+Do not settle from aggregate merchant payable balance alone.
 
 ## 2. Settlement instruction
 
-Network retries must not accidentally send duplicate merchant payments.
+Network retries must not accidentally send duplicate merchant payments (post-F0 / FIN-INV-05).
 
 Conceptual protections:
 
@@ -71,3 +76,4 @@ This flow is modelled in:
 - [Settlement state machine](settlement-state-machine.md)
 - [Reconciliation](reconciliation.md)
 - [ADR-006 Separate settlement lifecycle](../decisions/ADR-006-separate-settlement-lifecycle.md)
+- [ADR-027 Settlement obligation / eligibility](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)

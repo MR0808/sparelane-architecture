@@ -251,6 +251,7 @@ Not the merchant customer master.
 | --- | --- |
 | PK | `id` |
 | Fields | `code` UNIQUE, `name`, `account_type`, `currency` (or multi-currency policy TBD), `merchant_id` nullable (for merchant payable), `consumer_id` nullable (wallet liability) |
+| MVP collection codes | Binding ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)): `sys:processor-clearing:{providerCode}:{currency}` (`account_type=clearing`); `mrc:{merchantPublicId}:payable:{currency}` (`account_type=liability`, `merchant_id` set) |
 | Indexes | `code`, `(merchant_id)`, `(consumer_id)` |
 
 ---
@@ -265,7 +266,7 @@ Not the merchant customer master.
 | Public | `public_id` (`jt_...`) optional for ops |
 | Fields | `business_reference` UNIQUE (**Sparelane-generated financial posting identity**, not a merchant or provider reference), `transaction_type`, `currency`, `posted_at`, `payment_workflow_id` nullable, `settlement_id` nullable, `correlation_id` |
 | Mutability | Insert-only; no updates/deletes |
-| Idempotency | `business_reference` uniquely identifies one financial effect, e.g. collection posting for a payment workflow (`payment-collection:<paymentWorkflowId>` or equivalent). Merchant reconciliation references and provider transaction IDs remain separate columns/relations. |
+| Idempotency | `business_reference` uniquely identifies one financial effect. **MVP collection** binding ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)): `payment-collection:{paymentWorkflowPublicId}`. Merchant reconciliation references and provider transaction IDs remain separate columns/relations. |
 
 ---
 
@@ -285,23 +286,26 @@ Not the merchant customer master.
 
 ## settlements
 
-**Purpose:** Merchant settlement obligation lifecycle.
+**Purpose:** Merchant settlement obligation lifecycle — **one confirmed collection PaymentWorkflow → one Settlement** ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)).
 
 | Aspect | Design |
 | --- | --- |
 | PK | `id` |
 | Public | `public_id` (`set_...`) UNIQUE |
-| Tenant | `merchant_id` NOT NULL |
-| FKs | `payment_workflow_id` (or payable grouping TBD), `settlement_batch_id` nullable |
-| Fields | `status`, `amount_minor`, `currency`, `merchant_reconciliation_reference`, `submitted_at`, `settled_at` |
-| Indexes | `(merchant_id, status)`, `public_id` |
-| Gate | Create/advance past ELIGIBLE only when source collection ledger posting CONFIRMED |
+| Tenant | `merchant_id` NOT NULL (immutable; matches workflow merchant) |
+| FKs | `payment_workflow_id` NOT NULL **UNIQUE**; `settlement_batch_id` nullable (set only when later batched) |
+| Identity | `business_reference` UNIQUE = `settlement:{paymentWorkflowPublicId}` |
+| Fields | `status` (initial `PENDING`), `amount_minor` (> 0, immutable), `currency` (immutable), `merchant_reconciliation_reference`, `submitted_at`, `settled_at`; optional `eligibility_blocked_reason` |
+| Indexes | `(merchant_id, status)`, `public_id`, unique `payment_workflow_id`, unique `business_reference` |
+| Amount | Gross merchant payable CREDIT from ADR-026 journal `payment-collection:{paymentWorkflowPublicId}` (must equal Bill `amount_minor`) |
+| Gate | Create only when source collection `ledger_posting_status = CONFIRMED` and journal validates; ELIGIBLE only after merchant status + `APPROVED_FOR_SETTLEMENT` |
+| Aggregation | Not via multi-workflow FK; optional later grouping through `settlement_batches` |
 
 ---
 
 ## settlement_batches
 
-**Purpose:** Optional grouping.
+**Purpose:** Optional **execution** grouping of ELIGIBLE settlements (not F0; cadence [OD-011](../decisions/open/OD-011-settlement-batching.md)). Must not mix currencies unless a future ADR allows.
 
 | Aspect | Design |
 | --- | --- |

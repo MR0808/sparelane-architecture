@@ -15,10 +15,11 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `ConsumerRetryNow` | Payment Orchestrator | ADR-025 ordinal consume + cancel job |
 | `EvaluateRecoveryCutoff` | Payment Orchestrator / Retry Service | cutoffAt → FAILED when guards clear |
 | `ApplyProviderPaymentResult` | Payment Workflows | From verified provider event |
-| `PostCollectionLedgerEntry` | Ledger | Idempotent by business_reference |
-| `ConfirmLedgerPosting` | Payment Workflows / Ops | Marks posting confirmed |
-| `CreateSettlement` | Settlement | After ledger confirmation |
-| `SubmitSettlementInstruction` | Settlement | Provider idempotency |
+| `PostCollectionLedgerEntry` | Ledger | Idempotent by `business_reference`; MVP legs per ADR-026 |
+| `ConfirmLedgerPosting` | Payment Workflows / Ops | PENDING → CONFIRMED after durable journal |
+| `CreateSettlement` | Settlement | After `LedgerPostingConfirmed`; 1:1 workflow; initial PENDING ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)) |
+| `EvaluateSettlementEligibility` | Settlement | PENDING → ELIGIBLE when merchant/KYB/journal gates pass; else remain PENDING |
+| `SubmitSettlementInstruction` | Settlement | Provider idempotency (post-F0) |
 | `ReconcileSettlement` | Reconciliation / Settlement | |
 | `DeliverMerchantWebhook` | Webhooks | Signed delivery |
 | `NotifyConsumer` | Notifications | Email/SMS |
@@ -33,13 +34,14 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `PaymentAttemptDeclined` | Declined with classification |
 | `PaymentRetryScheduled` | Durable retry job accepted |
 | `PaymentRetryDue` | Scheduled retry time reached |
-| `PaymentCollected` | Workflow COLLECTED (+ outbox for ledger) |
+| `PaymentCollected` | Workflow COLLECTED (+ outbox for ledger); trigger for ADR-026 posting |
 | `PaymentFailed` | Terminal workflow failure |
-| `LedgerPostingConfirmed` | Journal posted; settlement may become eligible |
-| `SettlementEligible` | Payable verified |
+| `LedgerPostingConfirmed` | Journal durable + operational CONFIRMED; settlement-worker may create Settlement |
+| `SettlementCreated` | Settlement row exists at PENDING (obligation recorded) |
+| `SettlementEligible` | PENDING → ELIGIBLE; domain-ready for later batch/instruction |
 | `SettlementSubmitted` | Instruction submitted |
 | `SettlementSettled` | Confirmed + reconciled |
-| `SettlementFailed` | Failed; payment remains COLLECTED |
+| `SettlementFailed` | External failure; payment remains COLLECTED |
 | `WebhookDeliveryFailed` | Delivery attempt failed / terminal |
 
 Internal names need not equal merchant webhook types (`payment.collected`, etc.).

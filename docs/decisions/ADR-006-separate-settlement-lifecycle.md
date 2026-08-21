@@ -24,6 +24,8 @@ Settlement = SETTLED
 
 Settlement has its own lifecycle (`PENDING` / `ELIGIBLE` / `BATCHED` / `SUBMITTED` / `PROCESSING` / `SETTLED` / `FAILED` / `RETRY_PENDING` / `CANCELLED`).
 
+MVP obligation cardinality, amount source, and eligibility gates: [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.md).
+
 ## Consequences
 
 ### Positive

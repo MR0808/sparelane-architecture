@@ -12,8 +12,9 @@ Queue partition-by-workflow is an optional later optimisation — **not** the so
 
 ## Settlement
 
-- Lifecycle state guards
-- Unique settlement instruction idempotency keys
+- Unique `payment_workflow_id` and `business_reference = settlement:{paymentWorkflowPublicId}` ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md))
+- Lifecycle state guards / OCC on status transitions
+- Unique settlement instruction idempotency keys (post-F0)
 - Provider reference uniqueness where present
 - Unknown-outcome query before resubmit
 

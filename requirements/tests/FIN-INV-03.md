@@ -21,12 +21,14 @@ Journal transaction always balances.
 
 ## Scenario
 
-Exercise the invariant under success, replay, and restart conditions as applicable.
+Exercise balanced-journal rejection and acceptance for domain append APIs and for ADR-026 collection journals (two equal legs).
 
 ## Expected result
 
-Invariant holds; test fails the release if violated.
+- Unbalanced journals never persist
+- Collection journals satisfy `sum(DEBIT) = sum(CREDIT)` at Bill `amount_minor`
+- Invariant holds; test fails the release if violated
 
 ## Implementation status
 
-`specified` — Not yet testable — requires Phase E balanced journal. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md) Phase D section.
+`specified` — Platform E0 proves balanced-journal mechanics locally; collection posting (E1) not yet implemented. Architecture: ADR-004 + ADR-026. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).

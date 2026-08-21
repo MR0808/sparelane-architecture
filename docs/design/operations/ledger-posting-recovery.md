@@ -9,13 +9,16 @@ likec4:
   - ledgerPostingRecovery
 requirements:
   - FUN-SET-001
+  - FUN-SET-005
   - NFR-REL-001
   - NFR-REL-005
 adrs:
   - ADR-004
   - ADR-016
   - ADR-017
+  - ADR-026
 tests:
+  - FIN-INV-02
   - FIN-INV-04
   - OPS-REC-001
 ---
@@ -24,12 +27,13 @@ tests:
 
 ## Purpose
 
-Transactional outbox path: COLLECTED commits with outbox; Ledger Consumer retries idempotently until **exactly one** journal exists; settlement becomes eligible only after posting confirmation.
+Transactional outbox path: COLLECTED commits with `PaymentCollected` outbox; Ledger Consumer retries idempotently until **exactly one** ADR-026 collection journal exists; operational `ledger_posting_status` becomes **CONFIRMED**; settlement becomes eligible only after that confirmation.
 
 ## Preconditions
 
 - Operational commit of COLLECTED + outbox succeeded.
 - Ledger write may fail transiently after event publish.
+- Crash may occur after ledger append before operational CONFIRMED.
 
 ## Mermaid
 
@@ -44,22 +48,28 @@ sequenceDiagram
     participant LDB as Ledger DB
     participant SS as Settlement Service
 
-    Orch->>ODB: Commit COLLECTED + outbox atomically
+    Orch->>ODB: Commit COLLECTED + PaymentCollected outbox
+    Note over ODB: ledger_posting_status = PENDING
     OB->>ODB: Read unpublished outbox row
-    OB->>Bus: Publish collection posting event
+    OB->>Bus: Publish PaymentCollected
     Bus->>LC: Ledger consumer receives event
     LC->>LDB: Ledger write fails transiently
-    Bus->>LC: Bounded message retry
-    LC->>LDB: Idempotency check — exactly one journal
-    LC->>ODB: Mark financial posting CONFIRMED
+    Note over ODB: Workflow remains COLLECTED / PENDING
+    Bus->>LC: Bounded infrastructure retry (not ADR-025)
+    LC->>LDB: Idempotent append — business_reference unique
+    Note over LDB: Exactly one collection journal
+    LC->>ODB: ConfirmLedgerPosting → CONFIRMED + LedgerPostingConfirmed
     Bus->>SS: Settlement eligible after confirmation
 ```
 
 ## Important invariants
 
-- Exactly one journal posting per collection (idempotent key).
+- Exactly one journal posting per collection (`payment-collection:{pay_…}`).
+- Journal exists before CONFIRMED.
+- Conflicting substance for same reference → integrity failure; remain PENDING.
 - Settlement eligibility only after CONFIRMED.
 - At-least-once messaging must not create duplicate journals.
+- Ledger failure does not change PaymentWorkflow.status away from COLLECTED.
 
 ## Failure notes
 
@@ -67,4 +77,4 @@ sequenceDiagram
 
 ## Related
 
-LikeC4: `ledgerPostingRecovery`. ADR-016.
+LikeC4: `ledgerPostingRecovery`. ADR-016. ADR-026.

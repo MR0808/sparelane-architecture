@@ -16,6 +16,7 @@ requirements:
 adrs:
   - ADR-005
   - ADR-006
+  - ADR-027
 tests:
   - E2E-SET-001
   - E2E-SET-003
@@ -26,12 +27,13 @@ tests:
 
 ## Purpose
 
-Legal settlement lifecycle states and transitions from `docs/schema/state-transitions.md` and `docs/money/settlement-state-machine.md`. Separate from Payment Workflow.
+Legal settlement lifecycle states and transitions from `docs/schema/state-transitions.md` and `docs/money/settlement-state-machine.md`. Separate from Payment Workflow. Obligation/eligibility: [ADR-027](../../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md).
 
 ## Preconditions
 
-- Settlement eligibility requires Payment Workflow COLLECTED and ledger posting CONFIRMED.
-- Batching is optional; providers may skip BATCHED.
+- Settlement creation requires Payment Workflow COLLECTED and ledger posting CONFIRMED.
+- Initial status PENDING; ELIGIBLE after merchant/KYB gates.
+- Batching is optional; providers may skip BATCHED. F0 does not create batches.
 
 ## Mermaid
 
@@ -69,14 +71,17 @@ stateDiagram-v2
 
 ## Important invariants
 
-- Must not SUBMIT unless payment COLLECTED and ledger CONFIRMED.
-- Ack alone is not SETTLED.
+- Must not create/SUBMIT unless payment COLLECTED and ledger CONFIRMED.
+- One Settlement per payment workflow (unique).
+- Merchant/KYB block → remain PENDING (not FAILED).
+- Ack alone is not SETTLED; SETTLED needs reconciliation.
 - Settlement FAILED does not reverse consumer COLLECTED.
+- FAILED is recoverable via RETRY_PENDING when permitted (not unconditionally terminal).
 
 ## Failure notes
 
-- Invalid: Payment not COLLECTED → SUBMITTED; SETTLED → SUBMITTED without reversal design; FAILED → SETTLED without confirmation + recon.
+- Invalid: Payment not COLLECTED → SUBMITTED; SETTLED → SUBMITTED without reversal design; FAILED → SETTLED without confirmation + recon; ineligibility → FAILED.
 
 ## Related
 
-Payment workflow remains COLLECTED during settlement failure/outage.
+Payment workflow remains COLLECTED during settlement failure/outage. SEQ-MONEY-002.

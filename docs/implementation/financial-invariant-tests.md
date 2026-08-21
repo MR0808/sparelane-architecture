@@ -62,8 +62,8 @@ See [phase-c-status](phase-c-status.md).
 | ID | Spec | Phase D |
 | --- | --- | --- |
 | FIN-INV-01 | Same payment cannot be collected twice | **Local FakePSP evidence** (orchestration) — not real-PSP `product_verified` |
-| FIN-INV-02 | One collection → one ledger posting | **Not yet testable** — Phase E |
-| FIN-INV-03 | Journal always balances | **Not yet testable** — Phase E |
+| FIN-INV-02 | One collection → one ledger posting | **Not yet testable in product** — template frozen by ADR-026; platform E1 pending |
+| FIN-INV-03 | Journal always balances | **Partial local (E0 mechanics)** — collection journals pending E1; not `product_verified` |
 | FIN-INV-04 | Failed collection not settlement-eligible | **Partial prerequisite** — FAILED creates no Settlement |
 | FIN-INV-05 | Settlement not submitted twice | **Not yet testable** — Phase F+ |
 | FIN-INV-06 | Unknown payout → no blind resubmit | **Local evidence (collection UNKNOWN block)** — payout later |
@@ -73,3 +73,11 @@ See [phase-c-status](phase-c-status.md).
 | FIN-INV-10 | Worker restart no duplicate effect | **Local collection evidence** + prior foundation prerequisite |
 
 See [phase-d-status](phase-d-status.md). Platform detail: `sparelane-platform/docs/development/phase-d-exit-gate.md`.
+
+## Architecture gate (collection CoA)
+
+[ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md) freezes the MVP collection journal template (accounts, sides, codes, amount source, `business_reference`, PENDING→CONFIRMED). Platform Phase E1 may implement against that ADR. This does **not** mark FIN-INV-02/03 product_verified.
+
+## Architecture gate (settlement obligation)
+
+[ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md) freezes MVP settlement obligation cardinality (1:1 workflow), amount source (gross payable CREDIT), PENDING→ELIGIBLE, merchant/KYB gates. Platform F0 may implement against that ADR. This does **not** mark FIN-INV-04/05/08 product_verified; F0 proves domain obligation uniqueness and eligibility holds — not bank-transfer exactly-once.

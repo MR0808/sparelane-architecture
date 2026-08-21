@@ -9,6 +9,8 @@ likec4:
   - collectionToLedger
 requirements:
   - FUN-SET-001
+  - FUN-SET-005
+  - FUN-SET-006
   - FUN-PAY-005
   - BUS-003
 adrs:
@@ -17,8 +19,11 @@ adrs:
   - ADR-013
   - ADR-016
   - ADR-017
+  - ADR-026
 tests:
   - FIN-INV-01
+  - FIN-INV-02
+  - FIN-INV-03
   - FIN-INV-04
   - E2E-SET-001
 ---
@@ -27,7 +32,7 @@ tests:
 
 ## Purpose
 
-Successful PSP collection becomes Payment Workflow COLLECTED with an atomic outbox write; the Ledger Consumer posts an idempotent journal. Workflow state and ledger state remain distinct; consistency is eventual until posting is confirmed.
+Successful PSP collection becomes Payment Workflow COLLECTED with an atomic outbox write; the Ledger Consumer appends the **ADR-026** collection journal idempotently, then confirms operational `ledger_posting_status = CONFIRMED`. Workflow state and ledger state remain distinct; consistency is eventual until posting is confirmed.
 
 ## Preconditions
 
@@ -52,28 +57,42 @@ sequenceDiagram
     WH->>Orch: Verified collection success
     Orch->>Att: Mark attempt CAPTURED
     Orch->>PSM: Workflow → COLLECTED
-    Orch->>ODB: Commit COLLECTED + outbox (atomic)
+    Orch->>ODB: Commit COLLECTED + PaymentCollected outbox (atomic)
     Note over ODB: ledger_posting_status = PENDING
 
-    OB->>Bus: Publish collection posting event
+    OB->>Bus: Publish PaymentCollected
     Bus->>LC: At-least-once delivery
-    LC->>LDB: Append immutable journal (idempotent key)
-    LC->>ODB: Confirm financial posting (CONFIRMED)
+    Note over LC: Reload workflow + Bill (authoritative amount)
+    LC->>LDB: Ensure accounts + append collection journal
+    Note over LDB: business_reference = payment-collection:{pay_…}<br/>Dr processor clearing / Cr merchant payable
+    LC->>ODB: ConfirmLedgerPosting PENDING→CONFIRMED + LedgerPostingConfirmed outbox
 
-    Note over Orch,LDB: Eventual consistency until CONFIRMED — settlement waits
+    Note over Orch,LDB: Crash after journal before confirm: redelivery already_applied then CONFIRMED
+    Note over Orch,LDB: Settlement waits for CONFIRMED — no payout here
 ```
+
+## Canonical journal (ADR-026)
+
+| Leg | Side | Account | Amount |
+| --- | --- | --- | --- |
+| 1 | DEBIT | `sys:processor-clearing:{providerCode}:{currency}` | Bill `amount_minor` |
+| 2 | CREDIT | `mrc:{merchantPublicId}:payable:{currency}` | Bill `amount_minor` |
 
 ## Important invariants
 
-- Exactly one collection journal per successful collection (idempotent consumer).
+- Exactly one collection journal per successful collection (idempotent `business_reference`).
+- Journal exists before `ledger_posting_status = CONFIRMED`.
 - Settlement must not SUBMIT until posting CONFIRMED.
+- Ledger posting failure leaves workflow `COLLECTED` (not payment FAILED).
 - Ledger DB is financial source of truth; Operational DB holds workflow + posting status.
+- No distributed transaction across ODB and LDB.
 
 ## Failure notes
 
-- Transient ledger write failure → bounded retry / recovery (SEQ-OPS-002).
+- Transient ledger write failure → bounded infrastructure retry / recovery (SEQ-OPS-002). Not ADR-025 payment retry.
+- Conflicting journal substance for same `business_reference` → integrity failure; remain PENDING; do not mutate journal.
 - Do not mark SETTLED from this path.
 
 ## Related
 
-LikeC4: `collectionToLedger`. ADR-016 outbox consistency.
+LikeC4: `collectionToLedger`. ADR-016 outbox consistency. ADR-026 collection CoA.

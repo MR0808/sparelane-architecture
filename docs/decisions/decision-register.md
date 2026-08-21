@@ -1,6 +1,6 @@
 # Architecture Decision Register
 
-Quick-reference governance index for ADR-001 through ADR-025.
+Quick-reference governance index for ADR-001 through ADR-027.
 
 **Accepted** ADRs are binding implementation constraints unless superseded by a later ADR.
 
@@ -31,6 +31,8 @@ Quick-reference governance index for ADR-001 through ADR-025.
 | [ADR-023](./ADR-023-curated-external-events.md) | Curated external webhook events | Accepted | Integrations | ADR-009 | Not raw internal domain events |
 | [ADR-024](./ADR-024-payment-recovery-ordering-and-exhaustion.md) | MVP recovery ordering + exhaustion (backup-before-soft-retry; ACTION_REQUIRED before FAILED) | Accepted | Payments | ADR-002, ADR-003; timings in ADR-025 | D4 orchestrator decision table; D5 schedules when |
 | [ADR-025](./ADR-025-payment-retry-timing-budget-and-recovery-window.md) | MVP retry timings, budget, due clock, cutoff, Retry Now, timezone freeze | Accepted | Payments | ADR-024; resolves OD-001/002/006 | D5 Retry Service / ScheduledJob / cutoff |
+| [ADR-026](./ADR-026-collection-ledger-posting-minimal-coa.md) | MVP collection journal CoA slice (Dr processor clearing / Cr merchant payable) | Accepted | Money / Ledger | ADR-004/005/013/016/021 | Platform E1 PaymentCollected → journal → CONFIRMED |
+| [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.md) | MVP settlement obligation 1:1 workflow; gross payable amount; PENDING→ELIGIBLE; KYB gate | Accepted | Money / Settlement | ADR-005/006/026 | Platform F0 LedgerPostingConfirmed → Settlement |
 
 ## Complementary pairs (not duplicates)
 
@@ -40,7 +42,8 @@ Quick-reference governance index for ADR-001 through ADR-025.
 | ADR-004 / ADR-013 | Ledger as financial SoT vs separation from operational workflow stores |
 | ADR-009 / ADR-023 | Delivery semantics/security vs curation of external event contract |
 | ADR-013 / ADR-016 | Logical separation vs consistency mechanism between the stores |
+| ADR-026 / ADR-027 | Collection journal CoA vs settlement obligation/eligibility policy |
 
 ## None superseded or rejected
 
-No ADRs in 001–024 are Superseded or Rejected at this gate. ADR-024 clarifies prior TBD prose in payment-method-selection / retry docs; it does not supersede ADR-002.
+No ADRs in 001–027 are Superseded or Rejected at this gate. ADR-026 freezes collection CoA; ADR-027 freezes settlement obligation/eligibility. Broader fee/settlement CoA and partner selection remain open.

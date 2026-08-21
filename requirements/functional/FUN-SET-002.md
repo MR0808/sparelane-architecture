@@ -13,6 +13,7 @@ flows:
   - settlementConfirmation
 adrs:
   - ADR-006
+  - ADR-027
 contracts:
   - contracts/openapi.yaml
 modules:
@@ -30,17 +31,18 @@ designs:
 
 ## Requirement
 
-Settlement instructions must be submitted idempotently so the same instruction identity cannot be paid out twice.
+Settlement instructions must be submitted idempotently so the same instruction identity cannot be paid out twice. Domain prerequisite: at most one Settlement obligation per confirmed collection ([ADR-027](../../docs/decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)); instruction exactly-once is a later (post-F0) concern.
 
 ## Rationale
 
-FIN-INV-05: settlement cannot be submitted twice for the same instruction identity.
+FIN-INV-05: settlement cannot be submitted twice for the same instruction identity. ADR-027 freezes one Settlement domain obligation per workflow.
 
 ## Acceptance Criteria
 
 - Replay of settlement submission is idempotent.
 - Duplicate settlement instruction is rejected or returns original outcome.
+- Duplicate `LedgerPostingConfirmed` does not create a second Settlement for the same workflow.
 
 ## Notes
 
-Money movement MVP.
+Money movement MVP. F0 proves obligation uniqueness; instruction submission is post-F0.

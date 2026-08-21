@@ -55,6 +55,14 @@ Retries create a **new** attempt row; do not mutate a terminal attempt into succ
 | RETRY_PENDING | SUBMITTED, FAILED, CANCELLED |
 | SETTLED / CANCELLED | terminal |
 
+Must not create Settlement unless payment workflow `COLLECTED` and ledger posting `CONFIRMED` ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)).
+
+Initial status: **PENDING**. F0: create PENDING then evaluate → ELIGIBLE or remain PENDING.
+
+`FAILED` is **not** terminal (may → `RETRY_PENDING`). Merchant/KYB ineligibility must not transition to `FAILED`.
+
+`SETTLED` requires reconciliation evidence; ack alone is invalid.
+
 Must not `SUBMITTED` unless payment workflow `COLLECTED` and ledger posting `CONFIRMED`.
 
 ---

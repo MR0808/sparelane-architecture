@@ -21,7 +21,13 @@ Merchant A can never settle against Merchant B data.
 
 ## Scenario
 
-Exercise the invariant under success, replay, and restart conditions as applicable.
+Exercise under success, replay, and restart:
+
+- Settlement `merchant_id` must equal workflow/journal merchant
+- Merchant A journal must not create Settlement for Merchant B
+- Eligibility evaluation must not read/write cross-tenant settlement rows
+
+Full payout-path isolation completes with instruction/reconciliation phases; F0 must already enforce create/eligibility isolation ([ADR-027](../../docs/decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)).
 
 ## Expected result
 
@@ -29,4 +35,4 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — Partial prerequisite — payment-path tenant isolation proven; settlement isolation remains Phase F+. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md) Phase D section.
+`specified` — Architecture policy frozen for F0 create/eligibility isolation. Full product verification Phase F+. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).

@@ -23,10 +23,14 @@ Settlement cannot be submitted twice for same instruction identity.
 
 Exercise the invariant under success, replay, and restart conditions as applicable.
 
+**Prerequisite (ADR-027 / F0):** at most one Settlement domain obligation per confirmed PaymentWorkflow — necessary but **not sufficient** for this invariant.
+
+**This invariant (F1+):** instruction idempotency key / provider submit exactly-once semantics.
+
 ## Expected result
 
 Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — Not yet testable — settlement Phase F+. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md) Phase D section.
+`specified` — Not yet testable for instruction submit — settlement instruction Phase F1+. Domain obligation uniqueness is F0. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).

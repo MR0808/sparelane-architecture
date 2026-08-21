@@ -15,6 +15,8 @@ flows:
 adrs:
   - ADR-005
   - ADR-004
+  - ADR-026
+  - ADR-027
 contracts: []
 modules:
   - Settlement
@@ -30,17 +32,20 @@ designs:
 
 ## Requirement
 
-A collection becomes settlement-eligible only after successful ledger posting confirmation.
+A collection becomes settlement-eligible only after successful ledger posting confirmation. Settlement creation requires `ledger_posting_status = CONFIRMED` and a valid ADR-026 collection journal; eligibility additionally requires merchant status and `APPROVED_FOR_SETTLEMENT` per [ADR-027](../../docs/decisions/ADR-027-settlement-obligation-eligibility-cardinality.md).
 
 ## Rationale
 
-Collection before settlement (ADR-005).
+Collection before settlement (ADR-005); obligation/eligibility policy (ADR-027).
 
 ## Acceptance Criteria
 
-- No settlement eligibility without ledger confirmation.
-- Failed collection cannot become settlement eligible.
+- No Settlement created without ledger confirmation and valid collection journal.
+- No ELIGIBLE without merchant/KYB gates when applicable.
+- Failed collection cannot become settlement eligible / create Settlement.
+- Cardinality: one Settlement per confirmed PaymentWorkflow (`payment_workflow_id` unique).
+- Amount: gross merchant payable CREDIT from collection journal (equals Bill amount).
 
 ## Notes
 
-Money movement MVP.
+Money movement MVP. F0 creates PENDING then evaluates ELIGIBLE; does not submit bank instructions.

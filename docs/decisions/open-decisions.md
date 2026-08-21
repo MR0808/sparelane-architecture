@@ -87,6 +87,34 @@ No OD is marked resolved merely because FakePSP local evidence exists.
 
 ---
 
+## Phase E accounting decision gate
+
+Architecture [ADR-026](./ADR-026-collection-ledger-posting-minimal-coa.md) freezes the **MVP collection journal CoA slice** that blocked platform E1:
+
+| Effect | Detail |
+| --- | --- |
+| **Resolved (no prior OD id)** | Collection debit/credit legs, account codes, amount source (Bill gross), fees excluded, `business_reference`, PENDING→CONFIRMED, `LedgerPostingConfirmed` |
+| Remains OPEN (broader CoA) | Settlement, fee recognition, refunds, chargebacks, wallet, tax, FX, suspense — still TBD |
+| Remains OPEN | [OD-019](./open/OD-019-db-topology.md) physical ledger DB topology; [OD-008](./open/OD-008-psp-selection.md) PSP selection (`providerCode` values) |
+
+Do not treat ADR-026 as freezing the final enterprise Chart of Accounts.
+
+---
+
+## Phase F0 settlement decision gate
+
+Architecture [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.md) freezes settlement **obligation and eligibility** that blocked platform F0:
+
+| Effect | Detail |
+| --- | --- |
+| **Resolved (no prior OD id)** | 1:1 Settlement per confirmed collection; amount = ADR-026 payable CREDIT (gross); PENDING→ELIGIBLE; merchant status table; KYB/`APPROVED_FOR_SETTLEMENT`; business identity; uniqueness |
+| Narrowed (not resolved) | [OD-011](./open/OD-011-settlement-batching.md) — **role** of batching = optional later execution grouping; cadence/schedule still open |
+| Remains OPEN | [OD-009](./open/OD-009-settlement-partner.md) partner; fee/reserve netting; settlement execution CoA; payout-destination model details; [OD-015](./open/OD-015-kyb-evidence-retention.md) evidence retention |
+
+Do not treat ADR-027 as selecting a banking partner or inventing fee netting.
+
+---
+
 ## Catalogue
 
 ### product

@@ -53,8 +53,11 @@ CONFIRMED
 FAILED
 ```
 
-Settlement eligibility requires `CONFIRMED` after `COLLECTED`.
+Canonical confirmation value is **`CONFIRMED`** (do not introduce a parallel `POSTED` status).
 
+On successful collection: COLLECTED sets `PENDING`; after durable ADR-026 journal, `ConfirmLedgerPosting` moves `PENDING` → `CONFIRMED` and emits `LedgerPostingConfirmed`.
+
+Settlement creation/eligibility requires `CONFIRMED` after `COLLECTED` ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)).
 ## SettlementStatus
 
 ```text
@@ -68,6 +71,20 @@ FAILED
 RETRY_PENDING
 CANCELLED
 ```
+
+Semantics (binding MVP):
+
+| Status | Meaning |
+| --- | --- |
+| PENDING | Obligation recorded; eligibility not yet satisfied (not bank-pending) |
+| ELIGIBLE | Domain-ready for later batch/instruction |
+| BATCHED / SUBMITTED / PROCESSING | Post-F0 execution path |
+| SETTLED | Terminal happy path; requires reconciliation (not ack alone) |
+| FAILED | External execution / definitive negative recon — **recoverable** via `RETRY_PENDING` when permitted; **not** merchant temporary ineligibility |
+| RETRY_PENDING | Bounded external retry scheduled |
+| CANCELLED | Terminal; product cancel triggers deferred beyond F0 |
+
+Merchant/KYB blocks → remain `PENDING`, never auto-`FAILED`.
 
 ## BillIngestionStatus
 
@@ -109,6 +126,19 @@ OFFBOARDED
 ```
 
 Exact onboarding transitions remain product TBD; these are conceptual persistence values.
+
+Settlement eligibility by status ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)):
+
+| Status | Settlement eligible? |
+| --- | --- |
+| DRAFT | No |
+| PENDING_VERIFICATION | No |
+| SANDBOX_READY | Sandbox/local only |
+| LIVE | Yes (status gate; KYB still required) |
+| SUSPENDED | No — remain PENDING |
+| OFFBOARDED | No — remain PENDING / review; do not erase payable |
+
+Separate capability **`APPROVED_FOR_SETTLEMENT`** (KYB) is also required; do not infer from status alone.
 
 ## MerchantConnectionStatus
 

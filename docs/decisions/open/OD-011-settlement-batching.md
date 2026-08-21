@@ -29,3 +29,5 @@ Settlement worker batching
 ## Notes
 
 Unresolved item tracked separately from Accepted ADRs. See the [open decisions index](../open-decisions.md).
+
+**Narrowed by [ADR-027](../ADR-027-settlement-obligation-eligibility-cardinality.md):** Settlement itself is **not** the aggregate. `SettlementBatch` is optional **execution** grouping of ELIGIBLE 1:1 Settlements. F0 does not create batches and does not need cadence. This OD remains open for schedule/cutoff/window policy only.
