@@ -49,4 +49,6 @@ Workflow and attempt states match architecture; merchant/consumer outcomes consi
 
 ## Implementation status
 
-`specified`
+`specified` — **local FakePSP product evidence** exists in `sparelane-platform` (`tests/e2e/phase-d/`, `npm run test:phase-d`).
+
+This is **not** `implementationProgress: product_verified` (schema reserved for real product/provider verification). Real PSP / sandbox verification has not been run.

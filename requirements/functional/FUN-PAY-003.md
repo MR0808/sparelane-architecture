@@ -4,6 +4,8 @@ title: Use primary payment method first
 type: functional
 area: payments
 status: accepted
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -42,3 +44,7 @@ Primary-first is the default reliability policy for consumer methods.
 ## Notes
 
 Payment Reliability Engine MVP.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: implemented` for primary-first selection (FakePSP local E2E). Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

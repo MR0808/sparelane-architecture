@@ -12,7 +12,7 @@ const cards = [
   {
     to: '/implementation',
     title: 'Implementation',
-        blurb: 'Blueprint, Phase A/B/C status, build phases',
+    blurb: 'Blueprint, Phase A–D status, build phases',
   },
   { to: '/health', title: 'Health', blurb: 'Static architecture/docs health' },
 ]
@@ -37,7 +37,11 @@ export function HomePage() {
         <Link to="/docs/implementation/phase-c-status">
           PASS WITH DOCUMENTED NON-BLOCKING RISKS
         </Link>{' '}
-        (no money movement). Phase D not started.
+        (no money movement). Phase D payment reliability:{' '}
+        <Link to="/docs/implementation/phase-d-status">
+          PASS WITH DOCUMENTED NON-BLOCKING RISKS
+        </Link>{' '}
+        (FakePSP collection; no ledger). Phase E not started.
       </p>
 
       <div className="card-grid">
@@ -71,6 +75,12 @@ export function HomePage() {
         </li>
         <li>
           <Link to="/docs/implementation/phase-b-status">Phase B implementation status</Link>
+        </li>
+        <li>
+          <Link to="/docs/implementation/phase-c-status">Phase C implementation status</Link>
+        </li>
+        <li>
+          <Link to="/docs/implementation/phase-d-status">Phase D implementation status</Link>
         </li>
       </ul>
     </article>

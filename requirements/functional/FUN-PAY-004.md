@@ -4,6 +4,8 @@ title: Ordered fallback across backup methods
 type: functional
 area: payments
 status: accepted
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -46,3 +48,7 @@ Backup recovery is a core reliability behaviour (BUS-005).
 ## Notes
 
 Payment Reliability Engine MVP.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: implemented` for ADR-024 ordered backup recovery (FakePSP local). OD-003 cardinality remains open. Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

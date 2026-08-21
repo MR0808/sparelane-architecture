@@ -144,9 +144,11 @@ const openapiExists = fs.existsSync(path.join(root, 'contracts', 'openapi.yaml')
 const phaseAFile = path.join(root, 'docs', 'implementation', 'phase-a-status.md')
 const phaseBFile = path.join(root, 'docs', 'implementation', 'phase-b-status.md')
 const phaseCFile = path.join(root, 'docs', 'implementation', 'phase-c-status.md')
+const phaseDFile = path.join(root, 'docs', 'implementation', 'phase-d-status.md')
 const phaseAPresent = fs.existsSync(phaseAFile)
 const phaseBPresent = fs.existsSync(phaseBFile)
 const phaseCPresent = fs.existsSync(phaseCFile)
+const phaseDPresent = fs.existsSync(phaseDFile)
 const phaseA = phaseAPresent
   ? {
       gate: 'pass_with_documented_non_blocking_risks',
@@ -184,13 +186,29 @@ const phaseC = phaseCPresent
       gate: 'pass_with_documented_non_blocking_risks',
       phasesCompleted: 'C0-C5',
       nextPhase: 'D',
-      nextPhaseStatus: 'not_started',
+      nextPhaseStatus: phaseDPresent ? 'pass_with_documented_non_blocking_risks' : 'not_started',
       documented: true,
     }
   : {
       gate: 'not_started',
       phasesCompleted: '',
       nextPhase: 'D',
+      nextPhaseStatus: 'not_started',
+      documented: false,
+    }
+
+const phaseD = phaseDPresent
+  ? {
+      gate: 'pass_with_documented_non_blocking_risks',
+      phasesCompleted: 'D0-D7',
+      nextPhase: 'E',
+      nextPhaseStatus: 'not_started',
+      documented: true,
+    }
+  : {
+      gate: 'not_started',
+      phasesCompleted: '',
+      nextPhase: 'E',
       nextPhaseStatus: 'not_started',
       documented: false,
     }
@@ -232,7 +250,10 @@ const health = {
     phaseCGate: phaseC.gate,
     phaseCPhasesCompleted: phaseC.phasesCompleted,
     phaseC: phaseC.gate,
-    phaseD: phaseC.nextPhaseStatus,
+    phaseDGate: phaseD.gate,
+    phaseDPhasesCompleted: phaseD.phasesCompleted,
+    phaseD: phaseD.gate,
+    phaseE: phaseD.nextPhaseStatus,
     label: 'Generated from repository state — not live production health',
   },
 }

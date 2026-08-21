@@ -4,6 +4,8 @@ title: Create one payment workflow per bill
 type: functional
 area: payments
 status: accepted
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -44,3 +46,7 @@ ADR-003: workflow vs attempt separation; one bill → one workflow.
 ## Notes
 
 Payment Reliability Engine MVP.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: implemented` for the Phase D workflow orchestration slice (with Phase C create). Local FakePSP product path. Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

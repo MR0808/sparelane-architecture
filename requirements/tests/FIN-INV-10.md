@@ -30,6 +30,6 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — product financial E2E is **not** executable.
+`specified` — product financial E2E is **not** fully executable.
 
-Phase A demonstrated a **foundation prerequisite** (worker restart/redelivery on a non-financial fixture). That is not FIN-INV-10 verification.
+Phase A foundation prerequisite remains. Phase D adds **local crash-recovery** evidence under FakePSP — still not `product_verified`.

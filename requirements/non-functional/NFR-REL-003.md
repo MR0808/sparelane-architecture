@@ -40,3 +40,7 @@ Reliability patterns from ADR-016/017 and financial invariants.
 ## Implementation evidence (Phase A)
 
 `implementationStatus: foundation_implemented`. Bounded **infrastructure** retry exists. Product payment retry windows are Accepted in [ADR-025](../../docs/decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md) (max 3; 6h/24h/48h; 7-day cutoff). Webhook/settlement numeric bounds may remain separate ODs.
+
+## Implementation evidence (Phase D)
+
+Product payment retry scheduling / Retry Now / cutoff are **implemented locally** against FakePSP (platform D5–D6). Frontmatter remains `foundation_implemented` for the broader NFR (webhook/settlement bounds still open). Not real-PSP verified. See [phase-d-status](../../docs/implementation/phase-d-status.md).

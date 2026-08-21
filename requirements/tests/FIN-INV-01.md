@@ -29,4 +29,6 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — automated in future `sparelane-platform` CI.
+`specified` — **local FakePSP orchestration evidence** in `sparelane-platform/tests/e2e/phase-d/financial-invariants.test.ts` (and concurrency / Retry Now races).
+
+Does **not** set `implementationProgress: product_verified`. Real provider idempotency and ledger halves remain unverified. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md) Phase D section.

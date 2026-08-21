@@ -30,4 +30,4 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — automated in future `sparelane-platform` CI.
+`specified` — Partial prerequisite — FAILED workflows create no Settlement rows (collection path). Settlement eligibility product test remains Phase F+. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md) Phase D section.

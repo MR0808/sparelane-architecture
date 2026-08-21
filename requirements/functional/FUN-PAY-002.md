@@ -4,6 +4,8 @@ title: Pre-authorise where supported
 type: functional
 area: payments
 status: accepted
+implementationStatus: foundation_implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -39,3 +41,7 @@ Pre-authorisation reduces failed captures and supports reliability policy.
 ## Notes
 
 Payment Reliability Engine MVP.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: foundation_implemented`. Adapter/FSM preauth hooks exist; collection path uses single-step capture. Not product preauth journey. Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

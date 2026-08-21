@@ -54,3 +54,22 @@ Phase C established durable bill + **exactly one** PaymentWorkflow + idempotent 
 | FIN-INV-10 Worker restart | Foundation prerequisite | Unchanged | Unchanged — not financial E2E |
 
 See [phase-c-status](phase-c-status.md).
+
+## Implementation evidence (Phase D)
+
+**None of FIN-INV-01–10 are fully `product_verified` against a real PSP or ledger.** Phase D proves **collection orchestration** against FakePSP and leaves ledger posting at `PENDING`.
+
+| ID | Spec | Phase D |
+| --- | --- | --- |
+| FIN-INV-01 | Same payment cannot be collected twice | **Local FakePSP evidence** (orchestration) — not real-PSP `product_verified` |
+| FIN-INV-02 | One collection → one ledger posting | **Not yet testable** — Phase E |
+| FIN-INV-03 | Journal always balances | **Not yet testable** — Phase E |
+| FIN-INV-04 | Failed collection not settlement-eligible | **Partial prerequisite** — FAILED creates no Settlement |
+| FIN-INV-05 | Settlement not submitted twice | **Not yet testable** — Phase F+ |
+| FIN-INV-06 | Unknown payout → no blind resubmit | **Local evidence (collection UNKNOWN block)** — payout later |
+| FIN-INV-07 | Compensating corrections only | **Not yet testable** — Phase E |
+| FIN-INV-08 | Tenant isolation of settlement | **Partial prerequisite** — payment tenant isolation; settlement later |
+| FIN-INV-09 | Replay idempotent | **Local collection evidence** + prior foundation prerequisite |
+| FIN-INV-10 | Worker restart no duplicate effect | **Local collection evidence** + prior foundation prerequisite |
+
+See [phase-d-status](phase-d-status.md). Platform detail: `sparelane-platform/docs/development/phase-d-exit-gate.md`.

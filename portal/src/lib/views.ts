@@ -37,7 +37,11 @@ export const architecturePages: ArchitectureViewPage[] = [
     description:
       'Payment Reliability Engine — orchestration, attempts, decline classification, and retries.',
     viewId: 'paymentEngineCore',
-    relatedDocs: [{ label: 'Payment lifecycle', to: '/docs/payments/payment-lifecycle' }],
+    relatedDocs: [
+      { label: 'Payment lifecycle', to: '/docs/payments/payment-lifecycle' },
+      { label: 'Phase D status', to: '/docs/implementation/phase-d-status' },
+      { label: 'MVP acceptance', to: '/docs/implementation/mvp-acceptance-criteria' },
+    ],
   },
   {
     slug: 'money',

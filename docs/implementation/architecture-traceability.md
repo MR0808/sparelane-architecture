@@ -8,19 +8,22 @@ Maps Accepted ADRs → design docs → implementation modules → verification.
 - Platform **foundation** evidence for Phase A is recorded in [phase-a-status](phase-a-status.md) and [implementation-status](implementation-status.md). Path references point at `sparelane-platform`; this repo does not copy those tests.
 - Platform **Phase B** merchant/consumer core evidence is recorded in [phase-b-status](phase-b-status.md). Phase B does not move money.
 - Platform **Phase C** bill ingestion evidence is recorded in [phase-c-status](phase-c-status.md). Phase C does not move money.
+- Platform **Phase D** payment reliability evidence is recorded in [phase-d-status](phase-d-status.md). Phase D collects via FakePSP; ledger posting remains PENDING.
 
 Distinguish:
 
 Architecture decision → Requirement → Design → Implementation phase → Implementation evidence → Test evidence
 
-| Layer | Phase A example | Phase B example | Phase C example |
-| --- | --- | --- | --- |
-| Architecture decision | ADR-016 / ADR-017 (outbox + at-least-once) | ADR-014 (tenant isolation); ADR-001/010 (PCI token refs) | ADR-007 / ADR-008 (billing SoR + idempotent Merchant API) |
-| Requirement | NFR-REL-001 (`status: accepted`) | FUN-CON-003 (`status: accepted`; partial implementation) | FUN-BIL-001 / FUN-MER-003 / FUN-MER-004 (`implementationStatus: implemented`) |
-| Design | Outbox blueprint, async processing | PCI boundary, tenant isolation, connection security | SEQ-PAY-001, OpenAPI POST/GET bills |
-| Implementation phase | A5 / A9 | B3 / B4 / B6 | C0–C5 |
-| Implementation evidence | Foundation outbox + idempotent consumer | Explicit connection + token refs; no payment execution | Machine auth + CreateBill + workflow + BillAccepted; no payment execution |
-| Test evidence | FIN-INV-09 remains `specified`; foundation prerequisite | SEC-TEN-001 local product isolation evidence; not `product_verified` | INT-API-001 local evidence; FIN-INV / E2E-PAY not verified |
+| Layer | Phase A example | Phase B example | Phase C example | Phase D example |
+| --- | --- | --- | --- | --- |
+| Architecture decision | ADR-016 / ADR-017 (outbox + at-least-once) | ADR-014 (tenant isolation); ADR-001/010 (PCI token refs) | ADR-007 / ADR-008 (billing SoR + idempotent Merchant API) | ADR-024 / ADR-025 (recovery + retry window) |
+| Requirement | NFR-REL-001 (`status: accepted`) | FUN-CON-003 (`status: accepted`; partial implementation) | FUN-BIL-001 / FUN-MER-003 / FUN-MER-004 (`implementationStatus: implemented`) | FUN-PAY-001/003–006, FUN-CON-006 (`implementationStatus: implemented` local FakePSP) |
+| Design | Outbox blueprint, async processing | PCI boundary, tenant isolation, connection security | SEQ-PAY-001, OpenAPI POST/GET bills | SEQ-PAY-003…007, STATE-PAY-001/002 |
+| Implementation phase | A5 / A9 | B3 / B4 / B6 | C0–C5 | D0–D7 |
+| Implementation evidence | Foundation outbox + idempotent consumer | Explicit connection + token refs; no payment execution | Machine auth + CreateBill + workflow + BillAccepted; no payment execution | Bill → workflow → selection → attempt → FakePSP → recovery → retry → COLLECTED/FAILED |
+| Test evidence | FIN-INV-09 remains `specified`; foundation prerequisite | SEC-TEN-001 local product isolation evidence; not `product_verified` | INT-API-001 local evidence; FIN-INV / E2E-PAY not verified | E2E-PAY-001–005 local FakePSP; FIN-INV-01 local; not real-PSP `product_verified` |
+
+**Phase D handoff:** `PaymentCollected` → Phase E ledger posting (`ledgerPostingStatus=PENDING`).
 
 **Implemented** and **verified** in requirement `status` mean **product** claims. Phase A uses `implementationStatus: foundation_implemented` instead.
 
@@ -64,7 +67,8 @@ Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-a
 | Phase A platform foundation | Recorded — [phase-a-status](phase-a-status.md). Not product implementation. |
 | Phase B merchant/consumer core | Recorded — [phase-b-status](phase-b-status.md). No money movement; payment/ledger/settlement not implemented. |
 | Phase C bill ingestion | Recorded — [phase-c-status](phase-c-status.md). No money movement; payment attempts/PSP/ledger/settlement not implemented. |
-| Automated product tests | Specs in this repo; product suites in `sparelane-platform`. FIN-INV not verified. |
+| Phase D payment reliability | Recorded — [phase-d-status](phase-d-status.md). FakePSP collection; ledger PENDING; real PSP / UNKNOWN recon / settlement not implemented. |
+| Automated product tests | Specs in this repo; product suites in `sparelane-platform`. FIN-INV-01 local FakePSP only; ledger FIN-INV not verified. |
 | Wallet licensing | Open decision — blocks wallet go-live only; ADR path TBD if custody model changes architecture |
 | Vendor adapters | Interfaces specified; concrete PSP/bank adapters await open decisions |
 | Numeric product knobs (retry windows, rate limits) | Config/open decisions — not ADR gaps |

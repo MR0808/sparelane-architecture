@@ -6,8 +6,8 @@ export function ImplementationPage() {
       <h1 className="page-title">Implementation</h1>
       <p className="page-lead">
         Engineering blueprint for <code>sparelane-platform</code>. Architecture Accepted is not
-        product implemented. Phase C proves bill ingestion only —{' '}
-        <strong>no money movement</strong>.
+        product implemented. Phase D proves FakePSP collection reliability —{' '}
+        <strong>COLLECTED → ledger posting NOT YET IMPLEMENTED</strong>.
       </p>
 
       <div className="card-grid">
@@ -35,10 +35,46 @@ export function ImplementationPage() {
         <div className="info-card">
           <strong>Phase D</strong>
           <span>Payment Reliability Engine</span>
+          <span>PASS WITH DOCUMENTED NON-BLOCKING RISKS</span>
+          <span>
+            D0–D7 · attempts · primary/backup · FakePSP · retry · Retry Now · cutoff · no ledger
+          </span>
+          <Link to="/docs/implementation/phase-d-status">Phase D status</Link>
+        </div>
+        <div className="info-card">
+          <strong>Phase E</strong>
+          <span>Ledger</span>
           <span>NOT STARTED</span>
           <Link to="/docs/implementation/build-phases">Build phases</Link>
         </div>
       </div>
+
+      <h2>Phase D at a glance</h2>
+      <ul className="link-list">
+        <li>
+          Engineering decomposition D0–D7 (not additional canonical architecture phases)
+        </li>
+        <li>
+          Implemented: payment attempts, primary/backup recovery, PSP adapter + FakePSP, retry
+          scheduling, Retry Now, cutoff/failure, UNKNOWN block
+        </li>
+        <li>
+          Boundary: <code>COLLECTED</code> → <code>ledgerPostingStatus=PENDING</code> →{' '}
+          <code>PaymentCollected</code> — ledger posting not yet implemented
+        </li>
+        <li>
+          Not implemented: journal entries, settlement, UNKNOWN reconciliation worker, real PSP,
+          wallet financial flows
+        </li>
+        <li>
+          <Link to="/docs/decisions/open-decisions">Open decisions</Link> remain (OD-003, OD-008,
+          OD-010, OD-017, …)
+        </li>
+        <li>
+          <Link to="/docs/implementation/architecture-traceability">Traceability</Link> ·{' '}
+          <Link to="/docs/implementation/mvp-acceptance-criteria">MVP acceptance</Link> (not passed)
+        </li>
+      </ul>
 
       <h2>Phase C at a glance</h2>
       <ul className="link-list">
@@ -48,15 +84,7 @@ export function ImplementationPage() {
           BillAccepted outbox, GET Bill, tenant/concurrency hardening
         </li>
         <li>
-          Not implemented: payment attempts, Reliability Engine, PSP execution, ledger, settlement
-        </li>
-        <li>
-          <Link to="/docs/decisions/open-decisions">Open decisions</Link> remain open (retention
-          OD-030, rate limits OD-029, broker OD-017)
-        </li>
-        <li>
-          <Link to="/docs/implementation/architecture-traceability">Traceability</Link> ·{' '}
-          <Link to="/docs/implementation/mvp-acceptance-criteria">MVP acceptance</Link> (not passed)
+          Not implemented in Phase C: payment attempts (now Phase D), ledger, settlement
         </li>
       </ul>
 
@@ -68,16 +96,8 @@ export function ImplementationPage() {
           token references, priority configuration, portal foundations
         </li>
         <li>
-          Not implemented in Phase B: bills (now Phase C), payment execution, ledger, settlement,
-          merchant webhooks, production IdP/PSP
-        </li>
-        <li>
-          <Link to="/docs/decisions/open-decisions">Open decisions</Link> remain open (vendor ODs not
-          resolved by fakes)
-        </li>
-        <li>
-          <Link to="/docs/implementation/architecture-traceability">Traceability</Link> ·{' '}
-          <Link to="/docs/implementation/mvp-acceptance-criteria">MVP acceptance</Link> (not passed)
+          Not implemented in Phase B: bills (Phase C), payment execution (Phase D), ledger,
+          settlement
         </li>
       </ul>
 

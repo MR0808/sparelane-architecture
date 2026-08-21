@@ -4,6 +4,8 @@ title: No duplicate collection
 type: functional
 area: payments
 status: accepted
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -42,3 +44,7 @@ Financial safety: same payment cannot be collected twice (FIN-INV-01).
 ## Notes
 
 Payment Reliability Engine MVP.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: implemented` for **local FakePSP orchestration** no-double-collect. Real PSP and ledger posting halves are not verified. Not `product_verified` against live provider. Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

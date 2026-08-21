@@ -4,6 +4,8 @@ title: Scheduled retry
 type: functional
 area: payments
 status: accepted
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -47,3 +49,7 @@ Scheduled retries complement Retry Now and fallback.
 ## Notes
 
 Payment Reliability Engine MVP. Platform Phase D5.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: implemented` for ADR-025 scheduled retries (FakePSP local). Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

@@ -4,6 +4,8 @@ title: Consumer Retry Now
 type: functional
 area: consumer
 status: accepted
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -41,3 +43,7 @@ Manual retry complements scheduled retries without bypassing eligibility or dupl
 ## Notes
 
 MVP consumer experience scope.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: implemented` for Retry Now command + portal route (FakePSP local worker E2E). Portal HTTP E2E thinner. Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

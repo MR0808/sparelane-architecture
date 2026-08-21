@@ -4,6 +4,8 @@ title: Authenticated provider webhooks
 type: integration
 area: psp
 status: accepted
+implementationStatus: foundation_implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -41,3 +43,7 @@ Defines required provider interface capabilities for vendor evaluation. Does not
 ## Notes
 
 Vendors remain open decisions.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: foundation_implemented` for adapter/FakePSP capability evidence only. Vendor selection OD-008/010 open. Not real-PSP verified. Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

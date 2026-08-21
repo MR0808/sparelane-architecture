@@ -4,6 +4,8 @@ title: Classify declines for retry policy
 type: functional
 area: payments
 status: accepted
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -40,3 +42,7 @@ Classification prevents blind retries and guides fallback.
 ## Notes
 
 Payment Reliability Engine MVP.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: implemented` for bounded decline classification on attempts (FakePSP local). Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

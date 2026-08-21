@@ -29,4 +29,4 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — automated in future `sparelane-platform` CI.
+`specified` — Not yet testable — requires Phase E balanced journal. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md) Phase D section.

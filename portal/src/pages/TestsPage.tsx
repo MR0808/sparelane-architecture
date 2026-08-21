@@ -28,7 +28,9 @@ export function TestsPage() {
       <h1 className="page-title">Tests</h1>
       <p className="page-lead">
         Test specifications (not executable results). Catalogue under{' '}
-        <code>requirements/tests/</code>. Product automation will live in the platform repo.
+        <code>requirements/tests/</code>. Product automation lives in the platform repo.
+        Phase D E2E-PAY evidence is <strong>local FakePSP</strong> only — not real-PSP{' '}
+        <code>product_verified</code>.
       </p>
       <label className="req-filter">
         <span>Type</span>

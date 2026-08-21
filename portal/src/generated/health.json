@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T03:39:08.281Z",
+  "generatedAt": "2026-08-21T05:56:43.966Z",
   "label": "Generated from repository state",
   "requirements": {
     "total": 71,
@@ -9,8 +9,8 @@
     "missingArchitecture": 0,
     "missingTests": 41,
     "mvpVerified": 0,
-    "foundationImplemented": 8,
-    "productImplemented": 6
+    "foundationImplemented": 15,
+    "productImplemented": 14
   },
   "decisions": {
     "adrs": 25,
@@ -32,7 +32,7 @@
     "openapi": "present"
   },
   "docs": {
-    "count": 227
+    "count": 228
   },
   "implementation": {
     "phaseAGate": "pass_with_documented_non_blocking_risks",
@@ -43,7 +43,10 @@
     "phaseCGate": "pass_with_documented_non_blocking_risks",
     "phaseCPhasesCompleted": "C0-C5",
     "phaseC": "pass_with_documented_non_blocking_risks",
-    "phaseD": "not_started",
+    "phaseDGate": "pass_with_documented_non_blocking_risks",
+    "phaseDPhasesCompleted": "D0-D7",
+    "phaseD": "pass_with_documented_non_blocking_risks",
+    "phaseE": "not_started",
     "label": "Generated from repository state — not live production health"
   }
 }

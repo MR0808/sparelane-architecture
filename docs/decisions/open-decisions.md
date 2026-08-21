@@ -74,6 +74,17 @@ Architecture [ADR-025](./ADR-025-payment-retry-timing-budget-and-recovery-window
 
 Do not create duplicate ODs for soft-before-backup, ACTION_REQUIRED-vs-FAILED, or MVP retry timings — those are Accepted ADR-024 / ADR-025.
 
+### Phase D exit (D7) — still open after local FakePSP pass
+
+| Item | Status |
+| --- | --- |
+| Platform Phase D gate | [PASS WITH DOCUMENTED NON-BLOCKING RISKS](../implementation/phase-d-status.md) |
+| Remains OPEN (blocks sandbox/pilot money) | [OD-008](./open/OD-008-psp-selection.md) PSP selection; [OD-010](./open/OD-010-provider-capability-matrix.md) capability matrix |
+| Remains OPEN | OD-003 backup cardinality; OD-017 broker; OD-013 PCI validation; OD-025 secrets/KMS |
+| Deferred product (not new ODs) | UNKNOWN automatic reconciliation worker; notification consumers (OD-005) |
+
+No OD is marked resolved merely because FakePSP local evidence exists.
+
 ---
 
 ## Catalogue

@@ -33,3 +33,7 @@ PayTo is tagged future in the architecture model; not MVP.
 ## Notes
 
 status: deferred; mvp: false.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: foundation_implemented` for adapter/FakePSP capability evidence only. Vendor selection OD-008/010 open. Not real-PSP verified. Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).

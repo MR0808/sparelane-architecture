@@ -30,6 +30,6 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — product financial E2E is **not** executable.
+`specified` — product financial E2E is **not** fully executable.
 
-Phase A demonstrated a **foundation prerequisite** (duplicate delivery on a non-financial `FoundationOperation` fixture). That is not FIN-INV-09 verification.
+Phase A foundation prerequisite remains. Phase D adds **local collection replay** evidence (duplicate Execute/result/due) under FakePSP — still not `product_verified`.

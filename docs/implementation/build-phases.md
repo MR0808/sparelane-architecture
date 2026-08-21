@@ -67,6 +67,8 @@ Engineering may further decompose this same scope (identity composition, merchan
 
 ## Phase D — Payment Reliability Engine
 
+**Platform implementation:** [PASS WITH DOCUMENTED NON-BLOCKING RISKS](phase-d-status.md) (D0–D7). Payment reliability / FakePSP collection only — **no ledger posting**, not MVP acceptance, not real-PSP verified.
+
 **Delivers:** workflow state machine, attempts, reliability engine, retry scheduler, PSP adapter interface (+ fake).
 
 **Depends on:** C.
@@ -80,11 +82,13 @@ Engineering may further decompose this same scope (identity composition, merchan
 | Pilot | **Yes** | PSP + capability matrix (pre-auth, idempotency) |
 | Production money | **Yes** | Live PSP + PCI validation approach |
 
-Product config (backup cardinality) is **Partial** — [OD-003](../decisions/open/OD-003-backup-cardinality.md) remains open. **Qualitative** recovery ordering/exhaustion: [ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md). **Numeric** retry timings/cutoff/due clock/Retry Now: [ADR-025](../decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md) (unblocks D5).
+Product config (backup cardinality) is **Partial** — [OD-003](../decisions/open/OD-003-backup-cardinality.md) remains open. **Qualitative** recovery ordering/exhaustion: [ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md). **Numeric** retry timings/cutoff/due clock/Retry Now: [ADR-025](../decisions/ADR-025-payment-retry-timing-budget-and-recovery-window.md).
 
 ---
 
 ## Phase E — Ledger
+
+**Platform implementation:** **NOT STARTED**.
 
 **Delivers:** journal, collection posting, derived balances, financial invariant tests.
 

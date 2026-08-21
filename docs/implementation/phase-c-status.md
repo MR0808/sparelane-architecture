@@ -126,7 +126,7 @@ FUN-BIL-002, FIN-INV-*, E2E-PAY-* remain **not** Phase C verified.
 
 ## Next phase
 
-[Phase D — Payment Reliability Engine](build-phases.md) is **NOT STARTED**. Delivers: workflow state machine, attempts, reliability engine, retry scheduler, PSP adapter interface (+ fake). Depends on Phase C.
+[Phase D — Payment Reliability Engine](phase-d-status.md) is **PASS WITH DOCUMENTED NON-BLOCKING RISKS** (D0–D7). Delivers: workflow state machine, attempts, reliability engine, retry scheduler, PSP adapter interface (+ fake). Ledger remains Phase E.
 
 ## Platform evidence (do not copy)
 

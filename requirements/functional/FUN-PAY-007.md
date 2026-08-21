@@ -4,6 +4,8 @@ title: Complete failure terminal state
 type: functional
 area: payments
 status: accepted
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-d-requirements.md
 priority: must
 mvp: true
 architecture:
@@ -44,3 +46,7 @@ Terminal failure is required for honest outcomes (BUS-003).
 ## Notes
 
 Payment Reliability Engine MVP. Platform Phase D5 cutoff processing.
+
+## Implementation evidence (Phase D)
+
+`implementationStatus: implemented` for cutoff → FAILED terminal (FakePSP local). Merchant/consumer notification **delivery** is not implemented. Architecture `status` remains **accepted**. See [phase-d-status](../../docs/implementation/phase-d-status.md).
