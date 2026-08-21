@@ -29,7 +29,7 @@ A Payment Workflow is created when a merchant bill is accepted into Sparelane an
 
 **Meaning:** Bill accepted; payment workflow exists but no schedule action has started.
 
-**Typical trigger:** Successful bill ingestion / `BillCreated`.
+**Typical trigger:** Successful bill ingestion / `BillAccepted`.
 
 **Permitted next:** `SCHEDULED`, `CANCELLED`
 

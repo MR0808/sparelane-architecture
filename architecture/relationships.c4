@@ -71,7 +71,7 @@ model {
   sparelane.edgeLayer.publicApi -> sparelane.billingDomain.billValidation 'validates bill event and idempotency'
   sparelane.billingDomain.billValidation -> sparelane.billingDomain.billService 'creates bill when unique'
   sparelane.billingDomain.billService -> sparelane.data.operationalDb 'persists bill and payment workflow'
-  sparelane.billingDomain.billService -[event]-> sparelane.events.eventBus 'publishes BillCreated'
+  sparelane.billingDomain.billService -[event]-> sparelane.events.eventBus 'publishes BillAccepted'
   sparelane.billingDomain.billScheduler -> sparelane.data.operationalDb 'finds bills requiring action'
   sparelane.billingDomain.billScheduler -[event]-> sparelane.events.eventBus 'publishes BillActionDue'
 

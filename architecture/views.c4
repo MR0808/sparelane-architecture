@@ -537,7 +537,7 @@ views {
     merchantEnvironment.merchantBackend -> sparelane.edgeLayer.publicApi 'submits recurring bill'
     sparelane.edgeLayer.publicApi -> sparelane.billingDomain.billValidation 'validates bill event and idempotency'
     sparelane.billingDomain.billValidation -> sparelane.billingDomain.billService 'creates bill when unique'
-    sparelane.billingDomain.billService -> sparelane.events.eventBus 'publishes BillCreated'
+    sparelane.billingDomain.billService -> sparelane.events.eventBus 'publishes BillAccepted'
     sparelane.billingDomain.billScheduler -> sparelane.paymentPlatform.orchestration 'triggers T-3 payment check'
     sparelane.paymentPlatform.orchestration -> sparelane.paymentPlatform.reliabilityEngine 'requests next eligible method'
     sparelane.paymentPlatform.reliabilityEngine -> sparelane.consumerDomain.methodPriorityService 'reads primary and backups'
@@ -599,7 +599,7 @@ views {
     sparelane.edgeLayer.publicApi -> sparelane.billingDomain.billValidation 'validates ownership, connection and idempotency'
     sparelane.billingDomain.billValidation -> sparelane.billingDomain.billService 'creates bill when unique'
     sparelane.billingDomain.billService -> sparelane.data.operationalDb 'persists bill and creates payment workflow CREATED/SCHEDULED'
-    sparelane.billingDomain.billService -> sparelane.events.eventBus 'publishes BillCreated'
+    sparelane.billingDomain.billService -> sparelane.events.eventBus 'publishes BillAccepted'
   }
 
   dynamic view preAuthorisation {
@@ -829,7 +829,7 @@ views {
     sparelane.billingDomain.billValidation -> sparelane.billingDomain.billService 'creates bill when unique'
     sparelane.billingDomain.billService -> sparelane.data.operationalDb 'persists bill and payment workflow'
     sparelane.edgeLayer.publicApi -> merchantEnvironment.merchantBackend 'acknowledges bill accepted (not collected)'
-    sparelane.billingDomain.billService -> sparelane.events.eventBus 'publishes BillCreated; async payment lifecycle begins'
+    sparelane.billingDomain.billService -> sparelane.events.eventBus 'publishes BillAccepted; async payment lifecycle begins'
   }
 
   dynamic view duplicateBillSubmission {

@@ -53,7 +53,7 @@ sequenceDiagram
     Val->>BS: Create bill when unique
     BS->>ODB: Persist bill + Payment Workflow
     API-->>MBE: Acknowledge bill accepted (not collected)
-    BS->>Bus: BillCreated — async payment lifecycle begins
+    BS->>Bus: BillAccepted — async payment lifecycle begins
 
     Note over API,MBE: accepted != COLLECTED
 ```

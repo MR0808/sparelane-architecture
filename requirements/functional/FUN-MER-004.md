@@ -4,6 +4,7 @@ title: Safely retry duplicate bill request
 type: functional
 area: merchant
 status: accepted
+implementationStatus: implemented
 priority: must
 mvp: true
 architecture:
@@ -40,3 +41,5 @@ Idempotent Merchant API (ADR-008) is required for at-least-once client retries.
 ## Notes
 
 MVP merchant integration scope.
+
+`implementationStatus: implemented` for the **Phase C idempotency slice** only. Architecture `status` remains **accepted**. Replay / conflict / concurrent same-key evidence in `sparelane-platform` C2/C4. Retention TTL remains OD-030. Concurrent in-progress losers may receive 503 then retry with the **same** key. See [phase-c-status](../../docs/implementation/phase-c-status.md).

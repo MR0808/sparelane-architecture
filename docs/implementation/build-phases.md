@@ -48,6 +48,8 @@ Engineering may further decompose this same scope (identity composition, merchan
 
 ## Phase C — Bill Ingestion
 
+**Platform implementation:** [PASS WITH DOCUMENTED NON-BLOCKING RISKS](phase-c-status.md) (C0–C5). Bill ingestion only — **no money movement**, not MVP acceptance.
+
 **Delivers:** Merchant API (`CreateBill`), idempotency, bills, 1:1 workflow creation, outbox write path.
 
 **Depends on:** B (merchant + connection).

@@ -52,6 +52,7 @@ Phase 9 engineering blueprint for `sparelane-platform`. **Does not** implement t
 - [Implementation status](implementation-status.md) — designed vs foundation vs product vs verified
 - [Phase A status](phase-a-status.md) — platform foundation gate
 - [Phase B status](phase-b-status.md) — merchant + consumer core gate (no money movement)
+- [Phase C status](phase-c-status.md) — bill ingestion gate (no money movement)
 - [Build phases A–I](build-phases.md)
 - [MVP acceptance criteria](mvp-acceptance-criteria.md)
 - [Architecture traceability](architecture-traceability.md)

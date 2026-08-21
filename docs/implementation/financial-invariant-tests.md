@@ -40,3 +40,17 @@ Phase B established safe **Consumer-owned payment-method reference** ownership a
 | FIN-INV-10 Worker restart | Foundation prerequisite on non-financial fixture | Unchanged — not financial E2E |
 
 See [phase-b-status](phase-b-status.md).
+
+## Implementation evidence (Phase C)
+
+**None of FIN-INV-01–10 are product-verified.** Phase C accepts bills and creates workflows; it does **not** execute collection, ledger posting, or settlement.
+
+Phase C established durable bill + **exactly one** PaymentWorkflow + idempotent Merchant API accept + transactional `BillAccepted` outbox as prerequisites for Phase D — that is **not** FIN-INV verification.
+
+| ID | Phase A | Phase B | Phase C |
+| --- | --- | --- | --- |
+| FIN-INV-01–08 | Unverified | Unverified | Unverified — no collection/ledger/settlement |
+| FIN-INV-09 Idempotent replay | Foundation prerequisite | Unchanged | Bill API idempotency proven locally — still not financial E2E |
+| FIN-INV-10 Worker restart | Foundation prerequisite | Unchanged | Unchanged — not financial E2E |
+
+See [phase-c-status](phase-c-status.md).

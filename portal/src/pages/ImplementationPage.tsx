@@ -6,7 +6,7 @@ export function ImplementationPage() {
       <h1 className="page-title">Implementation</h1>
       <p className="page-lead">
         Engineering blueprint for <code>sparelane-platform</code>. Architecture Accepted is not
-        product implemented. Phase B proves merchant + consumer core only —{' '}
+        product implemented. Phase C proves bill ingestion only —{' '}
         <strong>no money movement</strong>.
       </p>
 
@@ -28,10 +28,37 @@ export function ImplementationPage() {
         <div className="info-card">
           <strong>Phase C</strong>
           <span>Bill Ingestion</span>
+          <span>PASS WITH DOCUMENTED NON-BLOCKING RISKS</span>
+          <span>C0–C5 · API key · POST Bill · idempotency · workflow · GET · no money</span>
+          <Link to="/docs/implementation/phase-c-status">Phase C status</Link>
+        </div>
+        <div className="info-card">
+          <strong>Phase D</strong>
+          <span>Payment Reliability Engine</span>
           <span>NOT STARTED</span>
           <Link to="/docs/implementation/build-phases">Build phases</Link>
         </div>
       </div>
+
+      <h2>Phase C at a glance</h2>
+      <ul className="link-list">
+        <li>Engineering decomposition C0–C5 (not additional canonical architecture phases)</li>
+        <li>
+          Implemented: merchant machine auth, POST Bill (201), idempotency, Bill + 1:1 workflow,
+          BillAccepted outbox, GET Bill, tenant/concurrency hardening
+        </li>
+        <li>
+          Not implemented: payment attempts, Reliability Engine, PSP execution, ledger, settlement
+        </li>
+        <li>
+          <Link to="/docs/decisions/open-decisions">Open decisions</Link> remain open (retention
+          OD-030, rate limits OD-029, broker OD-017)
+        </li>
+        <li>
+          <Link to="/docs/implementation/architecture-traceability">Traceability</Link> ·{' '}
+          <Link to="/docs/implementation/mvp-acceptance-criteria">MVP acceptance</Link> (not passed)
+        </li>
+      </ul>
 
       <h2>Phase B at a glance</h2>
       <ul className="link-list">
@@ -41,8 +68,8 @@ export function ImplementationPage() {
           token references, priority configuration, portal foundations
         </li>
         <li>
-          Not implemented: bills, payment execution, ledger, settlement, merchant webhooks, production
-          IdP/PSP
+          Not implemented in Phase B: bills (now Phase C), payment execution, ledger, settlement,
+          merchant webhooks, production IdP/PSP
         </li>
         <li>
           <Link to="/docs/decisions/open-decisions">Open decisions</Link> remain open (vendor ODs not

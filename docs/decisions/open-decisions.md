@@ -6,7 +6,7 @@ Unresolved items that are **not** Accepted ADRs. Organised separately from vendo
 
 Stable IDs (`OD-###`) are never renumbered after assignment.
 
-Implementation phase detail: [`docs/implementation/build-phases.md`](../implementation/build-phases.md). Phase A foundation status: [`docs/implementation/phase-a-status.md`](../implementation/phase-a-status.md). Phase B merchant/consumer core: [`docs/implementation/phase-b-status.md`](../implementation/phase-b-status.md).
+Implementation phase detail: [`docs/implementation/build-phases.md`](../implementation/build-phases.md). Phase A foundation status: [`docs/implementation/phase-a-status.md`](../implementation/phase-a-status.md). Phase B merchant/consumer core: [`docs/implementation/phase-b-status.md`](../implementation/phase-b-status.md). Phase C bill ingestion: [`docs/implementation/phase-c-status.md`](../implementation/phase-c-status.md).
 
 Portal: `/decisions` and `/decisions/open/:id`.
 
@@ -39,6 +39,21 @@ Phase B implemented **merchant/consumer core with local fakes**. It did **not** 
 | Does not block local Phase C | Stub `/v1`, fake auth, token-reference path per [build-phases](../implementation/build-phases.md) |
 
 No OD is marked resolved by Phase B.
+
+---
+
+## Phase C impact
+
+Phase C implemented **bill ingestion with local fakes**. It did **not** resolve vendor, production-topology, retention, or money-movement ODs.
+
+| Effect | Open decisions |
+| --- | --- |
+| Remains OPEN | All catalogue items unless listed below |
+| Implementation evidence; still OPEN | OD-030 — idempotency keys are stored and exercised; **retention TTL not chosen**. OD-029 — in-memory rate limit exists; distributed limits not chosen. OD-018 — polling outbox remains local convention |
+| Drift clarifications (not new ODs) | OpenAPI **201** is SoT for CreateBill (SEQ-PAY-001 corrected). Canonical internal event **BillAccepted** (design/LikeC4 aligned). GET Bill uses `merchant_machine` without inventing `bills.read`. Concurrent same-key may return **503** then replay with same key |
+| Does not block local Phase D | Fake PSP adapter allowed by [build-phases](../implementation/build-phases.md) |
+
+No OD is marked resolved by Phase C alone.
 
 ---
 

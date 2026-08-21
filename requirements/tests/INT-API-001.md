@@ -31,4 +31,6 @@ Idempotency/signature/retry rules hold.
 
 ## Implementation status
 
-`specified`
+`specified` — architecture acceptance remains specified.
+
+**Local Phase C evidence** (not product-verified): `sparelane-platform` C2/C4 suites and live `test:scenario:phase-c` exercise duplicate key replay, conflict, and concurrent same-key safety. See [phase-c-status](../../docs/implementation/phase-c-status.md).

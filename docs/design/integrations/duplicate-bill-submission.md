@@ -14,7 +14,7 @@ adrs:
   - ADR-008
   - ADR-017
 tests:
-  - INT-API-002
+  - INT-API-001
 ---
 
 # Duplicate Bill Submission

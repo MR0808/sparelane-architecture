@@ -12,7 +12,7 @@ const cards = [
   {
     to: '/implementation',
     title: 'Implementation',
-    blurb: 'Blueprint, Phase A/B status, build phases',
+        blurb: 'Blueprint, Phase A/B/C status, build phases',
   },
   { to: '/health', title: 'Health', blurb: 'Static architecture/docs health' },
 ]
@@ -33,7 +33,11 @@ export function HomePage() {
         <Link to="/docs/implementation/phase-b-status">
           PASS WITH DOCUMENTED NON-BLOCKING RISKS
         </Link>{' '}
-        (no money movement). Phase C not started.
+        (no money movement). Phase C bill ingestion:{' '}
+        <Link to="/docs/implementation/phase-c-status">
+          PASS WITH DOCUMENTED NON-BLOCKING RISKS
+        </Link>{' '}
+        (no money movement). Phase D not started.
       </p>
 
       <div className="card-grid">

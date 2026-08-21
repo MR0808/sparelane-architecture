@@ -20,9 +20,13 @@ export function HealthPage() {
           <span>Phase B — Merchant + Consumer Core</span>
           <span>Phase B gate: {health.implementation?.phaseBGate ?? 'unknown'}</span>
           <span>Sub-phases: {health.implementation?.phaseBPhasesCompleted ?? 'B0-B6'}</span>
-          <span>Phase C: {health.implementation?.phaseC ?? 'not_started'}</span>
-          <span>Not live production health</span>
           <Link to="/docs/implementation/phase-b-status">Phase B status</Link>
+          <span>Phase C — Bill Ingestion</span>
+          <span>Phase C gate: {health.implementation?.phaseCGate ?? health.implementation?.phaseC ?? 'not_started'}</span>
+          <span>Sub-phases: {health.implementation?.phaseCPhasesCompleted ?? 'C0-C5'}</span>
+          <span>Phase D: {health.implementation?.phaseD ?? 'not_started'}</span>
+          <span>Not live production health</span>
+          <Link to="/docs/implementation/phase-c-status">Phase C status</Link>
         </div>
         <div className="info-card">
           <strong>Requirements</strong>
@@ -35,7 +39,7 @@ export function HealthPage() {
           <span>Missing tests: {health.requirements.missingTests}</span>
           <span>MVP verified: {health.requirements.mvpVerified}</span>
           <span>Foundation implemented (NFR evidence): {health.requirements.foundationImplemented ?? 0}</span>
-          <span>Product implemented (Phase B slice): {health.requirements.productImplemented ?? 0}</span>
+          <span>Product implemented (Phase B/C slice): {health.requirements.productImplemented ?? 0}</span>
           <Link to="/requirements">Open requirements</Link>
         </div>
         <div className="info-card">

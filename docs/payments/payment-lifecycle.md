@@ -45,7 +45,7 @@ Bill Validation checks ownership, consumer connection and idempotency. Duplicate
 
 ### 3. Workflow created / scheduled
 
-Bill Service persists the Sparelane bill projection and associated Payment Workflow (`CREATED` / `SCHEDULED`). `BillCreated` is published.
+Bill Service persists the Sparelane bill projection and associated Payment Workflow (`CREATED` / `SCHEDULED`). `BillAccepted` is published.
 
 ### 4. Early / pre-auth check
 

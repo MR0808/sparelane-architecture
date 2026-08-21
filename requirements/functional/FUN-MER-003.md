@@ -4,6 +4,7 @@ title: Submit bill
 type: functional
 area: merchant
 status: accepted
+implementationStatus: implemented
 priority: must
 mvp: true
 architecture:
@@ -20,7 +21,8 @@ contracts:
 modules:
   - Bills
   - Merchant Integrations
-tests: []
+tests:
+  - INT-API-001
 designs:
   - SEQ-PAY-001
   - SEQ-INT-001
@@ -43,3 +45,5 @@ Bill submission is the entry point for payment reliability workflows.
 ## Notes
 
 MVP merchant integration scope.
+
+`implementationStatus: implemented` for the **Phase C CreateBill API slice** only. Architecture `status` remains **accepted**. OpenAPI `POST /bills` → **201** with machine auth + `bill-submit`. Payment collection is not started. See [phase-c-status](../../docs/implementation/phase-c-status.md).

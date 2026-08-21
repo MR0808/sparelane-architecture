@@ -7,19 +7,20 @@ Maps Accepted ADRs → design docs → implementation modules → verification.
 - Requirement-centric traceability is generated from requirement markdown frontmatter in the portal (`/requirements/traceability`). Prefer updating requirement metadata for behaviour↔view↔test links; keep this document focused on **ADR → module → verification**.
 - Platform **foundation** evidence for Phase A is recorded in [phase-a-status](phase-a-status.md) and [implementation-status](implementation-status.md). Path references point at `sparelane-platform`; this repo does not copy those tests.
 - Platform **Phase B** merchant/consumer core evidence is recorded in [phase-b-status](phase-b-status.md). Phase B does not move money.
+- Platform **Phase C** bill ingestion evidence is recorded in [phase-c-status](phase-c-status.md). Phase C does not move money.
 
 Distinguish:
 
 Architecture decision → Requirement → Design → Implementation phase → Implementation evidence → Test evidence
 
-| Layer | Phase A example | Phase B example |
-| --- | --- | --- |
-| Architecture decision | ADR-016 / ADR-017 (outbox + at-least-once) | ADR-014 (tenant isolation); ADR-001/010 (PCI token refs) |
-| Requirement | NFR-REL-001 (`status: accepted`) | FUN-CON-003 (`status: accepted`; partial implementation) |
-| Design | Outbox blueprint, async processing | PCI boundary, tenant isolation, connection security |
-| Implementation phase | A5 / A9 | B3 / B4 / B6 |
-| Implementation evidence | Foundation outbox + idempotent consumer | Explicit connection + token refs; no payment execution |
-| Test evidence | FIN-INV-09 remains `specified`; foundation prerequisite | SEC-TEN-001 local product isolation evidence; not `product_verified` |
+| Layer | Phase A example | Phase B example | Phase C example |
+| --- | --- | --- | --- |
+| Architecture decision | ADR-016 / ADR-017 (outbox + at-least-once) | ADR-014 (tenant isolation); ADR-001/010 (PCI token refs) | ADR-007 / ADR-008 (billing SoR + idempotent Merchant API) |
+| Requirement | NFR-REL-001 (`status: accepted`) | FUN-CON-003 (`status: accepted`; partial implementation) | FUN-BIL-001 / FUN-MER-003 / FUN-MER-004 (`implementationStatus: implemented`) |
+| Design | Outbox blueprint, async processing | PCI boundary, tenant isolation, connection security | SEQ-PAY-001, OpenAPI POST/GET bills |
+| Implementation phase | A5 / A9 | B3 / B4 / B6 | C0–C5 |
+| Implementation evidence | Foundation outbox + idempotent consumer | Explicit connection + token refs; no payment execution | Machine auth + CreateBill + workflow + BillAccepted; no payment execution |
+| Test evidence | FIN-INV-09 remains `specified`; foundation prerequisite | SEC-TEN-001 local product isolation evidence; not `product_verified` | INT-API-001 local evidence; FIN-INV / E2E-PAY not verified |
 
 **Implemented** and **verified** in requirement `status` mean **product** claims. Phase A uses `implementationStatus: foundation_implemented` instead.
 
@@ -33,8 +34,8 @@ See also [requirements README](../../requirements/README.md).
 | ADR-004 Double-entry ledger | [ledger-model](../money/ledger-model.md), [ledger-blueprint](ledger-blueprint.md) | Ledger | Balanced journal; invariant #3 |
 | ADR-005 Collection before settlement | [settlement-state-machine](../money/settlement-state-machine.md) | Settlement, Ledger | Invariant #4; settlement gating |
 | ADR-006 Separate settlement lifecycle | [settlement-state-machine](../money/settlement-state-machine.md), [reconciliation](../money/reconciliation.md) | Settlement, Reconciliation | Settlement lifecycle e2e |
-| ADR-007 Merchant billing SoR | [merchant-api](../integrations/merchant-api.md), [merchant-onboarding](../integrations/merchant-onboarding.md) | Bills, Merchant Integrations | Merchant submits bill; Sparelane ≠ billing SoR |
-| ADR-008 Idempotent Merchant API | [merchant-api](../integrations/merchant-api.md), OpenAPI | Bills, API layer | Duplicate bill submission e2e |
+| ADR-007 Merchant billing SoR | [merchant-api](../integrations/merchant-api.md), [merchant-onboarding](../integrations/merchant-onboarding.md) | Bills, Merchant Integrations | Merchant submits bill; Sparelane ≠ billing SoR — Phase C evidence |
+| ADR-008 Idempotent Merchant API | [merchant-api](../integrations/merchant-api.md), OpenAPI | Bills, API layer | Duplicate bill submission — Phase C INT-API-001 local evidence |
 | ADR-009 Signed at-least-once webhooks | [webhooks](../integrations/webhooks.md), [webhook-security](../security/webhook-security.md) | Webhooks | Webhook retry e2e; signature security |
 | ADR-010 PCI boundary | [pci-boundary](../security/pci-boundary.md) | Payment Methods, PSP adapter | Security tests; no CHD in logs |
 | ADR-011 Centralised secrets | [secrets-management](../security/secrets-management.md) | config/secrets, Integrations | Secret handling acceptance |
@@ -60,6 +61,7 @@ Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-a
 | All ADR-001–023 | Covered above — no missing ADR rows |
 | Phase A platform foundation | Recorded — [phase-a-status](phase-a-status.md). Not product implementation. |
 | Phase B merchant/consumer core | Recorded — [phase-b-status](phase-b-status.md). No money movement; payment/ledger/settlement not implemented. |
+| Phase C bill ingestion | Recorded — [phase-c-status](phase-c-status.md). No money movement; payment attempts/PSP/ledger/settlement not implemented. |
 | Automated product tests | Specs in this repo; product suites in `sparelane-platform`. FIN-INV not verified. |
 | Wallet licensing | Open decision — blocks wallet go-live only; ADR path TBD if custody model changes architecture |
 | Vendor adapters | Interfaces specified; concrete PSP/bank adapters await open decisions |

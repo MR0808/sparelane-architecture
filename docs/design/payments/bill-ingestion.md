@@ -56,9 +56,9 @@ sequenceDiagram
     alt New unique key
         Val->>BS: Create bill
         BS->>ODB: Persist bill + Payment Workflow (CREATED / SCHEDULED)
-        BS->>OB: Write BillCreated outbox
+        BS->>OB: Write BillAccepted outbox
         OB-->>BS: Outbox committed atomically
-        API-->>MBE: 202 Accepted (not collected)
+        API-->>MBE: 201 Created (accepted for processing, not collected)
     else Duplicate key (same fingerprint)
         Val->>BS: Load existing bill / workflow
         API-->>MBE: Replay existing accepted result
@@ -71,7 +71,7 @@ sequenceDiagram
 
 - Bill accepted does not imply payment collected or merchant settled.
 - Duplicate idempotency context with matching fingerprint must not create a second Payment Workflow.
-- BillCreated is published via transactional outbox with the operational write.
+- BillAccepted is published via transactional outbox with the operational write.
 
 ## Failure notes
 

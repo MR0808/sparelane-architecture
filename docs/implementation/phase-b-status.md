@@ -177,7 +177,7 @@ No Accepted ADR contradiction identified.
 
 ## Next phase
 
-[Phase C — Bill Ingestion](build-phases.md) is **NOT STARTED**. Delivers: Merchant API (`CreateBill`), idempotency, bills, 1:1 workflow creation, outbox write path. Depends on Phase B.
+[Phase C — Bill Ingestion](build-phases.md) is **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — see [phase-c-status](phase-c-status.md).
 
 ## Platform evidence (do not copy)
 
