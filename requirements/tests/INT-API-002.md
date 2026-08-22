@@ -6,6 +6,7 @@ status: specified
 relatedRequirements:
   - FUN-MER-006
   - NFR-SEC-005
+  - NFR-REL-003
 relatedFlows:
   - merchantWebhookRetry
 mvp: true
@@ -15,15 +16,15 @@ mvp: true
 
 ## Purpose
 
-Merchant webhook retry.
+Retryable merchant webhook delivery uses the same `evt_…`, ADR-030 schedule, and does not mutate financial state.
 
 ## Preconditions
 
-- Merchant API / webhook fixtures as applicable.
+- Local webhook sink / Fake HTTP.
 
 ## Scenario
 
-Exercise `merchantWebhookRetry`.
+Timeout or 5xx → bounded retry of the same event ID → 2xx or exhaustion FAILED.
 
 ## Expected result
 

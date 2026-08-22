@@ -7,6 +7,7 @@ Merchant API product principles (resources, idempotency, errors, correlation) li
 ## Controls
 
 - **TLS only** for external Merchant API and experience backends
+- **Outbound merchant webhooks:** HTTPS only in sandbox/production; SSRF denylist and no redirects ([ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md))
 - **Authentication** appropriate to actor (consumer session, merchant user session, merchant API credential, admin session)
 - **Authorisation** deny-by-default with tenant/ownership checks and scopes
 - **Scoped credentials** for machine access

@@ -1,130 +1,127 @@
 # Merchant Webhook Event Schemas
 
-Conceptual/contract-level payloads for curated merchant events. Names are **proposed**.
+**Binding:** [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md). Closed MVP catalogue. Names are **not** proposed.
 
-Common `data` correlation fields where applicable:
+Internal domain events are mapped here; they are **not** published as-is ([ADR-023](../decisions/ADR-023-curated-external-events.md)).
 
-- `billId`, `merchantBillReference`
-- `connectionId`, `merchantCustomerReference`
-- `paymentId` (payment workflow public id)
-- `settlementId`
-- `merchantReconciliationReference`
-- `amount` (`{ "value": "150.00", "currency": "AUD" }`)
+Money objects follow [money.md](./money.md): `{ "value": "150.00", "currency": "AUD" }`.
 
-Do not include: provider tokens, secret risk scores, internal ledger accounts, PAN/CVV, API secrets.
+Common forbidden fields: internal UUIDs, credentials, provider tokens/payloads, payout destination / bank details, PAN/CVV, auth subjects, consumer PII, ledger accounts, stack traces.
+
+---
+
+## Catalogue
+
+| External type | version | Source internal event | Merchant source | `source_identity` |
+| --- | --- | --- | --- | --- |
+| `bill.accepted` | 1 | `BillAccepted` | Bill merchant | `bill:{billPublicId}` |
+| `payment.action_required` | 1 | workflow → `ACTION_REQUIRED` | Workflow/Bill merchant | `pay:{paymentPublicId}:v{workflowVersion}` |
+| `payment.collected` | 1 | `PaymentCollected` | Workflow/Bill merchant | `pay:{paymentPublicId}` |
+| `payment.failed` | 1 | `PaymentFailed` | Workflow/Bill merchant | `pay:{paymentPublicId}` |
+| `settlement.submitted` | 1 | `SettlementSubmitted` | Settlement merchant | `set:{settlementPublicId}` |
+| `settlement.settled` | 1 | `SettlementSettled` | Settlement merchant | `set:{settlementPublicId}` |
+| `settlement.failed` | 1 | `SettlementFailed` | Settlement merchant | `set:{settlementPublicId}` |
 
 ---
 
 ## bill.accepted
 
-**Purpose:** Bill ingestion acknowledged (not paid).
+Bill ingestion acknowledged (not paid).
 
 | Field | Notes |
 | --- | --- |
 | billId | `bill_...` |
-| merchantBillReference | |
-| connectionId | |
-| amount | |
+| merchantBillReference | merchant correlation |
+| connectionId | `conn_...` |
+| amount | money |
 | dueDate | date-only |
 | status | `accepted` |
 | acceptedAt | RFC3339 |
 
 ---
 
-## payment.preauthorised
-
-**Purpose:** Early method validation succeeded; funds not collected.
-
-| Field | Notes |
-| --- | --- |
-| paymentId | |
-| billId / merchantBillReference | |
-| status | `preauthorised` |
-| preauthorisedAt | |
-
----
-
 ## payment.action_required
 
-**Purpose:** Consumer/merchant intervention needed.
+Consumer/merchant intervention needed.
 
 | Field | Notes |
 | --- | --- |
-| paymentId | |
-| billId / merchantBillReference | |
+| paymentId | `pay_...` (workflow public id) |
+| billId | `bill_...` |
+| merchantBillReference | |
 | status | `action_required` |
 | reasonCode | high-level, non-sensitive |
-| actionRequiredAt | |
+| actionRequiredAt | RFC3339 |
 
 ---
 
 ## payment.collected
 
-**Purpose:** Consumer funds collected for the bill.
+Consumer funds collected for the bill. Does **not** mean settled.
 
 | Field | Notes |
 | --- | --- |
-| paymentId | |
-| billId / merchantBillReference | |
-| amount | |
+| paymentId | `pay_...` |
+| billId | `bill_...` |
+| merchantBillReference | |
+| amount | money |
 | status | `collected` |
-| collectedAt | |
-
-Does **not** mean settled.
+| collectedAt | RFC3339 |
 
 ---
 
 ## payment.failed
 
-**Purpose:** Workflow terminal failure; merchant resumes normal collection.
+Workflow terminal failure; merchant resumes normal collection.
 
 | Field | Notes |
 | --- | --- |
-| paymentId | |
-| billId / merchantBillReference | |
+| paymentId | `pay_...` |
+| billId | `bill_...` |
+| merchantBillReference | |
 | status | `failed` |
-| failedAt | |
-| reasonCode | high-level |
+| failedAt | RFC3339 |
+| reasonCode | high-level, non-sensitive |
 
 ---
 
-## settlement.processing
+## settlement.submitted
 
-**Purpose:** Settlement submitted/in progress with partner.
+Settlement submitted or parked `SUBMITTED` with partner. Does **not** mean `SETTLED`.
 
 | Field | Notes |
 | --- | --- |
-| settlementId | |
-| amount | |
-| status | `processing` |
+| settlementId | `set_...` |
+| amount | money |
+| status | `submitted` |
 | merchantReconciliationReference | |
-| submittedAt | |
+| submittedAt | RFC3339 |
 
 ---
 
 ## settlement.settled
 
-**Purpose:** Settlement confirmed.
+Settlement confirmed (payout journal exists).
 
 | Field | Notes |
 | --- | --- |
-| settlementId | |
-| amount | |
+| settlementId | `set_...` |
+| amount | money |
 | status | `settled` |
 | merchantReconciliationReference | |
-| settledAt | |
+| settledAt | RFC3339 |
 
 ---
 
 ## settlement.failed
 
-**Purpose:** Settlement failed; collection remains collected.
+Settlement failed; collection remains collected.
 
 | Field | Notes |
 | --- | --- |
-| settlementId | |
-| amount | |
+| settlementId | `set_...` |
+| amount | money |
 | status | `failed` |
 | merchantReconciliationReference | |
-| failedAt | |
-| reasonCode | high-level |
+| failedAt | RFC3339 |
+| reasonCode | high-level, non-sensitive |

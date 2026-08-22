@@ -49,9 +49,18 @@ Each threat includes: affected assets, attack path, controls, residual risk, sta
 **STRIDE:** Spoofing, Tampering  
 **Assets:** merchant finance systems reacting to Sparelane events  
 **Attack path:** attacker posts forged events to merchant endpoint  
-**Controls:** HMAC signing (proposed); timestamp; stable event ID; secret rotation; merchant-side verification  
+**Controls:** HMAC-SHA256 (ADR-030); timestamp; stable event ID; SSRF denylist on outbound URL; secret shown once; merchant-side verification  
 **Residual risk:** merchant fails to verify signatures; leaked signing secret  
-**Status:** Controls modelled (ADR-009)
+**Status:** Controls Accepted (ADR-009 + ADR-030)
+
+## T-05b — Outbound webhook SSRF
+
+**STRIDE:** Information Disclosure, Elevation of Privilege (network)  
+**Assets:** cloud metadata, internal network, webhook worker  
+**Attack path:** merchant sets endpoint URL to loopback, RFC1918, or metadata  
+**Controls:** HTTPS-only sandbox/production; DNS re-resolve; IP denylist; no redirects; local loopback sink opt-in only ([ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md))  
+**Residual risk:** novel IPv6/metadata aliases; DNS load-balancing races — re-check at connect  
+**Status:** Controls Accepted (ADR-030)
 
 ## T-06 — Duplicate merchant settlement
 

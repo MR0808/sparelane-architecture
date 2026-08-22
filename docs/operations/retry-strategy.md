@@ -18,7 +18,7 @@ Must not blindly duplicate collection. Prefer query/reconcile provider or await 
 
 Example: merchant webhook 5xx / timeout.
 
-Same event ID, bounded backoff, at-least-once. Not a new domain event.
+Same event ID, bounded backoff, at-least-once. Not a new domain event. **Schedule:** [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md) (max 5; 1m/5m/30m/6h). Independent of payment retry.
 
 ## Processing retry
 

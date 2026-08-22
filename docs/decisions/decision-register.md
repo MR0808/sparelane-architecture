@@ -1,6 +1,6 @@
 # Architecture Decision Register
 
-Quick-reference governance index for ADR-001 through ADR-029.
+Quick-reference governance index for ADR-001 through ADR-030.
 
 **Accepted** ADRs are binding implementation constraints unless superseded by a later ADR.
 
@@ -35,6 +35,7 @@ Quick-reference governance index for ADR-001 through ADR-029.
 | [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.md) | MVP settlement obligation 1:1 workflow; gross payable amount; PENDING→ELIGIBLE; KYB gate | Accepted | Money / Settlement | ADR-005/006/026 | Platform F0 LedgerPostingConfirmed → Settlement |
 | [ADR-028](./ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) | MVP settlement execution: no batching; payout destination token; 1:1 instruction; provider taxonomy; Fake F1 ends SUBMITTED | Accepted | Money / Settlement | ADR-006/017/026/027 | Platform F1 ELIGIBLE → instruction → Fake submit |
 | [ADR-029](./ADR-029-settlement-finality-reconciliation-payout-accounting.md) | MVP settlement finality + payout CoA (Dr payable / Cr settlement clearing); journal before SETTLED | Accepted | Money / Settlement / Ledger | ADR-026/027/028 | Platform F2 ReconcileSettlement → journal → SETTLED |
+| [ADR-030](./ADR-030-merchant-webhook-contract-signing-and-delivery.md) | MVP merchant webhook catalogue, envelope, HMAC-SHA256, SSRF, delivery identity, OD-031 retry; notifications deferred | Accepted | Integrations / Security | ADR-009/023/017/022; resolves OD-031 | Platform G0/G1 merchant webhooks; G2+ notifications wait on OD-005 |
 
 ## Complementary pairs (not duplicates)
 
@@ -43,6 +44,8 @@ Quick-reference governance index for ADR-001 through ADR-029.
 | ADR-001 / ADR-010 | Tokenisation product choice vs explicit PCI trust/scope boundary |
 | ADR-004 / ADR-013 | Ledger as financial SoT vs separation from operational workflow stores |
 | ADR-009 / ADR-023 | Delivery semantics/security vs curation of external event contract |
+| ADR-009 / ADR-030 | At-least-once signed webhooks principle vs frozen catalogue/signing/SSRF/retry |
+| ADR-023 / ADR-030 | Curation principle vs closed MVP type list and envelope |
 | ADR-013 / ADR-016 | Logical separation vs consistency mechanism between the stores |
 | ADR-026 / ADR-027 | Collection journal CoA vs settlement obligation/eligibility policy |
 | ADR-027 / ADR-028 | Settlement obligation/eligibility vs instruction execution / destination / idempotency |
@@ -50,4 +53,4 @@ Quick-reference governance index for ADR-001 through ADR-029.
 
 ## None superseded or rejected
 
-No ADRs in 001–029 are Superseded or Rejected at this gate. ADR-026 freezes collection CoA; ADR-027 freezes settlement obligation/eligibility; ADR-028 freezes MVP execution/instruction without SETTLED; ADR-029 freezes finality + payout CoA for SETTLED. Fee/netting, bank-cash statement as SETTLED gate, OD-009 partner, and automatic poll cadence remain open/deferred.
+No ADRs in 001–030 are Superseded or Rejected at this gate. ADR-030 freezes merchant webhook contracts and resolves OD-031. Consumer notifications remain deferred (OD-005). Endpoint Merchant API remains OD-034.

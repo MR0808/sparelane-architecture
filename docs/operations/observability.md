@@ -13,7 +13,8 @@ Three pillars. Vendor TBD.
 - payment success / failure rates
 - retry counts
 - queue depth
-- webhook delivery failures
+- webhook delivery failures (`type`, `outcome` only — no merchant/endpoint/event ids)
+- webhook SSRF blocks (`error_class` bounded)
 - settlement pending age
 - reconciliation mismatches
 - DLQ size

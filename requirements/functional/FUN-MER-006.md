@@ -15,16 +15,18 @@ flows:
 adrs:
   - ADR-009
   - ADR-023
+  - ADR-030
 contracts:
   - docs/contracts/webhook-events.md
+  - docs/contracts/webhook-envelope.md
+  - docs/contracts/webhook-signing.md
   - docs/integrations/webhooks.md
 modules:
   - Webhooks
 tests:
   - INT-API-002
   - CON-WEBHOOK-001
-openDecisions:
-  - OD-031
+  - E2E-WEB-001
 designs:
   - SEQ-INT-003
   - SEQ-INT-004
@@ -41,9 +43,12 @@ Signed at-least-once delivery (ADR-009) with curated events (ADR-023).
 
 ## Acceptance Criteria
 
-- Webhook payloads are signed and verifiable by the merchant.
-- Failed deliveries are retried per policy without dropping durable intent.
+- Only the closed ADR-030 catalogue is published (internal events are not dumped).
+- Webhook payloads are HMAC-SHA256 signed over the exact body bytes sent.
+- Failed deliveries retry per ADR-030 without dropping durable intent or mutating financial state.
+- Event `id` is stable across retries; merchants can dedupe on it.
+- Outbound URLs obey SSRF policy.
 
 ## Notes
 
-MVP merchant integration scope.
+MVP merchant integration scope. Consumer notifications are not this requirement (OD-005). Endpoint Merchant API CRUD is OD-034.

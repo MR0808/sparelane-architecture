@@ -27,4 +27,4 @@ Payment and settlement replay must first check idempotency keys and external/pro
 - idempotent consumers absorb duplicates
 - unsafe to replay if authoritative state already reflects success and side effect would duplicate
 
-See runbook: [`runbooks/dlq-replay.md`](./runbooks/dlq-replay.md).
+Webhook delivery exhaustion records FAILED in Operational DB. Worker DLQ may hold a **pointer** (delivery / `evt_` id), not a second merchant payload copy. Replay of webhook HTTP is Phase H. See [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).

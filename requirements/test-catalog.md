@@ -22,6 +22,7 @@ Phase B adds **local product isolation evidence** for SEC-TEN-001 aligned paths 
 | `OPS-REC-###` | Ops recovery (ledger, DLQ) |
 | `CON-API-###` | Contract / OpenAPI conformance |
 | `CON-WEBHOOK-###` | Webhook contract scenarios |
+| `E2E-WEB-###` | End-to-end merchant webhook |
 
 Requirement frontmatter `tests:` must reference IDs that exist under `requirements/tests/`.
 

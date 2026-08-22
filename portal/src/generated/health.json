@@ -1,23 +1,23 @@
 {
-  "generatedAt": "2026-08-22T03:02:32.347Z",
+  "generatedAt": "2026-08-22T04:12:11.850Z",
   "label": "Generated from repository state",
   "requirements": {
     "total": 71,
     "mvp": 68,
     "future": 3,
-    "blocked": 13,
+    "blocked": 12,
     "missingArchitecture": 0,
-    "missingTests": 40,
+    "missingTests": 38,
     "mvpVerified": 0,
     "foundationImplemented": 15,
     "productImplemented": 20
   },
   "decisions": {
-    "adrs": 29,
+    "adrs": 30,
     "open": 34
   },
   "tests": {
-    "total": 27
+    "total": 28
   },
   "designs": {
     "total": 31,
@@ -32,7 +32,7 @@
     "openapi": "present"
   },
   "docs": {
-    "count": 237
+    "count": 239
   },
   "implementation": {
     "phaseAGate": "pass_with_documented_non_blocking_risks",

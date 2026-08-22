@@ -14,8 +14,11 @@ adrs:
   - ADR-009
   - ADR-017
   - ADR-023
+  - ADR-030
 tests:
   - CON-WEBHOOK-001
+  - INT-API-002
+  - E2E-WEB-001
   - OPS-REC-002
 ---
 
@@ -44,7 +47,7 @@ sequenceDiagram
     WHD->>ODB: Record failed attempt — schedule bounded retry
     Note over WHD,ODB: Same webhook_events.id / public Event ID E1 — no new event
 
-    WHD->>MBE: Redeliver same signed Event ID E1
+    WHD->>MBE: Redeliver same Event ID E1, same body, new timestamp/HMAC
     MBE-->>WHD: 2xx acknowledgement
     WHD->>ODB: Mark delivery successful
 ```
@@ -52,8 +55,9 @@ sequenceDiagram
 ## Important invariants
 
 - Retry reuses the same Webhook Event ID; no new domain event.
-- Delivery attempts are append-oriented (PENDING → DELIVERING → SUCCEEDED / RETRY_PENDING / FAILED).
+- Delivery attempts are append-oriented.
 - Merchant must treat duplicate deliveries as idempotent.
+- Schedule: ADR-030 / OD-031 (1m / 5m / 30m / 6h, max 5 attempts).
 
 ## Failure notes
 

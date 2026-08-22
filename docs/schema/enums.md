@@ -148,7 +148,32 @@ CANCELLED
 
 (`ACCEPTED` ≠ payment collected.)
 
+## WebhookEndpointStatus
+
+```text
+ACTIVE
+DISABLED
+REVOKED
+```
+
+No `PENDING_VERIFICATION` in MVP ([ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md)).
+
 ## WebhookDeliveryStatus
+
+Logical delivery (event + endpoint):
+
+```text
+PENDING
+SUCCEEDED
+FAILED
+CANCELLED
+```
+
+`CANCELLED` = endpoint not `ACTIVE` at attempt time (no HTTP).
+
+## WebhookAttemptStatus
+
+Per transport attempt row (append-oriented):
 
 ```text
 PENDING
@@ -157,6 +182,8 @@ SUCCEEDED
 RETRY_PENDING
 FAILED
 ```
+
+(Historical name `WebhookDeliveryStatus` on attempts is replaced by `WebhookAttemptStatus` to avoid colliding with logical delivery status.)
 
 ## ApiCredentialStatus
 

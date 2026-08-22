@@ -107,3 +107,24 @@ Settlement SUBMITTED|PROCESSING → SETTLED + `settled_at` + Outbox `SettlementS
 | `not_found` / `unknown` | Hold + `reconciliation_hold_reason`; no resubmit; no SETTLED |
 
 Reconcile/lookup must not call submit. Crash after journal before SETTLED: replay → same journal → then SETTLED.
+
+## Merchant webhook projection and delivery ([ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md))
+
+**No open DB TX across merchant HTTP.**
+
+### Operational TX A — project
+
+1. Load authoritative aggregate; derive merchant from DB (not event payload)
+2. If type not in closed catalogue: no-op
+3. Insert WebhookEvent idempotently on `(merchant_id, type, source_identity)`
+4. Insert WebhookDelivery rows for currently ACTIVE subscribed endpoints
+
+### HTTP (outside TX)
+
+Sign exact body bytes; POST with SSRF controls.
+
+### Operational TX B — attempt result
+
+Append WebhookDeliveryAttempt; update logical delivery; schedule next delay or FAILED/CANCELLED.
+
+Webhook/notification processing must not write Bill, PaymentWorkflow, PaymentAttempt, Ledger, Settlement, or SettlementInstruction.

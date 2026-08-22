@@ -13,15 +13,15 @@ mvp: true
 
 ## Purpose
 
-Webhook envelope and signature headers match contracts.
+Webhook envelope, headers, and HMAC-SHA256 signing string match [ADR-030](../../docs/decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md) contracts.
 
 ## Preconditions
 
-- OpenAPI and webhook contract docs current.
+- Webhook envelope, events, and signing docs current.
 
 ## Scenario
 
-Validate request/response/webhook shapes against contracts.
+Validate webhook JSON key order, catalogue types, header names, and signature input `timestamp.rawBody`.
 
 ## Expected result
 

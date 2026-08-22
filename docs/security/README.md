@@ -3,7 +3,7 @@
 **Status:** Current  
 **Owner:** Security (TBD)  
 **Last Reviewed:** 2026-08-13  
-**Related ADRs:** ADR-010, ADR-011, ADR-012, ADR-014  
+**Related ADRs:** ADR-009, ADR-010, ADR-011, ADR-012, ADR-014, ADR-030  
 **Related Views:** `06 Security /*`
 
 | Topic | Doc |

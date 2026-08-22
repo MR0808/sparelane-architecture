@@ -34,3 +34,5 @@ Defines required provider interface capabilities for vendor evaluation. Does not
 ## Notes
 
 Vendors remain open decisions.
+
+**Phase G:** Email delivery is **deferred** past G0/G1 ([ADR-030](../../docs/decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md), [OD-005](../../docs/decisions/open/OD-005-notification-rules.md)). Adapter interface may exist; do not implement consumer email until contact ownership is Accepted.

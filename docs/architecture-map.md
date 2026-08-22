@@ -72,7 +72,7 @@ Do not over-tag. Open vendor choices stay in [open decisions](decisions/open-dec
 | **Purpose** | Merchant API, webhooks, hosted/widget paths |
 | **Primary view** | `05 Integrations / Merchant Integration` |
 | **Docs** | [docs/integrations/](integrations/), [contracts](contracts/README.md), [`openapi.yaml`](../contracts/openapi.yaml) |
-| **ADRs** | ADR-007, ADR-008, ADR-009, ADR-022, ADR-023 |
+| **ADRs** | ADR-007, ADR-008, ADR-009, ADR-022, ADR-023, ADR-030 |
 
 ## Security
 

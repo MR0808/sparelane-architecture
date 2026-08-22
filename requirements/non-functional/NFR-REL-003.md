@@ -15,12 +15,16 @@ flows:
   - scheduledRetry
 adrs:
   - ADR-017
+  - ADR-025
+  - ADR-030
 contracts:
   - docs/operations/resilience-patterns.md
 modules:
   - Workers
   - Reliability Engine
-tests: []
+tests:
+  - E2E-WEB-001
+  - INT-API-002
 ---
 # NFR-REL-003 — Bounded retry
 

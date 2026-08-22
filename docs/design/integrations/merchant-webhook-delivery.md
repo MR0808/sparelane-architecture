@@ -14,8 +14,10 @@ adrs:
   - ADR-009
   - ADR-023
   - ADR-017
+  - ADR-030
 tests:
   - CON-WEBHOOK-001
+  - E2E-WEB-001
 ---
 
 # Merchant Webhook Delivery
@@ -37,23 +39,24 @@ sequenceDiagram
     autonumber
     participant Bus as Event Bus
     participant WHD as Webhook Delivery
-    participant Int as Merchant Integration Service
-    participant MBE as Merchant Backend
     participant ODB as Operational DB
+    participant MBE as Merchant Backend
 
-    Bus->>WHD: Select merchant-facing event
-    WHD->>Int: Load webhook endpoint configuration
-    WHD->>MBE: Deliver signed payload + stable Webhook Event ID
-    MBE->>MBE: Verify signature — process idempotently
+    Bus->>WHD: Curated internal event
+    WHD->>ODB: ProjectMerchantWebhook (idempotent evt_)
+    WHD->>ODB: Create delivery per ACTIVE subscribed endpoint
+    WHD->>MBE: POST signed body (same bytes HMAC'd)
+    MBE->>MBE: Verify HMAC — process idempotently by evt_
     MBE-->>WHD: 2xx
-    WHD->>ODB: Mark delivery attempt SUCCEEDED
+    WHD->>ODB: Append attempt SUCCEEDED
 ```
 
 ## Important invariants
 
-- Stable public Webhook Event ID across retries.
+- Stable public Webhook Event ID across retries and endpoints.
 - At-least-once delivery; merchant idempotency required.
-- Only curated external events (ADR-023).
+- Only closed catalogue types (ADR-030). HTTP outside DB transaction.
+- Duplicate internal events → same `evt_…`.
 
 ## Failure notes
 
@@ -61,4 +64,4 @@ sequenceDiagram
 
 ## Related
 
-LikeC4: `merchantWebhookDelivery`. ADR-009.
+LikeC4: `merchantWebhookDelivery`. ADR-009 / ADR-030.

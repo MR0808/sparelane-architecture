@@ -145,14 +145,26 @@ Product config (backup cardinality) is **Partial** — [OD-003](../decisions/ope
 
 **Depends on:** C+ (events exist); ideally D/F for payment/settlement events.
 
+**Binding merchant webhooks:** [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md). Resolves [OD-031](../decisions/open/OD-031-webhook-retry-bounds.md).
+
+**Engineering sub-phases (local):**
+
+| Slice | Scope |
+| --- | --- |
+| **G0** | Merchant webhook domain, closed catalogue, envelope, HMAC, SSRF, projection, delivery identity, retry policy, Fake/local HTTP sink |
+| **G1** | Portal/internal endpoint management + production-safe HTTPS delivery |
+| **G2+** | Consumer notifications — **deferred** until OD-005 (contact, copy, channels, preferences, templates) |
+
+Canonical Phase G is **not** complete after G0/G1.
+
 **Open decisions**
 
 | Stage | Blocks? | Items |
 | --- | --- | --- |
-| Local | No | Fake email/SMS |
-| Sandbox | Soft | Email/SMS provider; webhook retry schedule defaults |
-| Pilot | Soft | Consumer notification copy |
-| Production | Soft | Vendor selection |
+| Local G0/G1 | No | Fake/local webhook sink; Fake email/SMS unused until G2 |
+| Sandbox webhooks | Soft | Secrets product (OD-025) for signing_secret_ref |
+| Pilot / Production notifications | **Yes** for notify | OD-005 contact/copy; email/SMS vendor |
+| Production | Soft | Vendor selection for email/SMS when G2 starts |
 
 ---
 

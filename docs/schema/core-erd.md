@@ -31,8 +31,9 @@ erDiagram
   payment_workflows ||--o| journal_transactions : "collection ref"
   settlements ||--o| journal_transactions : "settlement ref"
   merchants ||--o{ webhook_events : "receives"
-  webhook_events ||--o{ webhook_delivery_attempts : "1..N"
-  webhook_endpoints ||--o{ webhook_delivery_attempts : "target"
+  webhook_events ||--o{ webhook_deliveries : "1..N endpoints"
+  webhook_endpoints ||--o{ webhook_deliveries : "target"
+  webhook_deliveries ||--o{ webhook_delivery_attempts : "1..N"
   wallets ||--o{ wallet_reservations : "reserves"
 
   merchants {
@@ -102,10 +103,17 @@ erDiagram
     text public_id UK
     uuid merchant_id FK
     text type
+    text source_identity
+  }
+  webhook_deliveries {
+    uuid id PK
+    uuid webhook_event_id FK
+    uuid webhook_endpoint_id FK
+    text status
   }
   webhook_delivery_attempts {
     uuid id PK
-    uuid webhook_event_id FK
+    uuid webhook_delivery_id FK
     int attempt_number
     text status
   }

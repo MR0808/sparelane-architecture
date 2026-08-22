@@ -35,3 +35,13 @@ Each worker:
 | Later | Business retry after FAILED; optional production batching; bank-cash statement control |
 
 Gates: [phase-f0-settlement-decision-gate](./phase-f0-settlement-decision-gate.md), [phase-f1-settlement-execution-decision-gate](./phase-f1-settlement-execution-decision-gate.md).
+
+## notification-worker (Phase G)
+
+| Concern | Binding |
+| --- | --- |
+| Owns | Outbound **merchant** webhook projection/delivery ([ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md)) |
+| G0/G1 | Catalogue mapping, signing, SSRF, deliveries/attempts, Fake/local HTTP sink |
+| Must not | Mutate payment/settlement/ledger; expose internal events wholesale; auto-select Fake in sandbox/production |
+| G2+ | Consumer email/SMS — deferred (OD-005); same worker when implemented |
+| Isolated from | payment-worker / settlement-worker ([ADR-019](../decisions/ADR-019-financial-workload-isolation.md)) |

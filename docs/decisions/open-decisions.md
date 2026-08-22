@@ -143,6 +143,18 @@ Do not treat ADR-029 as selecting a banking partner, inventing fees, or requirin
 
 ---
 
+## Phase G impact
+
+ADR-030 freezes **merchant webhook** contracts. Canonical Phase G still includes notifications.
+
+| Effect | Open decisions |
+| --- | --- |
+| **Resolved** | [OD-031](./open/OD-031-webhook-retry-bounds.md) → ADR-030 (5 attempts; 1m/5m/30m/6h; Retry-After on 429/503) |
+| Remains OPEN | [OD-005](./open/OD-005-notification-rules.md) consumer notification rules/copy/contact — does **not** block G0 webhooks |
+| Remains OPEN | [OD-034](./open/OD-034-webhook-endpoint-api.md) Merchant API endpoint CRUD — portal/internal for MVP |
+
+---
+
 ## Catalogue
 
 ### product
@@ -204,7 +216,7 @@ Do not treat ADR-029 as selecting a banking partner, inventing fees, or requirin
 | --- | --- | --- | --- |
 | [OD-029](./open/OD-029-rate-limits.md) | Numeric rate limits | non-blocking | open |
 | [OD-030](./open/OD-030-idempotency-ttl.md) | Idempotency key retention TTL | development | open |
-| [OD-031](./open/OD-031-webhook-retry-bounds.md) | Webhook retry schedule / attempt bounds | development | open |
+| [OD-031](./open/OD-031-webhook-retry-bounds.md) | Webhook retry schedule / attempt bounds | development | resolved |
 | [OD-032](./open/OD-032-public-id-prefixes.md) | Public ID prefix final spelling | non-blocking | open |
 | [OD-033](./open/OD-033-attempt-api-visibility.md) | Payment-attempt merchant API visibility | non-blocking | open |
 | [OD-034](./open/OD-034-webhook-endpoint-api.md) | Webhook endpoint management via API | non-blocking | open |
@@ -218,3 +230,4 @@ Do not treat ADR-029 as selecting a banking partner, inventing fees, or requirin
 4. OD-017 Queue/broker + OD-019 DB hosting topology
 5. OD-014 Legal retention + OD-012 wallet regulatory posture (if wallet enabled)
 6. ~~OD-002 Due-date local clock + OD-006 timezone-change policy~~ → **resolved by ADR-025**
+7. ~~OD-031 Webhook retry bounds~~ → **resolved by ADR-030**

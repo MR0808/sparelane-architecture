@@ -39,7 +39,7 @@ See also [requirements README](../../requirements/README.md).
 | ADR-006 Separate settlement lifecycle | [settlement-state-machine](../money/settlement-state-machine.md), [reconciliation](../money/reconciliation.md) | Settlement, Reconciliation | Settlement lifecycle e2e |
 | ADR-007 Merchant billing SoR | [merchant-api](../integrations/merchant-api.md), [merchant-onboarding](../integrations/merchant-onboarding.md) | Bills, Merchant Integrations | Merchant submits bill; Sparelane ≠ billing SoR — Phase C evidence |
 | ADR-008 Idempotent Merchant API | [merchant-api](../integrations/merchant-api.md), OpenAPI | Bills, API layer | Duplicate bill submission — Phase C INT-API-001 local evidence |
-| ADR-009 Signed at-least-once webhooks | [webhooks](../integrations/webhooks.md), [webhook-security](../security/webhook-security.md) | Webhooks | Webhook retry e2e; signature security |
+| ADR-009 Signed at-least-once webhooks | [webhooks](../integrations/webhooks.md), [webhook-security](../security/webhook-security.md) | Webhooks | Webhook retry e2e; signature security; ADR-030 freezes package |
 | ADR-010 PCI boundary | [pci-boundary](../security/pci-boundary.md) | Payment Methods, PSP adapter | Security tests; no CHD in logs |
 | ADR-011 Centralised secrets | [secrets-management](../security/secrets-management.md) | config/secrets, Integrations | Secret handling acceptance |
 | ADR-012 Privileged admin audit | [audit](../security/audit.md), [admin-access](../security/admin-access.md) | Audit, Admin surfaces | Admin privileged action audited |
@@ -54,6 +54,7 @@ See also [requirements README](../../requirements/README.md).
 | ADR-021 Money representation | [contracts/money](../contracts/money.md) | domain money helpers, DB minor units | Money maths unit; API decimal strings |
 | ADR-022 Versioned external contracts | [api-versioning](../contracts/api-versioning.md) | API, contracts package | OpenAPI lint in CI |
 | ADR-023 Curated external events | [webhook-events](../contracts/webhook-events.md), [event-envelope](../contracts/event-envelope.md) | Webhooks | No raw internal dump to merchants |
+| ADR-030 Merchant webhook contract | [webhooks](../integrations/webhooks.md), [webhook-signing](../contracts/webhook-signing.md), SEQ-INT-003/004 | notification-worker; ProjectMerchantWebhook; DeliverMerchantWebhook | Unblocks platform G0; OD-031 resolved; notifications deferred OD-005 |
 | ADR-024 Recovery ordering / exhaustion | [payment-method-selection](../payments/payment-method-selection.md), [retry-policy](../payments/retry-policy.md), SEQ-PAY-004/005/006 | Payment Orchestrator, Decline Classification, Reliability Engine, Retry Service (D5 timing) | D4 decision table; E2E-PAY-002/003/004; no blind UNKNOWN retry |
 | ADR-025 Retry timing / budget / cutoff | [retry-policy](../payments/retry-policy.md), [due-dates](../contracts/due-dates.md), SEQ-PAY-005/006/007 | Retry Service, DurableScheduler, Orchestrator due/cutoff/Retry Now | D5; E2E-PAY-003/004/005; OD-001/002/006 resolved |
 | ADR-026 Collection CoA / posting template | [ledger-model](../money/ledger-model.md), SEQ-MONEY-001, SEQ-OPS-002 | Ledger consumer; ConfirmLedgerPosting | Unblocks platform E1; FIN-INV-02/03 mapping |
@@ -67,13 +68,14 @@ Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-a
 
 | Item | Status |
 | --- | --- |
-| All ADR-001–029 | Covered above — no missing ADR rows |
+| All ADR-001–030 | Covered above — no missing ADR rows |
 | Phase A platform foundation | Recorded — [phase-a-status](phase-a-status.md). Not product implementation. |
 | Phase B merchant/consumer core | Recorded — [phase-b-status](phase-b-status.md). No money movement; payment/ledger/settlement not implemented. |
 | Phase C bill ingestion | Recorded — [phase-c-status](phase-c-status.md). No money movement; payment attempts/PSP/ledger/settlement not implemented. |
 | Phase D payment reliability | Recorded — [phase-d-status](phase-d-status.md). FakePSP collection; real PSP still open. |
 | Phase E ledger (E0–E1) | Collection journal ADR-026 locally evidenced; not bank-cash verified. |
 | Phase F settlement (F0–F2) | Recorded — [phase-f-status](phase-f-status.md). Local Fake settlement; OD-009 / fees / batch / poll / retry / bank-cash remain open. |
+| Phase G webhooks (G0 architecture) | [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md) Accepted — platform G0 not yet implemented. Notifications deferred (OD-005). |
 | Automated product tests | Specs in this repo; product suites in `sparelane-platform`. FIN-INV local Fake evidence ≠ `product_verified` real rails. |
 | Wallet licensing | Open decision — blocks wallet go-live only; ADR path TBD if custody model changes architecture |
 | Vendor adapters | Interfaces specified; concrete PSP/bank adapters await open decisions |

@@ -24,8 +24,9 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `SubmitSettlementInstruction` | Settlement | Alias/legacy name for execute path — prefer `ExecuteSettlementInstruction` |
 | `LookupSettlementInstruction` | Settlement | Provider port used by unknown recovery and inside `ReconcileSettlement` (same key; never submit) |
 | `ReconcileSettlement` | Settlement | F2: finality → optional PROCESSING / payout journal + SETTLED / FAILED / hold ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)) |
-| `DeliverMerchantWebhook` | Webhooks | Signed delivery |
-| `NotifyConsumer` | Notifications | Email/SMS |
+| `ProjectMerchantWebhook` | Webhooks | Idempotent curated projection; closed catalogue ([ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md)) |
+| `DeliverMerchantWebhook` | Webhooks | Signed HTTP outside TX; same `evt_` on retry |
+| `NotifyConsumer` | Notifications | Email/SMS — **deferred** past G0/G1 (OD-005) |
 
 ## Important domain events (internal)
 
@@ -46,8 +47,11 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `SettlementSubmitted` | ELIGIBLE → SUBMITTED after provider accepted **or** unknown hold; **not** SETTLED; enqueues F2 `ReconcileSettlement` |
 | `SettlementSettled` | SUBMITTED/PROCESSING → SETTLED after ADR-029 finality + payout journal; outbox with transition |
 | `SettlementFailed` | External failure (F1 reject or F2 reconcile `failed`); payment remains COLLECTED |
-| `WebhookDeliveryFailed` | Delivery attempt failed / terminal |
+| `MerchantWebhookProjected` | WebhookEvent persisted; deliveries may be created |
+| `WebhookDelivered` | Logical delivery SUCCEEDED (2xx) |
+| `WebhookDeliveryFailed` | Attempt failed / delivery exhausted FAILED |
+| `WebhookDeliveryCancelled` | Endpoint not ACTIVE; no HTTP |
 
-Internal names need not equal merchant webhook types (`payment.collected`, etc.).
+Internal names need not equal merchant webhook types (`payment.collected`, etc.). Closed external catalogue: [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).
 
 F1 does **not** emit batch events (`BatchCreated`, etc.).

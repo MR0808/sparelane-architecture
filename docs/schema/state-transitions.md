@@ -82,9 +82,31 @@ Must not `SUBMITTED` unless payment workflow `COLLECTED`, ledger posting `CONFIR
 
 ---
 
-## Webhook Delivery Attempt
+## Webhook endpoint
 
-Per delivery attempt row (append-oriented):
+| From | To |
+| --- | --- |
+| (create after URL validation + secret issuance) | ACTIVE |
+| ACTIVE | DISABLED, REVOKED |
+| DISABLED | ACTIVE (re-validate URL), REVOKED |
+| REVOKED | terminal |
+
+Only `ACTIVE` may receive HTTP delivery.
+
+---
+
+## Webhook logical delivery
+
+| From | To |
+| --- | --- |
+| PENDING | SUCCEEDED, FAILED, CANCELLED |
+| SUCCEEDED / FAILED / CANCELLED | terminal |
+
+---
+
+## Webhook delivery attempt
+
+Per attempt row (append-oriented):
 
 | From | To |
 | --- | --- |
@@ -93,4 +115,4 @@ Per delivery attempt row (append-oriented):
 | RETRY_PENDING | DELIVERING |
 | SUCCEEDED / FAILED | terminal for that attempt |
 
-Event-level aggregate status may summarise latest attempt. Retries reuse the same `webhook_events.id` / public event ID.
+Retries reuse the same `webhook_events.public_id`. New attempt row; fresh signature timestamp. [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).

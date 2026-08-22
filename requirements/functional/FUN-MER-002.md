@@ -12,6 +12,7 @@ flows: []
 adrs:
   - ADR-008
   - ADR-009
+  - ADR-030
 contracts:
   - docs/integrations/merchant-api.md
 modules:

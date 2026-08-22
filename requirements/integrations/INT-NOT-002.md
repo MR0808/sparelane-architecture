@@ -34,3 +34,5 @@ Defines required provider interface capabilities for vendor evaluation. Does not
 ## Notes
 
 Vendors remain open decisions.
+
+**Phase G:** SMS is not MVP (`mvp: false`). Not in G0/G1. [ADR-030](../../docs/decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).

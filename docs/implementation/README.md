@@ -3,7 +3,7 @@
 **Status:** Current  
 **Owner:** Engineering (TBD)  
 **Last Reviewed:** 2026-08-20  
-**Related ADRs:** ADR-001–023 (via [traceability](architecture-traceability.md))  
+**Related ADRs:** ADR-001–030 (via [traceability](architecture-traceability.md))  
 **Related Views:** `10 Implementation /*`
 
 Phase 9 engineering blueprint for `sparelane-platform`. **Does not** implement the product.

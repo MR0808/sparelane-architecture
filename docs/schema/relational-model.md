@@ -109,10 +109,10 @@ Tenant enforcement: foreign keys + application checks; PostgreSQL RLS optional l
 | PK | `id` |
 | Public | `public_id` (`wh_...`) |
 | Tenant | `merchant_id` NOT NULL |
-| Fields | `url`, `environment`, `status`, `signing_secret_ref` (secrets manager ref; avoid plaintext), `event_types[]` |
+| Fields | `url`, `environment`, `status` (`ACTIVE` \| `DISABLED` \| `REVOKED`), `signing_secret_ref` (recoverable secrets-manager / SecretProvider ref; **not** a hash; **not** plaintext in this table), `event_types[]` (empty = all MVP catalogue types) |
 | Indexes | `(merchant_id, environment)` |
 
-Portal-managed for MVP API surface (no OpenAPI CRUD required).
+Portal/internal-command managed for MVP ([OD-034](../decisions/open/OD-034-webhook-endpoint-api.md)). URL/SSRF and lifecycle: [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).
 
 ---
 
@@ -355,31 +355,48 @@ Not the merchant customer master.
 
 ## webhook_events
 
-**Purpose:** Stable merchant-facing event contract instance.
+**Purpose:** Stable merchant-facing logical event (`evt_…`). Shared across endpoints. Not a raw dump of internal domain events.
 
 | Aspect | Design |
 | --- | --- |
 | PK | `id` |
-| Public | `public_id` (`evt_...`) UNIQUE — stable across delivery retries |
+| Public | `public_id` (`evt_...`) UNIQUE — same ID on every retry and every endpoint |
 | Tenant | `merchant_id` NOT NULL |
-| Fields | `type`, `payload` (curated JSON), `schema_version`, `created_at` |
+| Fields | `type` (closed catalogue), `payload` (curated JSON `data`), `schema_version` (integer; envelope `version`), `source_identity` (deterministic projection key), `created_at` (original; immutable on retry) |
+| Unique | `(merchant_id, type, source_identity)` |
 | Indexes | `(merchant_id, created_at)` |
 
-Not a raw dump of internal domain events.
+[ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).
 
 ---
 
-## webhook_delivery_attempts
+## webhook_deliveries
 
-**Purpose:** 1..N delivery attempts per webhook event.
+**Purpose:** One logical delivery of a WebhookEvent to one WebhookEndpoint.
 
 | Aspect | Design |
 | --- | --- |
 | PK | `id` |
 | FKs | `webhook_event_id`, `webhook_endpoint_id` |
-| Fields | `attempt_number`, `status`, `http_status`, `next_retry_at`, `error_class`, timestamps |
-| Unique | `(webhook_event_id, attempt_number)` |
-| Note | Avoid storing full merchant response bodies unless required |
+| Tenant | via event + endpoint `merchant_id` (must match) |
+| Fields | `status` (`PENDING` \| `SUCCEEDED` \| `FAILED` \| `CANCELLED`) |
+| Unique | `(webhook_event_id, webhook_endpoint_id)` |
+
+N ACTIVE subscribed endpoints ⇒ N delivery rows, one shared `evt_…`.
+
+---
+
+## webhook_delivery_attempts
+
+**Purpose:** 1..N transport attempts per **delivery** (not per event).
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| FKs | `webhook_delivery_id` (required); event/endpoint denormalised optional |
+| Fields | `attempt_number` (starts at 1), `status` (`WebhookAttemptStatus`), `http_status`, `next_retry_at`, `error_class`, timestamps |
+| Unique | `(webhook_delivery_id, attempt_number)` |
+| Note | Avoid storing full merchant response bodies. Do **not** use unique `(webhook_event_id, attempt_number)` once multiple endpoints exist. |
 
 ---
 

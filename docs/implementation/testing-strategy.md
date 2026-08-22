@@ -19,7 +19,7 @@
 ## Contract
 
 - OpenAPI request/response conformance
-- webhook envelope/event schemas
+- webhook envelope/event schemas and HMAC signing string (ADR-030)
 - provider adapter contract fakes
 
 ## End-to-end (critical flows)
@@ -32,6 +32,8 @@
 - settlement success / failure / unknown outcome
 - duplicate bill submission
 - webhook retry
+- webhook SSRF denylist
+- HMAC exact-bytes signing
 
 ## Security
 

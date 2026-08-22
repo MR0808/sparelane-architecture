@@ -2,7 +2,7 @@
 
 Distinguish inbound provider webhooks from outbound merchant webhooks. IP allowlisting may be complementary but is **not** sufficient as the only security mechanism.
 
-Product contract details: [`docs/integrations/webhooks.md`](../integrations/webhooks.md).
+Product contract: [`docs/integrations/webhooks.md`](../integrations/webhooks.md). Binding: [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).
 
 ## Incoming provider webhooks
 
@@ -17,27 +17,28 @@ Before treating an event as trusted:
 
 Invalid signatures or stale/replayed requests are rejected and should be audited/monitored. Unverified payloads must not drive payment or settlement state transitions.
 
+This path uses **provider** credentials and `ProviderEventReceipt`. It does **not** use merchant HMAC headers.
+
 ## Outgoing merchant webhooks
 
-Sparelane signs merchant-facing payloads.
+Sparelane signs merchant-facing payloads with **HMAC-SHA256** ([webhook-signing.md](../contracts/webhook-signing.md)).
 
-Conceptual security fields:
+Security fields:
 
-- stable event identifier
-- timestamp
-- signature
-- payload body integrity
+- stable event identifier (`evt_…`)
+- Unix-seconds timestamp header
+- hex HMAC over `timestamp.rawBody`
+- payload body integrity (exact bytes signed = bytes sent)
 
-Verification protects against:
-
-- payload tampering
-- spoofing
-- replay / stale delivery outside the accepted window
+Verification protects against tampering, spoofing, and replay outside ±300 seconds (merchant guidance).
 
 Additional requirements:
 
-- signing secret rotation capability
+- signing secret shown once; recoverable via secrets reference (not a hash)
 - redelivery safety (same event ID; at-least-once)
 - merchants process event IDs idempotently
+- outbound URL SSRF denylist (ADR-030) before connect
+- no redirects
+- HTTPS only in sandbox/production
 
-HMAC-SHA256 is a proposed signing approach; final algorithm package TBD if a different standard is required by partners.
+Ordinary merchant `5xx` is not a security incident. Blocked private/metadata destinations **are** a security signal.
