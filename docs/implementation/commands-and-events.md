@@ -22,8 +22,8 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `CreateSettlementInstruction` | Settlement | F1: 1:1 Settlement; amount = Settlement gross ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
 | `ExecuteSettlementInstruction` | Settlement | Provider submit outside TX; idempotency key = instruction business_reference |
 | `SubmitSettlementInstruction` | Settlement | Alias/legacy name for execute path — prefer `ExecuteSettlementInstruction` |
-| `LookupSettlementInstruction` | Settlement | Unknown-outcome / recovery lookup (same key) |
-| `ReconcileSettlement` | Reconciliation / Settlement | F2+; SETTLED only after evidence |
+| `LookupSettlementInstruction` | Settlement | Provider port used by unknown recovery and inside `ReconcileSettlement` (same key; never submit) |
+| `ReconcileSettlement` | Settlement | F2: finality → optional PROCESSING / payout journal + SETTLED / FAILED / hold ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)) |
 | `DeliverMerchantWebhook` | Webhooks | Signed delivery |
 | `NotifyConsumer` | Notifications | Email/SMS |
 
@@ -43,9 +43,9 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `SettlementCreated` | Settlement row exists at PENDING (obligation recorded) |
 | `SettlementEligible` | PENDING → ELIGIBLE; F1 may create/execute instruction |
 | `SettlementInstructionCreated` | Instruction CREATED (not yet provider-accepted) |
-| `SettlementSubmitted` | ELIGIBLE → SUBMITTED after provider accepted **or** unknown hold; **not** SETTLED; F1 handoff |
-| `SettlementSettled` | Confirmed + reconciled (F2+) |
-| `SettlementFailed` | External failure; payment remains COLLECTED |
+| `SettlementSubmitted` | ELIGIBLE → SUBMITTED after provider accepted **or** unknown hold; **not** SETTLED; enqueues F2 `ReconcileSettlement` |
+| `SettlementSettled` | SUBMITTED/PROCESSING → SETTLED after ADR-029 finality + payout journal; outbox with transition |
+| `SettlementFailed` | External failure (F1 reject or F2 reconcile `failed`); payment remains COLLECTED |
 | `WebhookDeliveryFailed` | Delivery attempt failed / terminal |
 
 Internal names need not equal merchant webhook types (`payment.collected`, etc.).

@@ -94,3 +94,18 @@ See [phase-d-status](phase-d-status.md). Platform detail: `sparelane-platform/do
 | FIN-INV-08 | Destination + instruction + provider request merchant isolation |
 
 This does **not** mark those invariants `product_verified`.
+
+## Architecture gate (settlement finality)
+
+[ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md) freezes MVP finality taxonomy, evidence hierarchy, not_found/unknown rules, trigger model (no poll cadence), and payout journal CoA. Platform F2 may implement against that ADR. Evidence expectations:
+
+| ID | F2 expectation |
+| --- | --- |
+| FIN-INV-03 | Payout journal balances |
+| FIN-INV-05 | Local Fake: one instruction → one transfer → one payout journal → one SETTLED under duplicate/concurrent/crash reconcile |
+| FIN-INV-06 | Unknown / not_found → no blind resubmit |
+| FIN-INV-02 | Collection journal unchanged; separate `settlement-payout` journal |
+| FIN-INV-08 | Merchant isolation on reconcile/SETTLED |
+| FIN-INV-09 / FIN-INV-10 | Reconcile replay / worker restart → no duplicate journal or SETTLED |
+
+This does **not** mark those invariants `product_verified`.

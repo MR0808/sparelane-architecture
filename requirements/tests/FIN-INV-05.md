@@ -12,7 +12,7 @@ mvp: true
 
 ## Purpose
 
-Settlement cannot be submitted twice for same instruction identity.
+Settlement cannot be submitted twice for same instruction identity; F2 reconciliation cannot create a second transfer, second payout journal, or second SETTLED.
 
 ## Preconditions
 
@@ -26,7 +26,7 @@ Exercise under success, replay, restart, and concurrency:
 
 **Prerequisite (ADR-027 / F0):** at most one Settlement domain obligation per confirmed PaymentWorkflow — necessary but **not sufficient**.
 
-**This invariant (ADR-028 / F1):**
+**F1 (ADR-028):**
 
 - One SettlementInstruction per Settlement (`settlement_id` unique)
 - Provider idempotency key = `settlement-instruction:{settlementPublicId}`
@@ -34,7 +34,13 @@ Exercise under success, replay, restart, and concurrency:
 - Technical retry reuses same instruction and key (no new instruction)
 - Provider accepted ≠ SETTLED
 
-**Verification boundary:** F1 proves **local Fake** exactly-once semantics. Real-bank exactly-once remains partner + production controls after OD-009.
+**F2 (ADR-029):**
+
+- Duplicate / concurrent `ReconcileSettlement` with finality `settled` → one payout journal `settlement-payout:{settlementPublicId}` → one SETTLED → one `SettlementSettled`
+- Reconcile/lookup never increments Fake transfer count / never calls submit
+- Crash after journal before SETTLED recovers to one journal + SETTLED
+
+**Verification boundary:** Local Fake exactly-once semantics. Real-bank exactly-once remains partner + production controls after OD-009.
 
 ## Expected result
 
@@ -42,4 +48,4 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — Architecture policy frozen (ADR-028). Platform F1 not yet implemented. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).
+`specified` — Architecture policy frozen (ADR-028, ADR-029). Platform F2 not yet implemented. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).

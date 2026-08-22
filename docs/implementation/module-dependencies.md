@@ -7,7 +7,7 @@ API/Web → Identity, Merchants, Consumers, Integrations, Bills, Payment Workflo
 Payment Workflows → Attempts, Reliability Engine, Payment Methods, Risk, Outbox, PSP adapter
 Attempts → Payment Methods, PSP adapter
 Ledger ← Outbox consumer (collection/settlement posting commands)
-Settlement → Ledger (eligibility read), Merchants (destination/KYB), SettlementProvider, Outbox; Reconciliation (F2+)
+Settlement → Ledger (eligibility read + F2 payout journal append), Merchants (destination/KYB), SettlementProvider, Outbox; Reconciliation (ADR-029 finality)
 Webhooks → Integrations, Secrets signing
 Notifications → Email/SMS adapters
 Audit ← any privileged module (record only)

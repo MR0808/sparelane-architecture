@@ -750,42 +750,40 @@ views {
 
   dynamic view settlementConfirmation {
     title '09 Flows / Money Movement / Settlement Confirmation'
-    description 'Banking partner confirms settlement outcome; Settlement Reconciliation matches expected vs provider vs ledger; settlement becomes SETTLED; merchant is notified. Exact confirmation ordering remains TBD with the partner.'
+    description 'ADR-029: verified webhook and/or lookup yields canonical finality; on settled, post payout journal then SETTLED + SettlementSettled. Bank statement not required for MVP SETTLED. Ack alone is not SETTLED.'
 
-    bankingPartner.settlementEvents -> sparelane.edgeLayer.webhookIngress 'publishes settlement confirmation'
+    bankingPartner.settlementEvents -> sparelane.edgeLayer.webhookIngress 'publishes settlement finality'
     sparelane.edgeLayer.webhookIngress -> sparelane.events.eventBus 'publishes verified settlement event'
-    sparelane.events.eventBus -> sparelane.settlementPlatform.settlementService 'applies provider confirmation'
-    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementReconciliation 'reconciles expected vs provider outcome'
-    sparelane.settlementPlatform.settlementReconciliation -> sparelane.fundsPlatform.ledgerService 'verifies ledger position'
-    sparelane.settlementPlatform.settlementService -> sparelane.fundsPlatform.ledgerService 'posts settlement journal entries'
-    sparelane.settlementPlatform.settlementService -> sparelane.events.eventBus 'publishes SettlementCompleted / SETTLED'
+    sparelane.events.eventBus -> sparelane.settlementPlatform.settlementService 'ReconcileSettlement'
+    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementReconciliation 'matches instruction identity + integrity'
+    sparelane.settlementPlatform.settlementReconciliation -> bankingPartner.settlementRail 'lookupSettlementInstruction when needed'
+    sparelane.settlementPlatform.settlementService -> sparelane.fundsPlatform.ledgerService 'posts settlement-payout journal'
+    sparelane.settlementPlatform.settlementService -> sparelane.events.eventBus 'publishes SettlementSettled'
     sparelane.events.eventBus -> sparelane.edgeLayer.webhookDelivery 'queues merchant settlement webhook'
     sparelane.edgeLayer.webhookDelivery -> merchantEnvironment.merchantBackend 'delivers settlement status'
   }
 
   dynamic view settlementFailure {
     title '09 Flows / Money Movement / Settlement Failure'
-    description 'Provider reports settlement failure. Consumer collection remains COLLECTED; settlement stays unpaid, is reconciled, may retry within bounds, and escalates if unresolved. Do not reverse the successful consumer payment merely because merchant settlement failed.'
+    description 'Provider reports definitive settlement failure (reconcile failed). Consumer collection remains COLLECTED; no payout discharge journal; F2 does not invent RETRY_PENDING replacement instruction.'
 
     bankingPartner.settlementEvents -> sparelane.edgeLayer.webhookIngress 'publishes settlement failure'
     sparelane.edgeLayer.webhookIngress -> sparelane.events.eventBus 'publishes verified settlement failure'
-    sparelane.events.eventBus -> sparelane.settlementPlatform.settlementService 'applies settlement failure'
-    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementReconciliation 'reconciles unpaid settlement vs ledger'
-    sparelane.settlementPlatform.settlementService -> sparelane.fundsPlatform.ledgerService 'posts compensating / exception entries if required'
-    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementInstructionService 'schedules bounded settlement retry if permitted'
+    sparelane.events.eventBus -> sparelane.settlementPlatform.settlementService 'ReconcileSettlement → FAILED'
+    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementReconciliation 'records failed finality'
     sparelane.settlementPlatform.settlementService -> sparelane.operations.alerting 'alerts operations if unresolved'
   }
 
   dynamic view unknownSettlementOutcome {
     title '09 Flows / Money Movement / Unknown Settlement Outcome'
-    description 'Network timeout after settlement submission leaves external outcome unknown. Architecture must query/reconcile before blindly resubmitting another payout instruction.'
+    description 'Network timeout after settlement submission leaves external outcome unknown. ADR-028/029: lookup/reconcile same key; never blind resubmit; not_found is integrity hold not auto-resubmit; SETTLED only after settled + payout journal.'
 
     sparelane.settlementPlatform.settlementInstructionService -> bankingPartner.settlementRail 'submits settlement instruction'
     bankingPartner.settlementRail -> sparelane.settlementPlatform.settlementInstructionService 'network timeout; outcome unknown'
     sparelane.settlementPlatform.settlementInstructionService -> sparelane.settlementPlatform.settlementService 'reports unknown external outcome'
-    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementReconciliation 'queries / reconciles with provider before resubmit'
-    sparelane.settlementPlatform.settlementReconciliation -> bankingPartner.settlementEvents 'determines actual external state'
-    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementInstructionService 'continues or retries safely only if not already accepted'
+    sparelane.settlementPlatform.settlementService -> sparelane.settlementPlatform.settlementReconciliation 'ReconcileSettlement / lookup same key — never blind resubmit'
+    sparelane.settlementPlatform.settlementReconciliation -> bankingPartner.settlementRail 'lookupSettlementInstruction'
+    sparelane.settlementPlatform.settlementService -> sparelane.fundsPlatform.ledgerService 'posts settlement-payout journal only if settled'
   }
 
   dynamic view merchantReconciliationFlow {

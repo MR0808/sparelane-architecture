@@ -16,8 +16,12 @@ adrs:
   - ADR-004
   - ADR-006
   - ADR-009
+  - ADR-026
+  - ADR-028
+  - ADR-029
 tests:
   - E2E-SET-002
+  - FIN-INV-05
   - FIN-INV-06
 ---
 
@@ -25,55 +29,80 @@ tests:
 
 ## Purpose
 
-Banking partner confirms settlement; reconciliation matches expected vs provider vs ledger; settlement becomes SETTLED; merchant is notified.
+After F1 `SUBMITTED`, settlement-worker reconciles provider finality (verified webhook and/or lookup). On canonical `settled`, appends the ADR-029 payout journal, then marks Settlement `SETTLED` and emits `SettlementSettled`. Merchant notification remains curated webhook (later Phase G).
+
+Binding: [ADR-029](../../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md).
 
 ## Preconditions
 
 - Settlement is SUBMITTED or PROCESSING.
-- Provider confirmation event is signature-verified.
-- Expected amount and ledger position are available for match.
+- SettlementInstruction exists (ACCEPTED or OUTCOME_UNKNOWN).
+- Provider confirmation is signature-verified when webhook-sourced.
+- Expected amount/currency/destination available for integrity match.
 
 ## Mermaid
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Bank as Banking / Settlement Partner
+    participant Bank as SettlementProvider
     participant WH as Webhook Ingress
     participant Bus as Event Bus
-    participant SS as Settlement Service
-    participant Rec as Settlement Reconciliation
+    participant SW as settlement-worker
     participant Led as Ledger Service
-    participant WHD as Webhook Delivery
-    participant MBE as Merchant Backend
 
-    Bank->>WH: Settlement confirmation
+    Note over Bus,SW: Trigger A — SettlementSubmitted enqueues ReconcileSettlement
+    Bus->>SW: SettlementSubmitted / ReconcileSettlement
+    SW->>Bank: lookupSettlementInstruction (same key - never submit)
+
+    Note over Bank,WH: Trigger B — verified webhook (optional parallel channel)
+    Bank->>WH: Settlement finality event
     WH->>Bus: Verified settlement event
-    Bus->>SS: Apply provider confirmation
-    SS->>Rec: Reconcile expected vs provider outcome
-    Rec->>Led: Verify ledger position
-    alt Match
-        SS->>Led: Post settlement journal entries
-        SS->>SS: → SETTLED
-        SS->>Bus: SettlementCompleted / SETTLED
-        Bus->>WHD: Queue merchant settlement webhook
-        WHD->>MBE: Deliver settlement status
-    else Mismatch
-        SS->>SS: Hold / FAILED for ops (do not force SETTLED)
+    Bus->>SW: ReconcileSettlement
+
+    alt pending
+        SW->>SW: Remain SUBMITTED or → PROCESSING
+        Note over SW: No journal - no SETTLED
+    else settled + integrity match
+        SW->>Led: appendJournal settlement-payout:{settlementPublicId}
+        Note over Led: Dr payable / Cr settlement-clearing (gross)
+        SW->>SW: Verify journal substance
+        SW->>SW: → SETTLED + SettlementSettled outbox
+    else failed
+        SW->>SW: → FAILED + SettlementFailed
+        Note over SW: No payout discharge journal
+    else not_found or unknown
+        SW->>SW: Hold with reconciliation_required - no resubmit
+    else integrity mismatch / conflict
+        SW->>SW: Financial-integrity hold - no SETTLED
     end
+```
+
+### Crash after journal before SETTLED
+
+```mermaid
+sequenceDiagram
+    participant SW as settlement-worker
+    participant Led as Ledger Service
+    SW->>Led: payout journal commits
+    Note over SW: Process dies
+    SW->>Led: replay same business_reference → already_applied
+    SW->>SW: → SETTLED + SettlementSettled
 ```
 
 ## Important invariants
 
-- SETTLED only after confirmation + reconciliation match.
+- SETTLED only after finality `settled` + durable payout journal.
 - First network ack alone must not mark SETTLED.
-- Merchant notification is curated webhook (ADR-023 / ADR-009).
+- Reconciliation never calls submit.
+- Merchant notification is curated webhook (ADR-023 / ADR-009) — Phase G delivery.
 
 ## Failure notes
 
 - Reconciliation mismatch → do not invent SETTLED; escalate.
 - Consumer payment remains COLLECTED regardless.
+- `not_found` is not automatic FAILED and not resubmit.
 
 ## Related
 
-LikeC4: `settlementConfirmation`. SEQ-MONEY-006 for merchant recon.
+LikeC4: `settlementConfirmation`. SEQ-MONEY-006 for merchant recon. ADR-029.

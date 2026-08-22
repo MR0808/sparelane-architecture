@@ -115,13 +115,15 @@ Product config (backup cardinality) is **Partial** — [OD-003](../decisions/ope
 
 **Binding execution/instruction:** [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md). Gate: [phase-f1-settlement-execution-decision-gate](./phase-f1-settlement-execution-decision-gate.md).
 
+**Binding finality / payout accounting:** [ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md). Gate: [phase-f2-settlement-finality-decision-gate](./phase-f2-settlement-finality-decision-gate.md).
+
 **Engineering sub-phases (local):**
 
 | Slice | Scope |
 | --- | --- |
 | **F0** | `LedgerPostingConfirmed` → create Settlement PENDING → evaluate → ELIGIBLE; unique per workflow; no batch/instruction/bank |
 | **F1** | Payout destination + 1:1 SettlementInstruction + FakeSettlementProvider; ELIGIBLE → SUBMITTED; no batch; no SETTLED; no settlement CoA |
-| **F2+** | Reconciliation → SETTLED; settlement accounting; unknown full recovery; optional production batching |
+| **F2** | `ReconcileSettlement` → finality → payout journal → SETTLED; unknown/not_found hold; no poll cadence; no fee netting |
 
 **Open decisions**
 
@@ -129,8 +131,9 @@ Product config (backup cardinality) is **Partial** — [OD-003](../decisions/ope
 | --- | --- | --- |
 | Local F0 | No | Fake KYB / `APPROVED_FOR_SETTLEMENT` |
 | Local F1 | No | Fake settlement adapter + Fake destinations ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
-| Sandbox | **Yes** for live payout sandbox | Settlement/banking partner ([OD-009](../decisions/open/OD-009-settlement-partner.md)) + payout CoA |
-| Pilot / Production money | **Yes** | Partner + fee/net + settlement CoA + reconciliation; batch cadence ([OD-011](../decisions/open/OD-011-settlement-batching.md)) only if aggregation enabled |
+| Local F2 | No | Fake finality + gross payout journal ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)) |
+| Sandbox | **Yes** for live payout sandbox | Settlement/banking partner ([OD-009](../decisions/open/OD-009-settlement-partner.md)) |
+| Pilot / Production money | **Yes** | Partner + fee/net (if commercial net required) + live reconcile adapters; batch cadence ([OD-011](../decisions/open/OD-011-settlement-batching.md)) only if aggregation enabled |
 
 ---
 

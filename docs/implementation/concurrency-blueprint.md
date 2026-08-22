@@ -16,8 +16,9 @@ Queue partition-by-workflow is an optional later optimisation — **not** the so
 - Lifecycle state guards / OCC on status transitions
 - Unique `settlement_id` on instruction + `business_reference` / provider idempotency key = `settlement-instruction:{settlementPublicId}` ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md))
 - Provider reference uniqueness where present
-- Unknown-outcome → SUBMITTED + OUTCOME_UNKNOWN hold; lookup before any resubmit (same key)
+- Unknown-outcome → SUBMITTED + OUTCOME_UNKNOWN hold; lookup/reconcile before any resubmit (same key); F2 never resubmits from `not_found` ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md))
 - Concurrent execute may hit provider twice only with same key → one logical transfer
+- Concurrent `ReconcileSettlement` → one payout journal (`settlement-payout:{settlementPublicId}`) and one SETTLED
 - Queue claim alone is insufficient
 
 ## Why not queue-ordering alone

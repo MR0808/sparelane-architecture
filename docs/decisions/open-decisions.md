@@ -94,7 +94,7 @@ Architecture [ADR-026](./ADR-026-collection-ledger-posting-minimal-coa.md) freez
 | Effect | Detail |
 | --- | --- |
 | **Resolved (no prior OD id)** | Collection debit/credit legs, account codes, amount source (Bill gross), fees excluded, `business_reference`, PENDING→CONFIRMED, `LedgerPostingConfirmed` |
-| Remains OPEN (broader CoA) | Settlement, fee recognition, refunds, chargebacks, wallet, tax, FX, suspense — still TBD |
+| Remains OPEN (broader CoA) | Fees, refunds, chargebacks, wallet, tax, FX, suspense, bank-cash statement adjustments — still TBD |
 | Remains OPEN | [OD-019](./open/OD-019-db-topology.md) physical ledger DB topology; [OD-008](./open/OD-008-psp-selection.md) PSP selection (`providerCode` values) |
 
 Do not treat ADR-026 as freezing the final enterprise Chart of Accounts.
@@ -109,7 +109,7 @@ Architecture [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.m
 | --- | --- |
 | **Resolved (no prior OD id)** | 1:1 Settlement per confirmed collection; amount = ADR-026 payable CREDIT (gross); PENDING→ELIGIBLE; merchant status table; KYB/`APPROVED_FOR_SETTLEMENT`; business identity; uniqueness |
 | Narrowed (not resolved) | [OD-011](./open/OD-011-settlement-batching.md) — **role** of batching = optional later execution grouping; cadence/schedule still open |
-| Remains OPEN | [OD-009](./open/OD-009-settlement-partner.md) partner; fee/reserve netting; settlement execution CoA; [OD-015](./open/OD-015-kyb-evidence-retention.md) evidence retention |
+| Remains OPEN | [OD-009](./open/OD-009-settlement-partner.md) partner; fee/reserve netting; [OD-015](./open/OD-015-kyb-evidence-retention.md) evidence retention |
 
 Do not treat ADR-027 as selecting a banking partner or inventing fee netting.
 
@@ -123,9 +123,23 @@ Architecture [ADR-028](./ADR-028-settlement-execution-payout-destination-instruc
 | --- | --- |
 | **Resolved (no prior OD id)** | No MVP batching; MerchantPayoutDestination token model; default per merchant+currency; 1:1 instruction; gross amount; idempotency key; provider taxonomy; SUBMITTED end; unknown hold; Fake-only F1; no settlement journal in F1 |
 | Narrowed (not resolved) | [OD-011](./open/OD-011-settlement-batching.md) — F1 does not batch; future production aggregation cadence still open |
-| Remains OPEN | [OD-009](./open/OD-009-settlement-partner.md) real partner; fee/reserve netting; settlement execution CoA (blocks production money); reconciliation → SETTLED (F2+); [OD-015](./open/OD-015-kyb-evidence-retention.md) |
+| Remains OPEN | [OD-009](./open/OD-009-settlement-partner.md) real partner; fee/reserve netting; [OD-015](./open/OD-015-kyb-evidence-retention.md) |
 
 Do not treat ADR-028 as selecting a banking partner, inventing payout CoA, or marking SETTLED on provider ack.
+
+---
+
+## Phase F2 settlement finality decision gate
+
+Architecture [ADR-029](./ADR-029-settlement-finality-reconciliation-payout-accounting.md) freezes MVP **finality / reconciliation / payout CoA** that blocked platform F2:
+
+| Effect | Detail |
+| --- | --- |
+| **Resolved (no prior OD id)** | SETTLED economic meaning; provider-neutral finality taxonomy; evidence hierarchy (webhook + lookup; bank file not required); matching keys; not_found hold; trigger model (no poll cadence); payout journal Dr payable / Cr settlement-clearing; gross amount; `settlement-payout:{settlementPublicId}`; journal-before-SETTLED; split-store crash semantics |
+| Explicitly deferred | Automatic ScheduledJob poll cadence; bank-cash as SETTLED prerequisite; RETRY_PENDING business recovery |
+| Remains OPEN | [OD-009](./open/OD-009-settlement-partner.md) real partner; fee/reserve netting (production commercial net payout); [OD-011](./open/OD-011-settlement-batching.md) future batch cadence; [OD-015](./open/OD-015-kyb-evidence-retention.md) |
+
+Do not treat ADR-029 as selecting a banking partner, inventing fees, or requiring bank-statement finality for MVP SETTLED.
 
 ---
 

@@ -15,6 +15,7 @@ adrs:
   - ADR-006
   - ADR-017
   - ADR-028
+  - ADR-029
 tests:
   - E2E-SET-003
   - FIN-INV-06
@@ -24,9 +25,9 @@ tests:
 
 ## Purpose
 
-Network timeout after settlement submission leaves external outcome unknown. **Do not resubmit blindly.** Query/reconcile before any safe retry.
+Network timeout after settlement submission leaves external outcome unknown. **Do not resubmit blindly.** Lookup/reconcile with the same instruction identity. Final `SETTLED` only via ADR-029 finality + payout journal.
 
-Binding: [ADR-028](../../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md).
+Binding: [ADR-028](../../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md), [ADR-029](../../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md).
 
 ## Preconditions
 
@@ -41,27 +42,29 @@ sequenceDiagram
     participant Inst as Settlement Instruction
     participant Bank as SettlementProvider
     participant SW as settlement-worker
-    participant Rec as Settlement Reconciliation
+    participant Led as Ledger Service
 
     Inst->>Bank: submitSettlementInstruction (stable idempotency key)
     Bank--xInst: Network timeout — outcome unknown
     Inst->>SW: Persist OUTCOME_UNKNOWN + Settlement SUBMITTED
 
     critical Do not blind resubmit
-        SW->>Rec: Lookup / reconcile with provider first
-        Rec->>Bank: lookupSettlementInstruction(same key / provider ref)
-        Bank-->>Rec: Accepted | Not found | Failed | Still processing | Still unknown
+        SW->>Bank: lookupSettlementInstruction / ReconcileSettlement (same key)
+        Bank-->>SW: pending | settled | failed | not_found | unknown
 
-        alt Already accepted / processing
-            Rec-->>SW: Adopt provider truth — no second instruction
-            SW->>SW: Align instruction ACCEPTED then optional PROCESSING
-            Note over SW: Still not SETTLED (F2+ reconciliation)
-        else Definitively not accepted
-            Rec-->>SW: Safe bounded retry permitted (same key)
-            SW->>Inst: Retry same SettlementInstruction
-        else Still unknown
-            Rec-->>SW: Hold — re-query — alert ops
-            Note over SW: Never invent a second payout / new key
+        alt pending
+            SW->>SW: Align ACCEPTED then optional PROCESSING
+            Note over SW: No journal - not SETTLED
+        else settled + integrity match
+            SW->>Led: settlement-payout journal
+            SW->>SW: → SETTLED + SettlementSettled
+        else failed
+            SW->>SW: → FAILED - no payout journal - no resubmit in F2
+        else not_found
+            SW->>SW: Integrity/ops hold - NO resubmit - NO FAILED-from-not-found
+        else unknown
+            SW->>SW: Hold - redeliver ReconcileSettlement - alert ops
+            Note over SW: Never invent a second payout or new key
         end
     end
 ```
@@ -69,9 +72,9 @@ sequenceDiagram
 ## Important invariants
 
 - Blind duplicate settlement instructions are forbidden.
-- Provider query / reconciliation precedes any resubmit.
+- Provider query / reconciliation precedes any resubmit; F2 MVP **never** resubmits from reconcile (including `not_found`).
 - Same instruction identity and idempotency key forever for this obligation (MVP).
-- Do not mark FAILED merely to enable retry; do not mark SETTLED.
+- Do not mark FAILED merely to enable retry; do not mark SETTLED without ADR-029 evidence + journal.
 
 ## Failure notes
 
@@ -80,4 +83,4 @@ sequenceDiagram
 
 ## Related
 
-LikeC4: `unknownSettlementOutcome`. Critical safety path. ADR-028.
+LikeC4: `unknownSettlementOutcome`. Critical safety path. ADR-028. ADR-029.

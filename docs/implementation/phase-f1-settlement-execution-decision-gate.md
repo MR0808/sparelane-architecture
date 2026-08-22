@@ -22,4 +22,4 @@ SettlementBatch path, real banking partner, SETTLED, settlement CoA journal, fee
 
 ## Still TBD (not F1 local blockers; block production money)
 
-OD-009 partner, OD-011 future batch cadence, fee/reserve netting, settlement execution CoA, full reconciliation → SETTLED (F2+).
+OD-009 partner, OD-011 future batch cadence, fee/reserve netting. Settlement finality / payout CoA / SETTLED: [ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md) / [phase-f2-settlement-finality-decision-gate](./phase-f2-settlement-finality-decision-gate.md).

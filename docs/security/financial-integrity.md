@@ -20,7 +20,8 @@ Protections for money-movement correctness and abuse resistance.
 - **Idempotency** for merchant mutations and provider/settlement instructions ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md): one instruction per Settlement; stable provider key; unknown ≠ blind resubmit)
 - **Ledger invariants** (balanced postings; no silent history rewrite)
 - **Append-only journal** with compensating entries for corrections
-- **Reconciliation** of provider, ledger and merchant references (SETTLED only after evidence)
+- **Reconciliation** of provider, ledger and merchant references ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md): SETTLED only after finality `settled` + payout journal; ack alone invalid; not_found ≠ resubmit)
+- **Payout journal integrity** — unique `settlement-payout:{settlementPublicId}`; amount/currency/destination mismatch → no SETTLED; SETTLED without journal → integrity violation
 - **Audit trail** for sensitive payment and settlement actions
 - **Scoped permissions** for financial and privileged operations
 - **Merchant isolation** on Settlement, payout destination, instruction, and provider request (FIN-INV-08)

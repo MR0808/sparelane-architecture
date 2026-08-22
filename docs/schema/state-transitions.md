@@ -49,7 +49,7 @@ Retries create a **new** attempt row; do not mutate a terminal attempt into succ
 | PENDING | ELIGIBLE, CANCELLED |
 | ELIGIBLE | BATCHED, SUBMITTED, CANCELLED |
 | BATCHED | SUBMITTED, CANCELLED |
-| SUBMITTED | PROCESSING, FAILED, RETRY_PENDING |
+| SUBMITTED | PROCESSING, SETTLED, FAILED, RETRY_PENDING |
 | PROCESSING | SETTLED, FAILED, RETRY_PENDING |
 | FAILED | RETRY_PENDING (if permitted) |
 | RETRY_PENDING | SUBMITTED, FAILED, CANCELLED |
@@ -61,9 +61,11 @@ Initial status: **PENDING**. F0: create PENDING then evaluate → ELIGIBLE or re
 
 `FAILED` is **not** terminal (may → `RETRY_PENDING`). Merchant/KYB/destination ineligibility must not transition to `FAILED`.
 
-`SETTLED` requires reconciliation evidence; ack alone is invalid ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)).
+`SETTLED` requires ADR-029 finality + payout journal; ack alone is invalid ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md), [ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)).
 
-**F1 MVP:** skip BATCHED; ELIGIBLE → SUBMITTED on provider `accepted` or on `unknown_outcome` (with instruction `OUTCOME_UNKNOWN` + reconcile hold). F1 happy-path end = **SUBMITTED**. PROCESSING optional via later lookup; SETTLED is F2+.
+**F1 MVP:** skip BATCHED; ELIGIBLE → SUBMITTED on provider `accepted` or on `unknown_outcome` (with instruction `OUTCOME_UNKNOWN` + reconcile hold). F1 happy-path end = **SUBMITTED**.
+
+**F2 MVP:** `ReconcileSettlement` — `pending` may SUBMITTED→PROCESSING; `settled` → journal then SETTLED (from SUBMITTED or PROCESSING); `failed` → FAILED; `not_found`/`unknown` → hold (no resubmit). No automatic poll cadence.
 
 Must not `SUBMITTED` unless payment workflow `COLLECTED`, ledger posting `CONFIRMED`, and pre-submit gates (merchant, KYB, destination) pass.
 

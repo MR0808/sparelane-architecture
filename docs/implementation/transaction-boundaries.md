@@ -84,4 +84,26 @@ Idempotent on redelivery of `LedgerPostingConfirmed`: unique `payment_workflow_i
 | `technical_error` | Instruction TECHNICAL_ERROR; Settlement remains ELIGIBLE; bounded same-key retry |
 | `unknown_outcome` | Instruction OUTCOME_UNKNOWN + `reconciliation_required`; Settlement → SUBMITTED; no second instruction |
 
-Unknown recovery uses `lookupSettlementInstruction` with the **same** key — never a new instruction. F1 does not post settlement CoA journals and does not mark SETTLED.
+Unknown recovery uses `lookupSettlementInstruction` / `ReconcileSettlement` with the **same** key — never a new instruction. F1 does not post settlement CoA journals and does not mark SETTLED.
+
+## F2 — ReconcileSettlement / SETTLED ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md))
+
+No distributed TX between ledger and operational Settlement store.
+
+### Ledger TX (when outcome = `settled`)
+
+Append payout journal `settlement-payout:{settlementPublicId}` (Dr payable / Cr settlement-clearing); idempotent on `business_reference`.
+
+### Operational TX (after journal verified)
+
+Settlement SUBMITTED|PROCESSING → SETTLED + `settled_at` + Outbox `SettlementSettled`.
+
+### Other outcomes (operational only)
+
+| Outcome | Persist |
+| --- | --- |
+| `pending` | Optional SUBMITTED→PROCESSING; instruction reconcile fields; no journal |
+| `failed` | → FAILED + `SettlementFailed`; no payout journal |
+| `not_found` / `unknown` | Hold + `reconciliation_hold_reason`; no resubmit; no SETTLED |
+
+Reconcile/lookup must not call submit. Crash after journal before SETTLED: replay → same journal → then SETTLED.

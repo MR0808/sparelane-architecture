@@ -80,9 +80,9 @@ Semantics (binding MVP):
 | ELIGIBLE | Domain-ready for instruction; F1 may submit after destination/KYB recheck ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
 | BATCHED | Future optional grouping only — **not used in F1** |
 | SUBMITTED | Provider accepted instruction **or** unknown outcome held for lookup — **not** SETTLED |
-| PROCESSING | Partner async in-progress after SUBMITTED (optional F1 Fake lookup; not SETTLED) |
-| SETTLED | Terminal happy path; requires reconciliation (not ack alone) — **F2+** |
-| FAILED | External execution / definitive negative recon — **recoverable** via `RETRY_PENDING` when permitted; **not** merchant temporary ineligibility or pre-submit gate failure |
+| PROCESSING | Partner async in-progress after SUBMITTED; F2 `pending` reconcile ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)) |
+| SETTLED | Terminal happy path; ADR-029 finality `settled` + payout journal — **not** ack alone |
+| FAILED | External execution / definitive reconcile `failed` — **recoverable** via `RETRY_PENDING` when permitted later; **not** merchant temporary ineligibility, pre-submit gate failure, or reconcile `not_found` alone |
 | RETRY_PENDING | Bounded external retry scheduled |
 | CANCELLED | Terminal; product cancel triggers deferred beyond F0 |
 
@@ -105,6 +105,27 @@ OUTCOME_UNKNOWN
 | REJECTED | Provider explicit business rejection |
 | TECHNICAL_ERROR | Known no-send technical failure (retry same key) |
 | OUTCOME_UNKNOWN | Submit may have succeeded; reconcile/lookup required — **no** blind resubmit |
+
+## SettlementReconcileOutcome
+
+Provider-neutral finality taxonomy ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)):
+
+```text
+pending
+settled
+failed
+not_found
+unknown
+```
+
+Distinct from F1 submit taxonomy (`accepted` \| `rejected` \| `technical_error` \| `unknown_outcome`).
+
+## SettlementReconcileSource
+
+```text
+lookup
+webhook
+```
 
 ## MerchantPayoutDestinationStatus
 

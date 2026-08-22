@@ -45,13 +45,16 @@ Conceptual protections:
 
 ## 4. Reconciliation
 
-Repeated reconciliation jobs/events must not create duplicate financial movements (F2+).
+Repeated reconciliation jobs/events must not create duplicate financial movements ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)).
 
-Conceptual protections:
+Binding protections:
 
-- reconciliation results are idempotent per settlement + provider statement reference
-- compensating entries are explicitly keyed and not re-posted blindly
-- matched settlements are not re-opened by identical inputs
+- reconciliation results are idempotent per SettlementInstruction identity (not per poll attempt)
+- payout journal `business_reference` = `settlement-payout:{settlementPublicId}` UNIQUE
+- duplicate/concurrent `ReconcileSettlement` → one journal, one SETTLED, one `SettlementSettled`
+- reconcile/lookup never calls submit / never increments Fake transfer count
+- `not_found` / `unknown` / `pending` never mark SETTLED and never resubmit
+- matched SETTLED settlements are not re-opened by identical inputs
 
 ## Unknown external outcome
 
@@ -61,14 +64,13 @@ Example:
 2. Network times out.
 3. Sparelane does not know whether the partner accepted it.
 
-Architecture must ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)):
+Architecture must ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md), [ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)):
 
 ```text
 Settlement → SUBMITTED
 instruction → OUTCOME_UNKNOWN + reconciliation_required
-→ lookupSettlementInstruction (same idempotency key)
-→ determine actual external state
-→ continue, confirm, or retry safely
+→ ReconcileSettlement / lookupSettlementInstruction (same idempotency key)
+→ pending | settled (+ journal → SETTLED) | failed | not_found (hold) | unknown (hold)
 ```
 
 Do **not**:
@@ -77,7 +79,8 @@ Do **not**:
 - change the provider idempotency key
 - submit to an alternate provider
 - mark FAILED merely to retry
-- mark SETTLED
+- mark SETTLED without ADR-029 finality + payout journal
+- auto-resubmit on `not_found`
 
 This flow is modelled in:
 
@@ -92,3 +95,4 @@ This flow is modelled in:
 - [ADR-006 Separate settlement lifecycle](../decisions/ADR-006-separate-settlement-lifecycle.md)
 - [ADR-027 Settlement obligation / eligibility](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)
 - [ADR-028 Settlement execution / instruction](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)
+- [ADR-029 Settlement finality / payout accounting](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)

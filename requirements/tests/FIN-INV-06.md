@@ -13,7 +13,7 @@ mvp: true
 
 ## Purpose
 
-Unknown payout outcome cannot trigger blind duplicate submission.
+Unknown payout outcome cannot trigger blind duplicate submission. Reconcile `not_found` / `unknown` / `pending` must not resubmit or mark SETTLED.
 
 ## Preconditions
 
@@ -22,7 +22,16 @@ Unknown payout outcome cannot trigger blind duplicate submission.
 
 ## Scenario
 
-Exercise the invariant under success, replay, and restart conditions as applicable.
+Exercise under success, replay, and restart:
+
+**Collection prerequisite:** UNKNOWN collection outcome blocks alternate charges (Phase D local evidence).
+
+**Settlement (ADR-028 / ADR-029):**
+
+- Submit `unknown_outcome` → SUBMITTED + OUTCOME_UNKNOWN + reconcile hold
+- `ReconcileSettlement` / lookup uses same instruction identity and provider key
+- Outcomes `unknown`, `not_found`, `pending` → no new instruction, no new key, no provider switch, no SETTLED, no payout journal
+- `not_found` is integrity/ops hold — not automatic FAILED and not automatic resubmit
 
 ## Expected result
 
@@ -30,4 +39,4 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — Partial prerequisite — collection UNKNOWN outcome blocks alternate charges locally. Payout blind-resubmit semantics remain Phase F+. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md) Phase D section.
+`specified` — Architecture policy frozen (ADR-028, ADR-029). See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).

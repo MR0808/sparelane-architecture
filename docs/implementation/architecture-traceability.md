@@ -58,7 +58,8 @@ See also [requirements README](../../requirements/README.md).
 | ADR-025 Retry timing / budget / cutoff | [retry-policy](../payments/retry-policy.md), [due-dates](../contracts/due-dates.md), SEQ-PAY-005/006/007 | Retry Service, DurableScheduler, Orchestrator due/cutoff/Retry Now | D5; E2E-PAY-003/004/005; OD-001/002/006 resolved |
 | ADR-026 Collection CoA / posting template | [ledger-model](../money/ledger-model.md), SEQ-MONEY-001, SEQ-OPS-002 | Ledger consumer; ConfirmLedgerPosting | Unblocks platform E1; FIN-INV-02/03 mapping |
 | ADR-027 Settlement obligation / eligibility | [settlement-state-machine](../money/settlement-state-machine.md), SEQ-MONEY-002, STATE-MONEY-001 | settlement-worker; CreateSettlement; EvaluateSettlementEligibility | Unblocks platform F0; FIN-INV-04/08 mapping; FIN-INV-05 deferred to instruction |
-| ADR-028 Settlement execution / destination / instruction | [settlement-idempotency](../money/settlement-idempotency.md), SEQ-MONEY-002/005, STATE-MONEY-001 | settlement-worker; Create/ExecuteSettlementInstruction; FakeSettlementProvider | Unblocks platform F1; FIN-INV-05 local Fake; SETTLED/recon F2+ |
+| ADR-028 Settlement execution / destination / instruction | [settlement-idempotency](../money/settlement-idempotency.md), SEQ-MONEY-002/005, STATE-MONEY-001 | settlement-worker; Create/ExecuteSettlementInstruction; FakeSettlementProvider | Unblocks platform F1; FIN-INV-05 local Fake; SETTLED via ADR-029 |
+| ADR-029 Settlement finality / payout CoA | [reconciliation](../money/reconciliation.md), [ledger-model](../money/ledger-model.md), SEQ-MONEY-003/005, STATE-MONEY-001 | settlement-worker; ReconcileSettlement; append settlement-payout journal | Unblocks platform F2; FIN-INV-05/06/03/09/10 mapping |
 
 Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-acceptance-criteria](mvp-acceptance-criteria.md), [build-phases](build-phases.md).
 
@@ -66,7 +67,7 @@ Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-a
 
 | Item | Status |
 | --- | --- |
-| All ADR-001–027 | Covered above — no missing ADR rows |
+| All ADR-001–029 | Covered above — no missing ADR rows |
 | Phase A platform foundation | Recorded — [phase-a-status](phase-a-status.md). Not product implementation. |
 | Phase B merchant/consumer core | Recorded — [phase-b-status](phase-b-status.md). No money movement; payment/ledger/settlement not implemented. |
 | Phase C bill ingestion | Recorded — [phase-c-status](phase-c-status.md). No money movement; payment attempts/PSP/ledger/settlement not implemented. |

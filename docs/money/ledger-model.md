@@ -7,9 +7,10 @@ Conceptual financial model for Sparelane money movement after Payment Workflow r
 | Slice | Status |
 | --- | --- |
 | **MVP successful collection journal** | **Binding** — [ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md) |
-| Settlement, fees, refunds, chargebacks, wallet, tax, FX, reconciliation adjustments | **TBD** with accounting, banking and regulatory advice |
+| **MVP confirmed payout (settlement) journal** | **Binding** — [ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md) |
+| Fees, refunds, chargebacks, wallet, tax, FX, bank-cash statement adjustments | **TBD** with accounting, banking and regulatory advice |
 
-Final enterprise CoA remains incomplete outside the ADR-026 collection slice.
+Final enterprise CoA remains incomplete outside the ADR-026 collection slice and ADR-029 payout slice.
 
 ## Purpose
 
@@ -26,7 +27,7 @@ Derived balances (Balance Service) must be reproducible from ledger entries.
 | **Asset** | Claims Sparelane holds or controls for settlement/clearing purposes (exact legal characterisation TBD) | Not used for MVP collection legs |
 | **Liability** | Amounts owed to consumers (wallet) or merchants (payable) | Merchant payable |
 | **Revenue** | Platform fees earned when product rules allow recognition | Not in collection journal |
-| **Clearing / control** | Temporary accounts used to move value between collection, processor, settlement and exception handling | Processor collection clearing (`account_type = clearing`) |
+| **Clearing / control** | Temporary accounts used to move value between collection, processor, settlement and exception handling | Processor collection clearing; settlement-partner clearing (`account_type = clearing`) |
 
 ## Conceptual accounts (broader CoA — not all frozen)
 
@@ -121,21 +122,20 @@ Cr Consumer Wallet Reserved
 
 Reservation is not final spend. Exact legs TBD.
 
-### Merchant settlement
+### Merchant settlement / confirmed payout (binding — ADR-029)
 
-```text
-Dr Merchant Payable
-Cr Settlement Clearing
-```
+Economic event: provider-adapter-normalised payout **completed** for one SettlementInstruction → discharge merchant payable + recognise settlement-partner clearing (gross). Not Sparelane bank cash. Not fee netting. Not a mutation of PSP `processor-clearing`.
 
-then on confirmed payout:
+| Leg | Side | Account code | Scope | `account_type` | Amount | Currency |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | DEBIT | `mrc:{merchantPublicId}:payable:{currency}` | Merchant | `liability` | `Settlement.amount_minor` | `Settlement.currency` |
+| 2 | CREDIT | `sys:settlement-clearing:{settlementProviderCode}:{currency}` | Platform | `clearing` | `Settlement.amount_minor` | `Settlement.currency` |
 
-```text
-Dr Settlement Clearing
-Cr Processor / Bank Clearing (or equivalent)
-```
-
-Settlement / payout legs remain TBD with accounting advice (beyond ADR-026). [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) allows F1 Fake provider submission **without** a settlement journal; production money requires payout CoA + reconciliation.
+- `transaction_type` = `settlement_payout`
+- `business_reference` = `settlement-payout:{settlementPublicId}`
+- Trigger path: `ReconcileSettlement` with canonical outcome `settled` → journal → Settlement `SETTLED` → `SettlementSettled`
+- [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) F1 may submit Fake **without** this journal; F2 requires this journal before `SETTLED`
+- Bank-cash / statement reconciliation remains a later independent control (not required for MVP `SETTLED`)
 
 ## Ledger Invariants
 
@@ -151,12 +151,13 @@ Settlement / payout legs remain TBD with accounting advice (beyond ADR-026). [AD
 10. One successful collection → exactly one collection journal ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md), FIN-INV-02).
 11. One confirmed collection → at most one Settlement ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)).
 
-### Implementation questions TBD (outside ADR-026 / ADR-027)
+### Implementation questions TBD (outside ADR-026 / ADR-027 / ADR-029)
 
 - materialised balance cache invalidation strategy
-- remaining CoA numbering for settlement execution / fees / refunds / wallet / suspense
+- remaining CoA for fees / refunds / wallet / suspense / bank-cash statement
 - fee recognition timing (production net-payout blocker)
-- treatment of processor settlement reports versus Sparelane collection events (reconciliation)
+- treatment of processor settlement reports versus Sparelane collection events (independent of MVP SETTLED)
+- settlement-clearing → bank cash movement when custody model is known
 
 ## Related docs
 
@@ -167,3 +168,4 @@ Settlement / payout legs remain TBD with accounting advice (beyond ADR-026). [AD
 - [ADR-005 Collection before settlement](../decisions/ADR-005-collection-before-settlement.md)
 - [ADR-026 Collection ledger posting / minimal CoA](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)
 - [ADR-027 Settlement obligation / eligibility](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)
+- [ADR-029 Settlement finality / payout accounting](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)

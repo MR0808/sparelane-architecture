@@ -14,30 +14,39 @@ flows:
   - settlementConfirmation
 adrs:
   - ADR-006
+  - ADR-028
+  - ADR-029
 contracts: []
 modules:
   - Reconciliation
   - Settlement
-tests: []
+tests:
+  - E2E-SET-001
+  - E2E-SET-002
+  - FIN-INV-05
+  - FIN-INV-06
 designs:
-  - SEQ-MONEY-004
+  - SEQ-MONEY-003
+  - SEQ-MONEY-005
   - SEQ-MONEY-006
 ---
 # FUN-SET-004 — Reconcile settlements
 
 ## Requirement
 
-Sparelane must support reconciliation of settlement instructions against provider outcomes and ledger postings.
+Sparelane must support reconciliation of settlement instructions against provider finality outcomes and ledger postings per [ADR-029](../../docs/decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md).
 
 ## Rationale
 
-Reconciliation closes the money-movement loop for merchants and operators.
+Reconciliation closes the money-movement loop for merchants and operators without blind resubmit or SETTLED-on-ack.
 
 ## Acceptance Criteria
 
-- Reconciliation can match settlement instruction to provider confirmation or failure.
-- Discrepancies are operable via runbooks.
+- Reconciliation matches settlement instruction to provider confirmation or failure using strong identity keys.
+- Canonical outcomes: pending / settled / failed / not_found / unknown with binding state effects.
+- `settled` requires payout journal before SETTLED; discrepancies / mismatches are operable and must not force SETTLED.
+- Reconciliation never creates a new external transfer.
 
 ## Notes
 
-Money movement MVP.
+Money movement MVP. Merchant ERP matching remains SEQ-MONEY-006.

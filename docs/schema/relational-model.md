@@ -252,6 +252,7 @@ Not the merchant customer master.
 | PK | `id` |
 | Fields | `code` UNIQUE, `name`, `account_type`, `currency` (or multi-currency policy TBD), `merchant_id` nullable (for merchant payable), `consumer_id` nullable (wallet liability) |
 | MVP collection codes | Binding ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)): `sys:processor-clearing:{providerCode}:{currency}` (`account_type=clearing`); `mrc:{merchantPublicId}:payable:{currency}` (`account_type=liability`, `merchant_id` set) |
+| MVP payout codes | Binding ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)): same merchant payable debit; `sys:settlement-clearing:{settlementProviderCode}:{currency}` (`account_type=clearing`) |
 | Indexes | `code`, `(merchant_id)`, `(consumer_id)` |
 
 ---
@@ -266,7 +267,8 @@ Not the merchant customer master.
 | Public | `public_id` (`jt_...`) optional for ops |
 | Fields | `business_reference` UNIQUE (**Sparelane-generated financial posting identity**, not a merchant or provider reference), `transaction_type`, `currency`, `posted_at`, `payment_workflow_id` nullable, `settlement_id` nullable, `correlation_id` |
 | Mutability | Insert-only; no updates/deletes |
-| Idempotency | `business_reference` uniquely identifies one financial effect. **MVP collection** binding ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)): `payment-collection:{paymentWorkflowPublicId}`. Merchant reconciliation references and provider transaction IDs remain separate columns/relations. |
+| Idempotency | `business_reference` uniquely identifies one financial effect. **MVP collection** ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)): `payment-collection:{paymentWorkflowPublicId}`. **MVP payout** ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)): `settlement-payout:{settlementPublicId}`. Merchant reconciliation references and provider transaction IDs remain separate columns/relations. |
+| transaction_type | Includes at least `collection` and `settlement_payout` |
 
 ---
 
@@ -296,6 +298,7 @@ Not the merchant customer master.
 | FKs | `payment_workflow_id` NOT NULL **UNIQUE**; `settlement_batch_id` nullable (**unused in F1**; set only if future batching) |
 | Identity | `business_reference` UNIQUE = `settlement:{paymentWorkflowPublicId}` |
 | Fields | `status` (initial `PENDING`), `amount_minor` (> 0, immutable), `currency` (immutable), `merchant_reconciliation_reference`, `submitted_at`, `settled_at`; optional `eligibility_blocked_reason` / execution hold reason |
+| SETTLED gate | ADR-029: finality `settled` + durable journal `settlement-payout:{settlementPublicId}` before `settled_at` / SETTLED |
 | Indexes | `(merchant_id, status)`, `public_id`, unique `payment_workflow_id`, unique `business_reference` |
 | Amount | Gross merchant payable CREDIT from ADR-026 journal `payment-collection:{paymentWorkflowPublicId}` (must equal Bill `amount_minor`) |
 | Gate | Create only when source collection `ledger_posting_status = CONFIRMED` and journal validates; ELIGIBLE only after merchant status + `APPROVED_FOR_SETTLEMENT` |
@@ -343,9 +346,10 @@ Not the merchant customer master.
 | FKs | `settlement_id` NOT NULL **UNIQUE** (MVP: one active instruction per Settlement); `settlement_batch_id` NULL / unused in F1; `merchant_payout_destination_id` NOT NULL |
 | Identity | `business_reference` UNIQUE = `settlement-instruction:{settlementPublicId}` |
 | Idempotency | External provider key = `business_reference` (also stored as `idempotency_key` UNIQUE if persisted separately — must be identical) |
-| Fields | `amount_minor` (= Settlement.amount_minor), `currency` (= Settlement.currency), `provider`, `provider_destination_ref` snapshot, `provider_instruction_ref`, `status` (`CREATED` \| `ACCEPTED` \| `REJECTED` \| `TECHNICAL_ERROR` \| `OUTCOME_UNKNOWN`), `reconciliation_required`, `submitted_at` |
+| Fields | `amount_minor` (= Settlement.amount_minor), `currency` (= Settlement.currency), `provider`, `provider_destination_ref` snapshot, `provider_instruction_ref`, `status` (`CREATED` \| `ACCEPTED` \| `REJECTED` \| `TECHNICAL_ERROR` \| `OUTCOME_UNKNOWN`), `reconciliation_required`, `submitted_at`; F2 reconcile observation: `last_reconcile_outcome`, `last_reconcile_source` (`lookup`\|`webhook`), `last_reconcile_provider_ref`, `last_reconcile_at`, `reconciliation_hold_reason` ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)) |
 | Unique (nullable) | `(provider, provider_instruction_ref)` |
 | Raw bank | **Forbidden** on this row |
+| Reconcile | Never creates a second instruction; lookup/reconcile must not call submit |
 
 ---
 
@@ -424,7 +428,8 @@ See [idempotency-storage.md](./idempotency-storage.md).
 7. `(provider, provider_event_id)` UNIQUE on provider receipts  
 8. At most one default `merchant_payout_destinations` per `(merchant_id, currency)`  
 9. No PAN/CVV columns; no raw bank account/BSB on settlement instructions; `api_credentials.secret_hash` only  
-10. Settlement progression gated on ledger posting confirmation; SETTLED gated on reconciliation (not provider ack)  
+10. Settlement progression gated on ledger posting confirmation; SETTLED gated on ADR-029 finality + payout journal (not provider ack)  
+11. Payout journal `business_reference` = `settlement-payout:{settlementPublicId}` UNIQUE (ADR-029) 
 
 ---
 

@@ -16,6 +16,10 @@ Settlement = SETTLED
 
 Binding MVP obligation and eligibility policy: [ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md).
 
+Binding execution: [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md).
+
+Binding finality / payout accounting: [ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md).
+
 ## Settlement record concepts
 
 ### Settlement
@@ -80,9 +84,9 @@ Settlement Instruction accepted by the partner **or** submit outcome unknown and
 
 ### PROCESSING
 
-Partner async in-progress after SUBMITTED; final settlement not confirmed. Optional F1 Fake lookup; SETTLED still requires reconciliation (F2+).
+Partner async in-progress after SUBMITTED; final settlement not confirmed. **F2:** reconcile outcome `pending` may transition SUBMITTED → PROCESSING ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)).
 
-**Typical trigger:** Lookup/webhook indicates processing.
+**Typical trigger:** Lookup/verified webhook indicates `pending`.
 
 **Important:** Acknowledgement alone is not `SETTLED`.
 
@@ -90,23 +94,25 @@ Partner async in-progress after SUBMITTED; final settlement not confirmed. Optio
 
 ### SETTLED
 
-Confirmed through the banking/payment partner **and** reconciled to the required degree against expected amount and ledger position.
+**Binding (ADR-029):** provider-adapter-normalised finality outcome **`settled`**, integrity-matched to the SettlementInstruction, **and** durable payout journal `settlement-payout:{settlementPublicId}` (Dr merchant payable / Cr settlement clearing). Not provider ack. Not bank-cash statement proof.
 
-**Typical trigger:** Confirmed provider settlement event + reconciliation match.
+**Typical trigger:** `ReconcileSettlement` with outcome `settled` → journal → operational SETTLED + `SettlementSettled`.
 
 **Terminal:** Yes (happy path)
 
 ### FAILED
 
-Provider reports failure or reconciliation determines settlement did not complete (**external execution** path).
+Provider reports failure or reconciliation determines settlement did not complete (**external execution** path). **F2:** canonical reconcile outcome `failed` → SUBMITTED/PROCESSING → FAILED. No payout discharge journal. Merchant payable remains outstanding. Business retry / `RETRY_PENDING` deferred beyond F2.
 
 **Not used for:** merchant temporarily SUSPENDED, KYB blocked, or missing/invalid payout destination — those remain PENDING (eligibility) or ELIGIBLE with execution hold ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)).
 
+**Not used for:** reconcile `not_found` alone — that is integrity/ops hold, not FAILED ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)).
+
 Consumer payment remains `COLLECTED`. Do not reverse consumer collection merely because merchant settlement failed.
 
-**Typical trigger:** Provider failure / definitive negative reconciliation.
+**Typical trigger:** Provider failure / definitive negative reconciliation (`failed`).
 
-**Permitted next:** `RETRY_PENDING` (if bounded retry permitted), or remain failed for operations handling.
+**Permitted next:** `RETRY_PENDING` (if bounded retry permitted in a later phase), or remain failed for operations handling.
 
 **Terminal:** No (recoverable via RETRY_PENDING when permitted)
 

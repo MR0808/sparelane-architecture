@@ -30,6 +30,8 @@ Each worker:
 | F1 owns | Destination resolve/recheck; CreateSettlementInstruction; ExecuteSettlementInstruction; persist provider result; lookup on unknown ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
 | F0 must not | Create batch, create/send SettlementInstruction, call bank/provider, mutate ledger |
 | F1 must not | SettlementBatch path; SETTLED; settlement CoA journal; real provider without OD-009; Fake fallback in production live money |
-| Later (F2+) | Reconciliation → SETTLED; settlement accounting; business retry |
+| F2 owns | `ReconcileSettlement`; finality taxonomy; payout journal then SETTLED; unknown/not_found hold ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)) |
+| F2 must not | Second transfer; SETTLED on ack; SETTLED without journal; resubmit on not_found; invent fee netting; invent ScheduledJob poll cadence; RETRY_PENDING replacement |
+| Later | Business retry after FAILED; optional production batching; bank-cash statement control |
 
 Gates: [phase-f0-settlement-decision-gate](./phase-f0-settlement-decision-gate.md), [phase-f1-settlement-execution-decision-gate](./phase-f1-settlement-execution-decision-gate.md).

@@ -1,6 +1,6 @@
 # Architecture Decision Register
 
-Quick-reference governance index for ADR-001 through ADR-027.
+Quick-reference governance index for ADR-001 through ADR-029.
 
 **Accepted** ADRs are binding implementation constraints unless superseded by a later ADR.
 
@@ -34,6 +34,7 @@ Quick-reference governance index for ADR-001 through ADR-027.
 | [ADR-026](./ADR-026-collection-ledger-posting-minimal-coa.md) | MVP collection journal CoA slice (Dr processor clearing / Cr merchant payable) | Accepted | Money / Ledger | ADR-004/005/013/016/021 | Platform E1 PaymentCollected → journal → CONFIRMED |
 | [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.md) | MVP settlement obligation 1:1 workflow; gross payable amount; PENDING→ELIGIBLE; KYB gate | Accepted | Money / Settlement | ADR-005/006/026 | Platform F0 LedgerPostingConfirmed → Settlement |
 | [ADR-028](./ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) | MVP settlement execution: no batching; payout destination token; 1:1 instruction; provider taxonomy; Fake F1 ends SUBMITTED | Accepted | Money / Settlement | ADR-006/017/026/027 | Platform F1 ELIGIBLE → instruction → Fake submit |
+| [ADR-029](./ADR-029-settlement-finality-reconciliation-payout-accounting.md) | MVP settlement finality + payout CoA (Dr payable / Cr settlement clearing); journal before SETTLED | Accepted | Money / Settlement / Ledger | ADR-026/027/028 | Platform F2 ReconcileSettlement → journal → SETTLED |
 
 ## Complementary pairs (not duplicates)
 
@@ -45,7 +46,8 @@ Quick-reference governance index for ADR-001 through ADR-027.
 | ADR-013 / ADR-016 | Logical separation vs consistency mechanism between the stores |
 | ADR-026 / ADR-027 | Collection journal CoA vs settlement obligation/eligibility policy |
 | ADR-027 / ADR-028 | Settlement obligation/eligibility vs instruction execution / destination / idempotency |
+| ADR-028 / ADR-029 | Instruction execution / SUBMITTED vs finality / payout journal / SETTLED |
 
 ## None superseded or rejected
 
-No ADRs in 001–028 are Superseded or Rejected at this gate. ADR-026 freezes collection CoA; ADR-027 freezes settlement obligation/eligibility; ADR-028 freezes MVP execution/instruction without SETTLED or production payout CoA. Broader fee/settlement CoA and partner selection remain open.
+No ADRs in 001–029 are Superseded or Rejected at this gate. ADR-026 freezes collection CoA; ADR-027 freezes settlement obligation/eligibility; ADR-028 freezes MVP execution/instruction without SETTLED; ADR-029 freezes finality + payout CoA for SETTLED. Fee/netting, bank-cash statement as SETTLED gate, OD-009 partner, and automatic poll cadence remain open/deferred.
