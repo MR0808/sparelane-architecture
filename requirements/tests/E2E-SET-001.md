@@ -3,6 +3,9 @@ id: E2E-SET-001
 title: Successful settlement
 type: e2e
 status: specified
+implementationEvidence: |
+  Local Fake settlement evidence in sparelane-platform (F0–F2 + exit gate).
+  Not real-provider / real-bank product_verified.
 relatedRequirements:
   - FUN-SET-001
   - FUN-SET-002
@@ -54,4 +57,4 @@ Settlement state machine matches ADRs. F1 alone does not require SETTLED. F2 req
 
 ## Implementation status
 
-`specified`
+`specified` — **local Fake settlement evidence** recorded in platform `npm run test:phase-f` / `phase-f-test-evidence.md`. Not `product_verified` against a real settlement partner.

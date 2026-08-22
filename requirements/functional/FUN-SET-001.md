@@ -6,6 +6,8 @@ area: settlement
 status: accepted
 priority: must
 mvp: true
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-f-requirements.md
 architecture:
   - settlementCore
   - fundsLedger
@@ -49,3 +51,5 @@ Collection before settlement (ADR-005); obligation/eligibility policy (ADR-027).
 ## Notes
 
 Money movement MVP. F0 creates PENDING then evaluates ELIGIBLE; does not submit bank instructions.
+
+`implementationStatus: implemented` for **local Fake / domain obligation+eligibility** (Phase F). Architecture `status` remains **accepted**. Not real-provider verified. See [phase-f-status](../../docs/implementation/phase-f-status.md).

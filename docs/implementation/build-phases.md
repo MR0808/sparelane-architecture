@@ -135,6 +135,8 @@ Product config (backup cardinality) is **Partial** — [OD-003](../decisions/ope
 | Sandbox | **Yes** for live payout sandbox | Settlement/banking partner ([OD-009](../decisions/open/OD-009-settlement-partner.md)) |
 | Pilot / Production money | **Yes** | Partner + fee/net (if commercial net required) + live reconcile adapters; batch cadence ([OD-011](../decisions/open/OD-011-settlement-batching.md)) only if aggregation enabled |
 
+**Platform status:** [phase-f-status](./phase-f-status.md) — **PASS WITH DOCUMENTED NON-BLOCKING RISKS** (local Fake settlement only).
+
 ---
 
 ## Phase G — Notifications & Webhooks

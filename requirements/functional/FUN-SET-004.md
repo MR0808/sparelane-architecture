@@ -6,6 +6,8 @@ area: settlement
 status: accepted
 priority: must
 mvp: true
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-f-requirements.md
 architecture:
   - reconciliationCore
   - settlementCore
@@ -50,3 +52,5 @@ Reconciliation closes the money-movement loop for merchants and operators withou
 ## Notes
 
 Money movement MVP. Merchant ERP matching remains SEQ-MONEY-006.
+
+`implementationStatus: implemented` for **local Fake reconcile → payout journal → SETTLED**. Not bank-statement / ERP matching. No automatic poll cadence. Architecture `status` remains **accepted**. See [phase-f-status](../../docs/implementation/phase-f-status.md).

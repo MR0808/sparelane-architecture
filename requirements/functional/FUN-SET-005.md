@@ -6,6 +6,8 @@ area: ledger
 status: accepted
 priority: must
 mvp: true
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-e1-traceability.md
 architecture:
   - fundsLedger
 flows:
@@ -52,3 +54,5 @@ FIN-INV-02; outbox/consistency patterns (ADR-016); collection CoA (ADR-026).
 ## Notes
 
 Money movement MVP. Fee/settlement journals are separate later templates.
+
+`implementationStatus: implemented` for **collection journal 1:1** (Phase E1 local). Phase F adds separate payout journal 1:1 per SETTLED — not a second collection journal. Architecture `status` remains **accepted**.

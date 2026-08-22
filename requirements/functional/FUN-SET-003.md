@@ -6,6 +6,8 @@ area: settlement
 status: accepted
 priority: must
 mvp: true
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-f-requirements.md
 architecture:
   - settlementCore
 flows:
@@ -49,3 +51,5 @@ FIN-INV-06 and NFR-REL-005; ADR-028 unknown taxonomy.
 ## Notes
 
 Money movement MVP. F1 Fake may implement lookup; full SETTLED reconciliation is F2+.
+
+`implementationStatus: implemented` for **local Fake unknown hold / no blind resubmit** (Phase F). Automatic poller deferred. Architecture `status` remains **accepted**. See [phase-f-status](../../docs/implementation/phase-f-status.md).

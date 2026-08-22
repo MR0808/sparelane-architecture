@@ -74,6 +74,25 @@ See [phase-c-status](phase-c-status.md).
 
 See [phase-d-status](phase-d-status.md). Platform detail: `sparelane-platform/docs/development/phase-d-exit-gate.md`.
 
+## Implementation evidence (Phase F)
+
+**None of FIN-INV-01–10 are fully `product_verified` against a real PSP, real settlement partner, or bank.** Phase F proves **settlement lifecycle** against FakeSettlementProvider (gross MVP).
+
+| ID | Spec | Phase F (local Fake) |
+| --- | --- | --- |
+| FIN-INV-01 | Same payment cannot be collected twice | Regression — Phase D local FakePSP evidence unchanged |
+| FIN-INV-02 | One collection → one ledger posting | **Locally evidenced** — one collection journal + one payout journal per settled obligation |
+| FIN-INV-03 | Journal always balances | **Locally evidenced** — collection + payout journals via E0 builders |
+| FIN-INV-04 | Failed collection not settlement-eligible | **Locally evidenced** — FAILED payment → no Settlement; FAILED settlement → no payout journal |
+| FIN-INV-05 | Settlement not submitted twice | **Locally evidenced (Fake)** — 1 instruction → 1 transfer → 1 payout journal → 1 SETTLED under dup/concurrent/crash; **not** real-bank exactly-once |
+| FIN-INV-06 | Unknown payout → no blind resubmit | **Locally evidenced (Fake)** — unknown/not_found hold; no automatic poller |
+| FIN-INV-07 | Compensating corrections only | **Not testable yet** |
+| FIN-INV-08 | Tenant isolation of settlement | **Locally evidenced (partial)** — cross-merchant destination/instruction isolation (Fake) |
+| FIN-INV-09 | Replay idempotent | **Locally evidenced (partial)** — Fake duplicate reconcile/execute |
+| FIN-INV-10 | Worker restart no duplicate effect | **Locally evidenced (partial)** — Fake crash-after-journal / crash-after-accept |
+
+See [phase-f-status](phase-f-status.md). Platform: `sparelane-platform/docs/development/phase-f-test-evidence.md`.
+
 ## Architecture gate (collection CoA)
 
 [ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md) freezes the MVP collection journal template (accounts, sides, codes, amount source, `business_reference`, PENDING→CONFIRMED). Platform Phase E1 may implement against that ADR. This does **not** mark FIN-INV-02/03 product_verified.

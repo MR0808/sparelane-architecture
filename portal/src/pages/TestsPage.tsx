@@ -30,6 +30,8 @@ export function TestsPage() {
         Test specifications (not executable results). Catalogue under{' '}
         <code>requirements/tests/</code>. Product automation lives in the platform repo.
         Phase D E2E-PAY evidence is <strong>local FakePSP</strong> only — not real-PSP{' '}
+        <code>product_verified</code>. Phase F E2E-SET evidence is{' '}
+        <strong>local Fake settlement</strong> only — not real-bank{' '}
         <code>product_verified</code>.
       </p>
       <label className="req-filter">

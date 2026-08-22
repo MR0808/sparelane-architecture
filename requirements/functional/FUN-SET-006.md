@@ -6,6 +6,8 @@ area: ledger
 status: accepted
 priority: must
 mvp: true
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-f-requirements.md
 architecture:
   - fundsLedger
 flows:
@@ -42,3 +44,5 @@ Double-entry ledger (ADR-004); collection CoA (ADR-026).
 ## Notes
 
 Money movement MVP.
+
+`implementationStatus: implemented` for **local collection + payout journals** (E1/F2 Fake evidence). Architecture `status` remains **accepted**. Not bank-cash balance proof.

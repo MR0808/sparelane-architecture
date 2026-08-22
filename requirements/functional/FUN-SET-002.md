@@ -6,6 +6,8 @@ area: settlement
 status: accepted
 priority: must
 mvp: true
+implementationStatus: implemented
+implementationEvidence: sparelane-platform/docs/development/phase-f-requirements.md
 architecture:
   - settlementCore
 flows:
@@ -61,3 +63,5 @@ FIN-INV-05; ADR-027 obligation uniqueness; ADR-028 instruction execution.
 ## Notes
 
 Money movement MVP. F1 ends at SUBMITTED with FakeSettlementProvider locally. OD-011 cadence does not apply to F1 (no batching).
+
+`implementationStatus: implemented` for **local Fake instruction idempotency**. OD-009 production partner open. Not real-bank exactly-once. Architecture `status` remains **accepted**. See [phase-f-status](../../docs/implementation/phase-f-status.md).

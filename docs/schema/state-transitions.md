@@ -47,7 +47,7 @@ Retries create a **new** attempt row; do not mutate a terminal attempt into succ
 | From | To |
 | --- | --- |
 | PENDING | ELIGIBLE, CANCELLED |
-| ELIGIBLE | BATCHED, SUBMITTED, CANCELLED |
+| ELIGIBLE | BATCHED, SUBMITTED, FAILED, CANCELLED |
 | BATCHED | SUBMITTED, CANCELLED |
 | SUBMITTED | PROCESSING, SETTLED, FAILED, RETRY_PENDING |
 | PROCESSING | SETTLED, FAILED, RETRY_PENDING |
@@ -59,11 +59,13 @@ Must not create Settlement unless payment workflow `COLLECTED` and ledger postin
 
 Initial status: **PENDING**. F0: create PENDING then evaluate → ELIGIBLE or remain PENDING.
 
-`FAILED` is **not** terminal (may → `RETRY_PENDING`). Merchant/KYB/destination ineligibility must not transition to `FAILED`.
+`FAILED` may later → `RETRY_PENDING` when business retry/supersession is productised (deferred past Phase F). Merchant/KYB/destination ineligibility must not transition to `FAILED`.
+
+**Phase F MVP:** no automatic business retry / replacement instruction after `FAILED` (hold terminal for that instruction path).
 
 `SETTLED` requires ADR-029 finality + payout journal; ack alone is invalid ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md), [ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)).
 
-**F1 MVP:** skip BATCHED; ELIGIBLE → SUBMITTED on provider `accepted` or on `unknown_outcome` (with instruction `OUTCOME_UNKNOWN` + reconcile hold). F1 happy-path end = **SUBMITTED**.
+**F1 MVP:** skip BATCHED; ELIGIBLE → SUBMITTED on provider `accepted` or on `unknown_outcome` (with instruction `OUTCOME_UNKNOWN` + reconcile hold). ELIGIBLE → FAILED on provider `rejected` acknowledgement ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)). F1 happy-path end = **SUBMITTED**.
 
 **F2 MVP:** `ReconcileSettlement` — `pending` may SUBMITTED→PROCESSING; `settled` → journal then SETTLED (from SUBMITTED or PROCESSING); `failed` → FAILED; `not_found`/`unknown` → hold (no resubmit). No automatic poll cadence.
 

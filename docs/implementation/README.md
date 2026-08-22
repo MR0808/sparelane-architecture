@@ -53,6 +53,8 @@ Phase 9 engineering blueprint for `sparelane-platform`. **Does not** implement t
 - [Phase A status](phase-a-status.md) — platform foundation gate
 - [Phase B status](phase-b-status.md) — merchant + consumer core gate (no money movement)
 - [Phase C status](phase-c-status.md) — bill ingestion gate (no money movement)
+- [Phase D status](phase-d-status.md) — payment reliability (FakePSP)
+- [Phase F status](phase-f-status.md) — settlement (local Fake; not real money)
 - [Build phases A–I](build-phases.md)
 - [MVP acceptance criteria](mvp-acceptance-criteria.md)
 - [Architecture traceability](architecture-traceability.md)

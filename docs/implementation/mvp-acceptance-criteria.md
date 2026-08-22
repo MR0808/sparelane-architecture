@@ -2,7 +2,7 @@
 
 Objective criteria for MVP readiness. All financial invariant tests must pass.
 
-These criteria are **not** satisfied by Phase A–D alone. Phase A is platform foundation only ([phase-a-status](phase-a-status.md)). Phase B is merchant/consumer core only — **no money movement** ([phase-b-status](phase-b-status.md)). Phase C is bill ingestion only — **no money movement** ([phase-c-status](phase-c-status.md)). Phase D is payment reliability / FakePSP collection only — **no ledger posting** ([phase-d-status](phase-d-status.md)).
+These criteria are **not** satisfied by Phase A–F alone. Phase A is platform foundation only ([phase-a-status](phase-a-status.md)). Phase B is merchant/consumer core only — **no money movement** ([phase-b-status](phase-b-status.md)). Phase C is bill ingestion only — **no money movement** ([phase-c-status](phase-c-status.md)). Phase D is payment reliability / FakePSP collection only ([phase-d-status](phase-d-status.md)). Phase E posts collection journals locally (ADR-026). Phase F settles merchants locally with **FakeSettlementProvider** only ([phase-f-status](phase-f-status.md)) — **not** real-provider / real-bank / fee-net / production money.
 
 ## Phase B prerequisite evidence (not MVP pass)
 

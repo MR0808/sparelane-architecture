@@ -145,10 +145,12 @@ const phaseAFile = path.join(root, 'docs', 'implementation', 'phase-a-status.md'
 const phaseBFile = path.join(root, 'docs', 'implementation', 'phase-b-status.md')
 const phaseCFile = path.join(root, 'docs', 'implementation', 'phase-c-status.md')
 const phaseDFile = path.join(root, 'docs', 'implementation', 'phase-d-status.md')
+const phaseFFile = path.join(root, 'docs', 'implementation', 'phase-f-status.md')
 const phaseAPresent = fs.existsSync(phaseAFile)
 const phaseBPresent = fs.existsSync(phaseBFile)
 const phaseCPresent = fs.existsSync(phaseCFile)
 const phaseDPresent = fs.existsSync(phaseDFile)
+const phaseFPresent = fs.existsSync(phaseFFile)
 const phaseA = phaseAPresent
   ? {
       gate: 'pass_with_documented_non_blocking_risks',
@@ -202,7 +204,7 @@ const phaseD = phaseDPresent
       gate: 'pass_with_documented_non_blocking_risks',
       phasesCompleted: 'D0-D7',
       nextPhase: 'E',
-      nextPhaseStatus: 'not_started',
+      nextPhaseStatus: 'pass_with_documented_non_blocking_risks',
       documented: true,
     }
   : {
@@ -211,6 +213,24 @@ const phaseD = phaseDPresent
       nextPhase: 'E',
       nextPhaseStatus: 'not_started',
       documented: false,
+    }
+
+const phaseF = phaseFPresent
+  ? {
+      gate: 'pass_with_documented_non_blocking_risks',
+      phasesCompleted: 'F0-F2',
+      nextPhase: 'G',
+      nextPhaseStatus: 'not_started',
+      documented: true,
+      verification: 'local_fake_settlement',
+    }
+  : {
+      gate: 'not_started',
+      phasesCompleted: '',
+      nextPhase: 'G',
+      nextPhaseStatus: 'not_started',
+      documented: false,
+      verification: '',
     }
 
 const health = {
@@ -253,7 +273,12 @@ const health = {
     phaseDGate: phaseD.gate,
     phaseDPhasesCompleted: phaseD.phasesCompleted,
     phaseD: phaseD.gate,
-    phaseE: phaseD.nextPhaseStatus,
+    phaseE: 'pass_with_documented_non_blocking_risks',
+    phaseFGate: phaseF.gate,
+    phaseFPhasesCompleted: phaseF.phasesCompleted,
+    phaseF: phaseF.gate,
+    phaseFVerification: phaseF.verification || 'none',
+    nextPhase: phaseFPresent ? 'G' : phaseDPresent ? 'E' : 'D',
     label: 'Generated from repository state — not live production health',
   },
 }

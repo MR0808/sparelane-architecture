@@ -3,6 +3,8 @@ id: E2E-SET-002
 title: Settlement failure
 type: e2e
 status: specified
+implementationEvidence: |
+  Local Fake reject/failed finality evidence (F1/F2/exit). No payout journal. Not real-provider product_verified.
 relatedRequirements:
   - FUN-SET-004
   - FUN-SET-006
@@ -35,4 +37,4 @@ Settlement state machine and reconciliation behaviour match ADRs (merchant ineli
 
 ## Implementation status
 
-`specified`
+`specified` — **local Fake settlement evidence** (F1 reject / F2 failed finality). Not real-provider `product_verified`.

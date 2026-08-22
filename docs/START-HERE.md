@@ -25,7 +25,7 @@ Sparelane is a payment reliability platform that sits between consumers and merc
 | **Contracts** ([contracts/](contracts/README.md), [`openapi.yaml`](../contracts/openapi.yaml)) | Merchant API and webhook/event shapes |
 | **Requirements** ([requirements/](../requirements/README.md)) | Behaviour/quality statements with traceability into views, ADRs, contracts, tests (portal routes `/requirements`, `/requirements/traceability`) |
 | **Implementation** ([implementation/](implementation/README.md)) | Build blueprint, modules, deployables, phases — not application code |
-| **Implementation status** ([phase A](implementation/phase-a-status.md), [phase B](implementation/phase-b-status.md), [phase C](implementation/phase-c-status.md), [phase D](implementation/phase-d-status.md)) | Platform foundation + merchant/consumer core + bill ingestion + payment reliability (FakePSP; no ledger) |
+| **Implementation status** ([phase A](implementation/phase-a-status.md), [phase B](implementation/phase-b-status.md), [phase C](implementation/phase-c-status.md), [phase D](implementation/phase-d-status.md), [phase F](implementation/phase-f-status.md)) | Platform foundation through settlement (Fake PSP / Fake settlement; not real-money production) |
 | **Runbooks** ([operations/runbooks/](operations/runbooks/README.md)) | Operator response for provider outages, DLQ, ledger lag, webhook backlog |
 
 Also see the [architecture map](architecture-map.md) and [Architecture Portal v1](governance/architecture-v1.md).
@@ -45,7 +45,7 @@ Also see the [architecture map](architecture-map.md) and [Architecture Portal v1
 ### Engineer
 
 1. [Implementation blueprint](implementation/README.md)
-2. [Implementation status](implementation/implementation-status.md) → [Phase A](implementation/phase-a-status.md) · [Phase B](implementation/phase-b-status.md)
+2. [Implementation status](implementation/implementation-status.md) → [Phase A](implementation/phase-a-status.md) · [Phase B](implementation/phase-b-status.md) · [Phase F](implementation/phase-f-status.md)
 3. LikeC4: **10 Implementation / Module Boundaries**
 4. [Requirements overview](../requirements/README.md) (portal `/requirements`) and [requirements governance](governance/requirements-governance.md)
 5. [`contracts/openapi.yaml`](../contracts/openapi.yaml) + [contracts index](contracts/README.md)

@@ -28,9 +28,16 @@ export function HealthPage() {
           <span>Phase D — Payment Reliability Engine</span>
           <span>Phase D gate: {health.implementation?.phaseDGate ?? health.implementation?.phaseD ?? 'not_started'}</span>
           <span>Sub-phases: {health.implementation?.phaseDPhasesCompleted ?? 'D0-D7'}</span>
-          <span>Phase E: {health.implementation?.phaseE ?? 'not_started'}</span>
-          <span>Not live production health</span>
           <Link to="/docs/implementation/phase-d-status">Phase D status</Link>
+          <span>Phase E — Ledger (E0–E1)</span>
+          <span>Phase E: {health.implementation?.phaseE ?? 'not_started'}</span>
+          <span>Phase F — Settlement</span>
+          <span>Phase F gate: {health.implementation?.phaseFGate ?? health.implementation?.phaseF ?? 'not_started'}</span>
+          <span>Sub-phases: {health.implementation?.phaseFPhasesCompleted ?? 'F0-F2'}</span>
+          <span>Verification: {health.implementation?.phaseFVerification ?? 'none'} (local Fake)</span>
+          <span>Next phase: {health.implementation?.nextPhase ?? 'G'}</span>
+          <span>Not live production health</span>
+          <Link to="/docs/implementation/phase-f-status">Phase F status</Link>
         </div>
         <div className="info-card">
           <strong>Requirements</strong>

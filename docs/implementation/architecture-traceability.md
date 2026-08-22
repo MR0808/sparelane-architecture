@@ -57,9 +57,9 @@ See also [requirements README](../../requirements/README.md).
 | ADR-024 Recovery ordering / exhaustion | [payment-method-selection](../payments/payment-method-selection.md), [retry-policy](../payments/retry-policy.md), SEQ-PAY-004/005/006 | Payment Orchestrator, Decline Classification, Reliability Engine, Retry Service (D5 timing) | D4 decision table; E2E-PAY-002/003/004; no blind UNKNOWN retry |
 | ADR-025 Retry timing / budget / cutoff | [retry-policy](../payments/retry-policy.md), [due-dates](../contracts/due-dates.md), SEQ-PAY-005/006/007 | Retry Service, DurableScheduler, Orchestrator due/cutoff/Retry Now | D5; E2E-PAY-003/004/005; OD-001/002/006 resolved |
 | ADR-026 Collection CoA / posting template | [ledger-model](../money/ledger-model.md), SEQ-MONEY-001, SEQ-OPS-002 | Ledger consumer; ConfirmLedgerPosting | Unblocks platform E1; FIN-INV-02/03 mapping |
-| ADR-027 Settlement obligation / eligibility | [settlement-state-machine](../money/settlement-state-machine.md), SEQ-MONEY-002, STATE-MONEY-001 | settlement-worker; CreateSettlement; EvaluateSettlementEligibility | Unblocks platform F0; FIN-INV-04/08 mapping; FIN-INV-05 deferred to instruction |
-| ADR-028 Settlement execution / destination / instruction | [settlement-idempotency](../money/settlement-idempotency.md), SEQ-MONEY-002/005, STATE-MONEY-001 | settlement-worker; Create/ExecuteSettlementInstruction; FakeSettlementProvider | Unblocks platform F1; FIN-INV-05 local Fake; SETTLED via ADR-029 |
-| ADR-029 Settlement finality / payout CoA | [reconciliation](../money/reconciliation.md), [ledger-model](../money/ledger-model.md), SEQ-MONEY-003/005, STATE-MONEY-001 | settlement-worker; ReconcileSettlement; append settlement-payout journal | Unblocks platform F2; FIN-INV-05/06/03/09/10 mapping |
+| ADR-027 Settlement obligation / eligibility | [settlement-state-machine](../money/settlement-state-machine.md), SEQ-MONEY-002, STATE-MONEY-001 | settlement-worker; CreateSettlement; EvaluateSettlementEligibility | Platform F0 + Phase F exit; FIN-INV-04/08 local Fake |
+| ADR-028 Settlement execution / destination / instruction | [settlement-idempotency](../money/settlement-idempotency.md), SEQ-MONEY-002/005, STATE-MONEY-001 | settlement-worker; Create/ExecuteSettlementInstruction; FakeSettlementProvider | Platform F1 + Phase F exit; FIN-INV-05 local Fake (≠ real bank) |
+| ADR-029 Settlement finality / payout CoA | [reconciliation](../money/reconciliation.md), [ledger-model](../money/ledger-model.md), SEQ-MONEY-003/005, STATE-MONEY-001 | settlement-worker; ReconcileSettlement; append settlement-payout journal | Platform F2 + Phase F exit; FIN-INV-05/06/03/09/10 local Fake |
 
 Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-acceptance-criteria](mvp-acceptance-criteria.md), [build-phases](build-phases.md).
 
@@ -71,8 +71,10 @@ Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-a
 | Phase A platform foundation | Recorded — [phase-a-status](phase-a-status.md). Not product implementation. |
 | Phase B merchant/consumer core | Recorded — [phase-b-status](phase-b-status.md). No money movement; payment/ledger/settlement not implemented. |
 | Phase C bill ingestion | Recorded — [phase-c-status](phase-c-status.md). No money movement; payment attempts/PSP/ledger/settlement not implemented. |
-| Phase D payment reliability | Recorded — [phase-d-status](phase-d-status.md). FakePSP collection; ledger PENDING; real PSP / UNKNOWN recon / settlement not implemented. |
-| Automated product tests | Specs in this repo; product suites in `sparelane-platform`. FIN-INV-01 local FakePSP only; ledger FIN-INV not verified. |
+| Phase D payment reliability | Recorded — [phase-d-status](phase-d-status.md). FakePSP collection; real PSP still open. |
+| Phase E ledger (E0–E1) | Collection journal ADR-026 locally evidenced; not bank-cash verified. |
+| Phase F settlement (F0–F2) | Recorded — [phase-f-status](phase-f-status.md). Local Fake settlement; OD-009 / fees / batch / poll / retry / bank-cash remain open. |
+| Automated product tests | Specs in this repo; product suites in `sparelane-platform`. FIN-INV local Fake evidence ≠ `product_verified` real rails. |
 | Wallet licensing | Open decision — blocks wallet go-live only; ADR path TBD if custody model changes architecture |
 | Vendor adapters | Interfaces specified; concrete PSP/bank adapters await open decisions |
 | Numeric product knobs (retry windows, rate limits) | Config/open decisions — not ADR gaps |

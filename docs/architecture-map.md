@@ -107,7 +107,7 @@ Do not over-tag. Open vendor choices stay in [open decisions](decisions/open-dec
 | --- | --- |
 | **Purpose** | Engineering blueprint for `sparelane-platform` |
 | **Primary views** | `10 Implementation /*` |
-| **Docs** | [docs/implementation/](implementation/README.md), [implementation status](implementation/implementation-status.md), [Phase A](implementation/phase-a-status.md), [Phase B](implementation/phase-b-status.md), [Phase C](implementation/phase-c-status.md), [Phase D](implementation/phase-d-status.md) |
+| **Docs** | [docs/implementation/](implementation/README.md), [implementation status](implementation/implementation-status.md), [Phase A](implementation/phase-a-status.md), [Phase B](implementation/phase-b-status.md), [Phase C](implementation/phase-c-status.md), [Phase D](implementation/phase-d-status.md), [Phase F](implementation/phase-f-status.md) |
 | **ADRs** | ADR-016–019 (deploy/async); all ADRs via [traceability](implementation/architecture-traceability.md) |
 
 ## Operations

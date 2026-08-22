@@ -6,8 +6,8 @@ export function ImplementationPage() {
       <h1 className="page-title">Implementation</h1>
       <p className="page-lead">
         Engineering blueprint for <code>sparelane-platform</code>. Architecture Accepted is not
-        product implemented. Phase D proves FakePSP collection reliability —{' '}
-        <strong>COLLECTED → ledger posting NOT YET IMPLEMENTED</strong>.
+        product verified for live money. Phases A–F: PASS WITH DOCUMENTED NON-BLOCKING RISKS. Phase F
+        is <strong>local Fake settlement only</strong> — not real-provider / real-bank production.
       </p>
 
       <div className="card-grid">
@@ -43,11 +43,42 @@ export function ImplementationPage() {
         </div>
         <div className="info-card">
           <strong>Phase E</strong>
-          <span>Ledger</span>
+          <span>Ledger (E0–E1)</span>
+          <span>PASS WITH DOCUMENTED NON-BLOCKING RISKS</span>
+          <span>Collection journal ADR-026 · local evidence</span>
+          <Link to="/docs/implementation/build-phases">Build phases</Link>
+        </div>
+        <div className="info-card">
+          <strong>Phase F</strong>
+          <span>Settlement (F0–F2)</span>
+          <span>PASS WITH DOCUMENTED NON-BLOCKING RISKS</span>
+          <span>Fake settlement · payout journal · SETTLED · not real money</span>
+          <Link to="/docs/implementation/phase-f-status">Phase F status</Link>
+        </div>
+        <div className="info-card">
+          <strong>Phase G</strong>
+          <span>Notifications &amp; Webhooks</span>
           <span>NOT STARTED</span>
           <Link to="/docs/implementation/build-phases">Build phases</Link>
         </div>
       </div>
+
+      <h2>Phase F at a glance</h2>
+      <ul className="link-list">
+        <li>Engineering decomposition F0–F2 of canonical Phase F (not extra architecture phases)</li>
+        <li>
+          Implemented locally: Settlement obligation, eligibility, instruction, Fake provider,
+          reconciliation taxonomy, payout journal, SETTLED
+        </li>
+        <li>
+          Boundary: FakeSettlementProvider only — OD-009 partner, fees/net, batching, poll cadence,
+          business retry, bank-cash control remain open/deferred
+        </li>
+        <li>
+          <Link to="/docs/implementation/mvp-acceptance-criteria">MVP acceptance</Link> not passed
+          overall
+        </li>
+      </ul>
 
       <h2>Phase D at a glance</h2>
       <ul className="link-list">

@@ -3,6 +3,8 @@ id: E2E-SET-003
 title: Unknown settlement outcome
 type: e2e
 status: specified
+implementationEvidence: |
+  Local Fake unknown → settled/not_found/pending evidence (F1/F2/exit). No blind resubmit. Not real-provider product_verified.
 relatedRequirements:
   - FUN-SET-003
   - NFR-REL-005
@@ -41,4 +43,4 @@ Unknown path matches ADR-028/029. Blind resubmit forbidden. SETTLED only with fi
 
 ## Implementation status
 
-`specified`
+`specified` — **local Fake settlement evidence** (unknown → settled/not_found/pending). Not real-provider `product_verified`.

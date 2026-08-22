@@ -2,9 +2,8 @@
 
 **Status:** Current  
 **Owner:** Engineering / Architecture  
-**Last Reviewed:** 2026-08-21  
-**Related ADRs:** ADR-001–025  
-**Related Views:** `10 Implementation /*`
+**Last Reviewed:** 2026-08-22  
+**Related ADRs:** ADR-001–029  
 
 Tracks how far `sparelane-platform` has progressed against this architecture. **This is not a product completeness percentage.** Architecture Accepted does not mean the product is built.
 
@@ -34,7 +33,9 @@ Test specifications keep `status: specified` until a product test is executable.
 | B | Merchant + Consumer Core | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-b-status](phase-b-status.md) |
 | C | Bill Ingestion | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-c-status](phase-c-status.md) |
 | D | Payment Reliability Engine | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-d-status](phase-d-status.md) |
-| E–I | Ledger through pilot readiness | **NOT STARTED** |
+| E | Ledger | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** (E0–E1 engineering slices; collection posting ADR-026) — see [phase-e1-accounting-gate](phase-e1-accounting-gate.md), platform `phase-e0` / `phase-e1` evidence |
+| F | Settlement | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-f-status](phase-f-status.md) (local Fake settlement; not real-provider / real-money) |
+| G–I | Notifications through pilot readiness | **NOT STARTED** |
 
 Canonical phase definitions remain in [build-phases](build-phases.md). Do not treat module shells or provider ports as deployed product systems.
 

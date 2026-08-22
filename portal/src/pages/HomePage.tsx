@@ -12,7 +12,7 @@ const cards = [
   {
     to: '/implementation',
     title: 'Implementation',
-    blurb: 'Blueprint, Phase A–D status, build phases',
+    blurb: 'Blueprint, Phase A–F status, build phases',
   },
   { to: '/health', title: 'Health', blurb: 'Static architecture/docs health' },
 ]
@@ -41,7 +41,13 @@ export function HomePage() {
         <Link to="/docs/implementation/phase-d-status">
           PASS WITH DOCUMENTED NON-BLOCKING RISKS
         </Link>{' '}
-        (FakePSP collection; no ledger). Phase E not started.
+        (FakePSP collection). Phase E ledger (E0–E1): PASS WITH DOCUMENTED NON-BLOCKING RISKS.
+        Phase F settlement:{' '}
+        <Link to="/docs/implementation/phase-f-status">
+          PASS WITH DOCUMENTED NON-BLOCKING RISKS
+        </Link>{' '}
+        (local Fake settlement only — not real-provider / real-money). Next:{' '}
+        <Link to="/docs/implementation/build-phases">Phase G — Notifications &amp; Webhooks</Link>.
       </p>
 
       <div className="card-grid">
@@ -81,6 +87,9 @@ export function HomePage() {
         </li>
         <li>
           <Link to="/docs/implementation/phase-d-status">Phase D implementation status</Link>
+        </li>
+        <li>
+          <Link to="/docs/implementation/phase-f-status">Phase F implementation status</Link>
         </li>
       </ul>
     </article>
