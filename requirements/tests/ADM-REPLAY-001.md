@@ -2,7 +2,7 @@
 id: ADM-REPLAY-001
 title: Only closed replayable types allowed
 type: security
-status: specified
+status: verified
 mvp: true
 relatedRequirements:
   - FUN-ADM-008

@@ -190,7 +190,7 @@ Canonical Phase G scope is **G0 + G1 + G2** for local/platform evidence. G3+ enh
 | **H2** | **Durable DLQ + webhook replay only** — [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md); `admin.dlq.view` / `admin.webhook.replay`; financial + notification replay prohibited/deferred |
 | **H3+** | Notification replay (if gated), merchant/user lifecycle mutations, support tooling, SIEM export, scoped PII lookup, financial corrections — separately gated |
 
-**Platform status:** [phase-h-status](./phase-h-status.md) — H0/H1 gates **PASS**; architecture H2 gate **PASS**; platform H0/H1 **PASS** (local); platform H2 **not started**; Phase H **in progress**. Canonical Phase H **not complete** after H0, H1, or architecture H2 alone.
+**Platform status:** [phase-h-status](./phase-h-status.md) — H0/H1/H2 **PASS WITH DOCUMENTED NON-BLOCKING RISKS** (local evidence). Canonical Phase H **complete** for H0–H2 scope; H3+ deferred; production admin blocked by OD-024.
 
 **Open decisions**
 
@@ -200,7 +200,7 @@ Canonical Phase G scope is **G0 + G1 + G2** for local/platform evidence. G3+ enh
 | Local H1 grant management | No (policy bound) | Fake/dev MFA may stub `PrivilegedAuthenticationContext` under existing gates |
 | Pilot | Partial | Admin MFA provider ([OD-024](../decisions/open/OD-024-mfa-passkey.md)); break-glass still open ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md)) |
 | Production admin | **Yes** | IdP + admin MFA provider (OD-023/OD-024) |
-| Production | Partial | SIEM, break-glass; platform durable DLQ + webhook replay (**H2** — architecture PASS, platform pending) |
+| Production | Partial | SIEM, break-glass; platform durable DLQ + webhook replay (**H2** — architecture and platform **PASS** locally) |
 
 ---
 

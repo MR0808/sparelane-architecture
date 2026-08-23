@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-23T10:12:03.551Z",
+  "generatedAt": "2026-08-23T14:03:46.402Z",
   "label": "Generated from repository state",
   "requirements": {
     "total": 92,
@@ -58,11 +58,14 @@
     "phaseH0Gate": "pass",
     "phaseH0Documented": true,
     "phaseH0Exit": "pass",
-    "phaseH": "in_progress",
     "phaseH1Gate": "pass",
     "phaseH1Exit": "pass",
     "phaseH1Documented": true,
-    "nextPhase": "H",
+    "phaseH2Gate": "pass",
+    "phaseH2Exit": "pass",
+    "phaseH2Documented": true,
+    "phaseH": "pass_with_documented_non_blocking_risks",
+    "nextPhase": "I",
     "label": "Generated from repository state — not live production health"
   }
 }

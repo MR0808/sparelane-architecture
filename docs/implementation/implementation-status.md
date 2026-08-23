@@ -36,7 +36,7 @@ Test specifications keep `status: specified` until a product test is executable.
 | E | Ledger | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** (E0–E1 engineering slices; collection posting ADR-026) — see [phase-e1-accounting-gate](phase-e1-accounting-gate.md), platform `phase-e0` / `phase-e1` evidence |
 | F | Settlement | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-f-status](phase-f-status.md) (local Fake settlement; not real-provider / real-money) |
 | G | Notifications & Webhooks | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-g-status](phase-g-status.md) (local webhook sink + Fake email; OD-025/OD-035 open) |
-| H | Security / Admin Hardening | **H0/H1 gates PASS**; **architecture H2 gate PASS** (durable DLQ + webhook replay) — [phase-h0-admin-decision-gate](phase-h0-admin-decision-gate.md), [phase-h1-admin-decision-gate](phase-h1-admin-decision-gate.md), [phase-h2-admin-decision-gate](phase-h2-admin-decision-gate.md), [phase-h-status](phase-h-status.md); platform H0/H1 **PASS** (local); platform H2 **not started**; Phase H still **in progress** |
+| H | Security / Admin Hardening | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-h-status](phase-h-status.md) (H0–H2 local; OD-024 blocks production admin; H3+ deferred) |
 | I | Pilot Readiness | **NOT STARTED** on platform |
 
 Canonical phase definitions remain in [build-phases](build-phases.md). Do not treat module shells or provider ports as deployed product systems.

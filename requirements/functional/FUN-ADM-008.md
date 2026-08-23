@@ -4,7 +4,7 @@ title: Controlled merchant webhook replay
 type: functional
 area: admin
 status: accepted
-implementationStatus: designed
+implementationStatus: verified
 priority: must
 mvp: true
 architecture:

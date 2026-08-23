@@ -1,76 +1,59 @@
 # Phase H — Security / Admin Hardening (architecture status)
 
-**Canonical Phase H status:** **IN PROGRESS** (not complete).
+**Canonical Phase H status:** **PASS WITH DOCUMENTED NON-BLOCKING RISKS**
 
-**Platform H0 status:** **PASS** — read-only admin control plane evidenced in `sparelane-platform` (`npm run test:phase-h0`; `docs/development/phase-h0-final-status.md`).
+**Platform H0 status:** **PASS** — read-only admin control plane (`npm run test:phase-h0`; `sparelane-platform/docs/development/phase-h0-final-status.md`).
 
-**Platform H1 status:** **PASS** — dual-control grant management evidenced in `sparelane-platform` (`npm run test:phase-h1`; `docs/development/phase-h1-final-status.md`). Local/test MFA doubles only; production IdP MFA still open ([OD-024](../decisions/open/OD-024-mfa-passkey.md)).
+**Platform H1 status:** **PASS** — dual-control grant management (`npm run test:phase-h1`; `sparelane-platform/docs/development/phase-h1-final-status.md`). Local/test MFA doubles only; production IdP MFA still open ([OD-024](../decisions/open/OD-024-mfa-passkey.md)).
 
-**Architecture H2 status:** **PASS** — durable DLQ + webhook replay policy bound by [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md). Platform H2 **not started**.
+**Platform H2 status:** **PASS** — durable DLQ + webhook operator replay (`npm run test:phase-h2`; `sparelane-platform/docs/development/phase-h2-final-status.md`).
 
-**Canonical Phase H:** admin workflows, audit completeness, security controls, operational tooling (including DLQ replay UI — architecture H2 Option A; platform pending).
+**Consolidated platform evidence:** `npm run test:phase-h` — `sparelane-platform/docs/development/phase-h-final-status.md`.
+
+## Canonical scope (build-phases)
+
+Phase H delivers admin workflows, audit completeness, security controls, and operational tooling (DLQ replay UI via H2). Engineering slices H0–H2 satisfy the canonical Phase H scope defined in [build-phases](./build-phases.md). **H3+** items (notification replay, merchant/user lifecycle mutations, support tooling, SIEM export, scoped PII lookup, financial corrections) are **separately gated** and **not required** to close canonical Phase H.
 
 ## Engineering decomposition
 
 | Slice | Architecture gate | Platform status |
 | --- | --- | --- |
-| **H0** | [phase-h0-admin-decision-gate](./phase-h0-admin-decision-gate.md) — **PASS** | **PASS** (read-only; local evidence; OD-024 blocks production admin) |
-| **H1** | [phase-h1-admin-decision-gate](./phase-h1-admin-decision-gate.md) — **PASS** (Option A: grant management only; [ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)) | **PASS** (grant create/revoke dual-control; local evidence; OD-024 blocks production MFA) |
-| **H2** | [phase-h2-admin-decision-gate](./phase-h2-admin-decision-gate.md) — **PASS** (Option A: durable DLQ + webhook replay; [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)) | **Not started** — [phase-h2-platform-checklist](./phase-h2-platform-checklist.md) |
-| **H3+** | Future — lifecycle mutations, notification replay, corrections, SIEM, roles | Not started |
+| **H0** | [phase-h0-admin-decision-gate](./phase-h0-admin-decision-gate.md) — **PASS** | **PASS** |
+| **H1** | [phase-h1-admin-decision-gate](./phase-h1-admin-decision-gate.md) — **PASS** ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)) | **PASS** |
+| **H2** | [phase-h2-admin-decision-gate](./phase-h2-admin-decision-gate.md) — **PASS** ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)) | **PASS** |
+| **H3+** | Future — lifecycle mutations, notification replay, corrections, SIEM, roles | Not started (deferred) |
 
-## What H0 proves
+## What H0+H1+H2 prove (local)
 
-- Persisted `PlatformAdminGrant` is the sole platform-admin authority
-- Separate admin control plane (`/admin` UI + `/admin/v1/*` BFF)
-- Deny-by-default closed catalogue of 8 read capabilities
-- Safe exact public-ID inspection (merchant/consumer/bill/payment/settlement)
-- Operational snapshot (admin-only)
-- Audit + security-event visibility
-- No financial mutation from admin reads
-- No admin privilege from merchant roles, env vars, or email/domain allowlists
+- Persisted `PlatformAdminGrant`; deny-by-default admin control plane
+- Safe exact-ID reads; audit/security visibility; no financial mutation from admin reads
+- Dual-control grant create/revoke with MFA ≤15m and reason
+- Durable `DeadLetterItem`; inspect-only financial/notification DLQ
+- Closed webhook operator replay (`admin.webhook.replay` only)
+- Same `evt_`/body replay semantics; manual attempt 6+; at-least-once transport boundary documented
 
-## What H1 proves (platform PASS — local)
+## What Phase H does NOT prove (non-blocking / deferred)
 
-- Closed mutation catalogue: `admin.grant.create` / `admin.grant.revoke` + capability `admin.grant.manage`
-- Dual control + recent MFA (≤15 min inclusive) via PrivilegedActionRequest
-- User `usr_…` mandatory for grant targeting
-- Last-active-admin protection under concurrent revoke (`FOR UPDATE`)
-- Safe audit for request / approve / deny / execute / fail / expire + grant created/revoked
-- Explicit deferral of replay, suspend, financial corrections, break-glass, impersonation, PII search
-
-## What H2 proves (architecture PASS — platform not started)
-
-- Durable operations-owned `DeadLetterItem` (`dlq_…`) with typed pointers
-- Closed replay catalogue: `admin.webhook.replay` only
-- Financial / notification / generic queue replay prohibited
-- Webhook replay semantics bound (same `evt_`/delivery; attempt 6+; ACTIVE endpoint; no auto-retry restart)
-- MFA ≤15m + reason; no dual control for webhook replay
-- `OperatorReplayRequest` (`rpl_…`) + notification-worker execution
-- Notification replay deferred (preserve ADR-031)
-
-## What H0+H1+H2 (architecture) do NOT prove
-
-- Platform H2 implementation / verified tests
-- Production MFA / IdP (OD-024 provider still open)
+- Production MFA / IdP provider (OD-024) — **production blocker**
+- Break-glass / impersonation (OD-026 partial)
 - Notification operator replay
-- Merchant suspend / user disable
+- Merchant suspend / user disable admin controls
 - Financial corrections / ledger admin mutation
-- Impersonation / break-glass
 - PII / support search
 - Audit export / SIEM
-- Canonical Phase H exit completeness
+- Automated bootstrap runbook automation
+- DLQ retention/archival enforcement
+- Dedicated H2 metric counter names (replay outcomes use existing webhook delivery metrics)
 
-## Open decisions (Phase H overall)
+## Open decisions
 
-| Item | Blocks H0 local? | Blocks production admin? | H2 Option A |
-| --- | --- | --- | --- |
-| [OD-024](../decisions/open/OD-024-mfa-passkey.md) MFA | No (dev/test gated identity) | **Yes** (provider) | Policy reused; provider open |
-| [OD-026](../decisions/open/OD-026-dual-control-break-glass.md) | No | Grants + webhook-replay dual-control resolved; break-glass deferred | Webhook dual-control **not required** |
-| Durable DLQ store | No | Architecture bound | ADR-034 Accepted |
-| Admin grant bootstrap runbook | No | Partial | Bound by ADR-033 |
-| Support/risk role matrix | No | Future | Deferred |
+| Item | Blocks local Phase H? | Blocks production admin? |
+| --- | --- | --- |
+| [OD-024](../decisions/open/OD-024-mfa-passkey.md) MFA provider | No (dev/test gated) | **Yes** |
+| [OD-026](../decisions/open/OD-026-dual-control-break-glass.md) break-glass | No | Partial |
+| DLQ retention lifecycle | No | Operational enhancement |
+| Admin grant bootstrap runbook | No | Partial |
 
-## Next step
+## Next canonical phase
 
-Implement **platform H2** per [phase-h2-platform-checklist](./phase-h2-platform-checklist.md). Do **not** mark canonical Phase H complete after architecture H2 alone — H3+ gates remain for remaining Phase H capabilities and production blockers.
+**Phase I — Pilot Readiness** per [build-phases](./build-phases.md).

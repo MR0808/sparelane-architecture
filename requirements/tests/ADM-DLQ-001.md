@@ -2,7 +2,7 @@
 id: ADM-DLQ-001
 title: Exhausted supported work creates one durable DLQ item
 type: operations
-status: specified
+status: verified
 mvp: true
 relatedRequirements:
   - FUN-ADM-007

@@ -151,6 +151,7 @@ const phaseH0GateFile = path.join(root, 'docs', 'implementation', 'phase-h0-admi
 const phaseHStatusFile = path.join(root, 'docs', 'implementation', 'phase-h-status.md')
 const phaseH1ScopeFile = path.join(root, 'docs', 'implementation', 'phase-h1-decision-gate-scope.md')
 const phaseH1GateFile = path.join(root, 'docs', 'implementation', 'phase-h1-admin-decision-gate.md')
+const phaseH2GateFile = path.join(root, 'docs', 'implementation', 'phase-h2-admin-decision-gate.md')
 const phaseAPresent = fs.existsSync(phaseAFile)
 const phaseBPresent = fs.existsSync(phaseBFile)
 const phaseCPresent = fs.existsSync(phaseCFile)
@@ -162,9 +163,13 @@ const phaseHStatusPresent = fs.existsSync(phaseHStatusFile)
 const phaseHStatusText = phaseHStatusPresent ? fs.readFileSync(phaseHStatusFile, 'utf8') : ''
 const phaseH0PlatformPass = /Platform H0 status:[\s\S]*?\*\*PASS\*\*/.test(phaseHStatusText)
 const phaseH1PlatformPass = /Platform H1 status:[\s\S]*?\*\*PASS\*\*/.test(phaseHStatusText)
-const phaseHInProgress = /Canonical Phase H status:[\s\S]*?\*\*IN PROGRESS\*\*/.test(phaseHStatusText)
+const phaseH2PlatformPass = /Platform H2 status:[\s\S]*?\*\*PASS\*\*/.test(phaseHStatusText)
+const phaseHCanonicalPass = /Canonical Phase H status:[\s\S]*?\*\*PASS WITH DOCUMENTED NON-BLOCKING RISKS\*\*/.test(
+  phaseHStatusText,
+)
 const phaseH1ScopePresent = fs.existsSync(phaseH1ScopeFile)
 const phaseH1GatePresent = fs.existsSync(phaseH1GateFile)
+const phaseH2GatePresent = fs.existsSync(phaseH2GateFile)
 const phaseA = phaseAPresent
   ? {
       gate: 'pass_with_documented_non_blocking_risks',
@@ -252,7 +257,9 @@ const phaseG = phaseGPresent
       gate: 'pass_with_documented_non_blocking_risks',
       phasesCompleted: 'G0-G2',
       nextPhase: 'H',
-      nextPhaseStatus: 'in_progress',
+      nextPhaseStatus: phaseHCanonicalPass
+        ? 'pass_with_documented_non_blocking_risks'
+        : 'in_progress',
       documented: true,
       verification: 'local_webhook_sink_fake_email',
     }
@@ -317,11 +324,18 @@ const health = {
     phaseH0Gate: phaseH0GatePresent ? 'pass' : 'not_documented',
     phaseH0Documented: phaseH0GatePresent,
     phaseH0Exit: phaseH0PlatformPass ? 'pass' : phaseH0GatePresent ? 'gate_only' : 'not_documented',
-    phaseH: phaseHInProgress || phaseH0PlatformPass ? 'in_progress' : 'not_started',
     phaseH1Gate: phaseH1GatePresent ? 'pass' : phaseH1ScopePresent ? 'scoped_not_started' : 'not_documented',
     phaseH1Exit: phaseH1PlatformPass ? 'pass' : phaseH1GatePresent ? 'gate_only' : 'not_documented',
     phaseH1Documented: phaseH1GatePresent || phaseH1ScopePresent,
-    nextPhase: phaseGPresent ? 'H' : phaseFPresent ? 'G' : phaseDPresent ? 'E' : 'D',
+    phaseH2Gate: phaseH2GatePresent ? 'pass' : 'not_documented',
+    phaseH2Exit: phaseH2PlatformPass ? 'pass' : phaseH2GatePresent ? 'gate_only' : 'not_documented',
+    phaseH2Documented: phaseH2GatePresent,
+    phaseH: phaseHCanonicalPass
+      ? 'pass_with_documented_non_blocking_risks'
+      : phaseH0PlatformPass || phaseH1PlatformPass || phaseH2PlatformPass
+        ? 'in_progress'
+        : 'not_started',
+    nextPhase: phaseHCanonicalPass ? 'I' : phaseGPresent ? 'H' : phaseFPresent ? 'G' : phaseDPresent ? 'E' : 'D',
     label: 'Generated from repository state — not live production health',
   },
 }

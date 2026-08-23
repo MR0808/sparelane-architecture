@@ -4,7 +4,7 @@ title: Operable closed-catalogue DLQ replay
 type: non-functional
 area: operations
 status: accepted
-implementationStatus: designed
+implementationStatus: verified
 priority: must
 mvp: true
 architecture:
