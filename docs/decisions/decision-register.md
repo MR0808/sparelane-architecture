@@ -1,6 +1,6 @@
 # Architecture Decision Register
 
-Quick-reference governance index for ADR-001 through ADR-030.
+Quick-reference governance index for ADR-001 through ADR-033.
 
 **Accepted** ADRs are binding implementation constraints unless superseded by a later ADR.
 
@@ -35,7 +35,10 @@ Quick-reference governance index for ADR-001 through ADR-030.
 | [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.md) | MVP settlement obligation 1:1 workflow; gross payable amount; PENDING→ELIGIBLE; KYB gate | Accepted | Money / Settlement | ADR-005/006/026 | Platform F0 LedgerPostingConfirmed → Settlement |
 | [ADR-028](./ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) | MVP settlement execution: no batching; payout destination token; 1:1 instruction; provider taxonomy; Fake F1 ends SUBMITTED | Accepted | Money / Settlement | ADR-006/017/026/027 | Platform F1 ELIGIBLE → instruction → Fake submit |
 | [ADR-029](./ADR-029-settlement-finality-reconciliation-payout-accounting.md) | MVP settlement finality + payout CoA (Dr payable / Cr settlement clearing); journal before SETTLED | Accepted | Money / Settlement / Ledger | ADR-026/027/028 | Platform F2 ReconcileSettlement → journal → SETTLED |
-| [ADR-030](./ADR-030-merchant-webhook-contract-signing-and-delivery.md) | MVP merchant webhook catalogue, envelope, HMAC-SHA256, SSRF, delivery identity, OD-031 retry; notifications deferred | Accepted | Integrations / Security | ADR-009/023/017/022; resolves OD-031 | Platform G0/G1 merchant webhooks; G2+ notifications wait on OD-005 |
+| [ADR-030](./ADR-030-merchant-webhook-contract-signing-and-delivery.md) | MVP merchant webhook catalogue, envelope, HMAC-SHA256, SSRF, delivery identity, OD-031 retry; G2+ consumer notifications sequenced | Accepted | Integrations / Security | ADR-009/023/017/022; resolves OD-031 | Platform G0/G1 merchant webhooks |
+| [ADR-031](./ADR-031-consumer-notification-contact-channel-and-delivery-policy.md) | Consumer notification contact, email MVP, G2 catalogue, templates, delivery/idempotency; SMS/prefs deferred | Accepted | Notifications / Privacy | ADR-019/030; resolves OD-005 core | Platform G2 consumer email + Fake provider |
+| [ADR-032](./ADR-032-platform-admin-authority-read-only-control-plane.md) | Platform admin authority + H0 read-only control plane; no mutations/replay/grant UI | Accepted | Security / Admin | ADR-012/014; OD-024/026 open for prod/H1 | Platform H0 admin BFF + `/admin` shell; H1 mutations deferred |
+| [ADR-033](./ADR-033-privileged-admin-grant-management-and-approval.md) | H1 Option A: grant create/revoke only; dual control + recent MFA; PrivilegedActionRequest | Accepted | Security / Admin | ADR-012/032; OD-024 policy narrowed; OD-026 grants resolved; break-glass deferred | Platform H1 grant management; replay/suspend deferred H2+ |
 
 ## Complementary pairs (not duplicates)
 
@@ -45,7 +48,10 @@ Quick-reference governance index for ADR-001 through ADR-030.
 | ADR-004 / ADR-013 | Ledger as financial SoT vs separation from operational workflow stores |
 | ADR-009 / ADR-023 | Delivery semantics/security vs curation of external event contract |
 | ADR-009 / ADR-030 | At-least-once signed webhooks principle vs frozen catalogue/signing/SSRF/retry |
-| ADR-023 / ADR-030 | Curation principle vs closed MVP type list and envelope |
+| ADR-023 / ADR-030 | Curation principle vs closed MVP merchant type list and envelope |
+| ADR-030 / ADR-031 | Merchant outbound HTTPS webhooks vs consumer email notifications |
+| ADR-012 / ADR-032 | Privileged audit principle vs H0 read-only control plane scope (mutations H1+) |
+| ADR-032 / ADR-033 | H0 read-only control plane vs H1 grant-management dual-control slice |
 | ADR-013 / ADR-016 | Logical separation vs consistency mechanism between the stores |
 | ADR-026 / ADR-027 | Collection journal CoA vs settlement obligation/eligibility policy |
 | ADR-027 / ADR-028 | Settlement obligation/eligibility vs instruction execution / destination / idempotency |
@@ -53,4 +59,4 @@ Quick-reference governance index for ADR-001 through ADR-030.
 
 ## None superseded or rejected
 
-No ADRs in 001–030 are Superseded or Rejected at this gate. ADR-030 freezes merchant webhook contracts and resolves OD-031. Consumer notifications remain deferred (OD-005). Endpoint Merchant API remains OD-034.
+No ADRs in 001–033 are Superseded or Rejected at this gate. ADR-032 unblocks platform H0. ADR-033 unblocks platform H1 grant management (Option A). ADR-031 resolves OD-005 core. Endpoint Merchant API remains OD-034. Email vendor remains OD-035. OD-024 MFA provider and OD-026 break-glass remain open.

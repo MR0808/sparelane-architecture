@@ -185,6 +185,58 @@ FAILED
 
 (Historical name `WebhookDeliveryStatus` on attempts is replaced by `WebhookAttemptStatus` to avoid colliding with logical delivery status.)
 
+## ConsumerNotificationChannel
+
+G2 MVP:
+
+```text
+EMAIL
+```
+
+(SMS reserved for G3+.)
+
+## ConsumerNotificationContactStatus
+
+```text
+PENDING
+ACTIVE
+INACTIVE
+REVOKED
+```
+
+## ConsumerNotificationStatus
+
+Logical notification intent:
+
+```text
+PENDING
+SENT
+FAILED
+SKIPPED
+```
+
+`SENT` = provider `accepted` (handed off), not inbox delivery.
+
+## ConsumerNotificationAttemptStatus
+
+```text
+PENDING
+DELIVERING
+SUCCEEDED
+RETRY_PENDING
+FAILED
+```
+
+## ConsumerNotificationType
+
+Closed G2 catalogue ([ADR-031](../decisions/ADR-031-consumer-notification-contact-channel-and-delivery-policy.md)):
+
+```text
+payment.action_required
+payment.failed
+payment.collected
+```
+
 ## ApiCredentialStatus
 
 ```text
@@ -242,6 +294,40 @@ REVOKED
 SANDBOX
 LIVE
 ```
+
+## PlatformAdminGrantStatus
+
+H1 lifecycle ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)). Only `active` confers platform admin. H0 used `active` only; H1 adds `revoked`.
+
+```text
+active
+revoked
+```
+
+## PrivilegedActionType
+
+Closed H1 catalogue ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)). Unknown actions denied.
+
+```text
+admin.grant.create
+admin.grant.revoke
+```
+
+## PrivilegedActionRequestStatus
+
+PrivilegedActionRequest lifecycle ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)):
+
+```text
+pending
+approved
+denied
+expired
+executed
+failed
+cancelled
+```
+
+`cancelled` is optional pre-execute cancel; not required for MVP if unused.
 
 ## JournalEntrySide
 

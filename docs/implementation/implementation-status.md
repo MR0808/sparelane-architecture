@@ -3,7 +3,7 @@
 **Status:** Current  
 **Owner:** Engineering / Architecture  
 **Last Reviewed:** 2026-08-22  
-**Related ADRs:** ADR-001–030  
+**Related ADRs:** ADR-001–033  
 
 Tracks how far `sparelane-platform` has progressed against this architecture. **This is not a product completeness percentage.** Architecture Accepted does not mean the product is built.
 
@@ -35,7 +35,9 @@ Test specifications keep `status: specified` until a product test is executable.
 | D | Payment Reliability Engine | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-d-status](phase-d-status.md) |
 | E | Ledger | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** (E0–E1 engineering slices; collection posting ADR-026) — see [phase-e1-accounting-gate](phase-e1-accounting-gate.md), platform `phase-e0` / `phase-e1` evidence |
 | F | Settlement | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-f-status](phase-f-status.md) (local Fake settlement; not real-provider / real-money) |
-| G–I | Notifications through pilot readiness | **NOT STARTED** on platform. Architecture **ADR-030** Accepted (merchant webhook contract). G0 implementation not started. Notifications deferred (OD-005). |
+| G | Notifications & Webhooks | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-g-status](phase-g-status.md) (local webhook sink + Fake email; OD-025/OD-035 open) |
+| H | Security / Admin Hardening | **H0 gate PASS**; **H1 gate PASS** (grant management only) — [phase-h0-admin-decision-gate](phase-h0-admin-decision-gate.md), [phase-h1-admin-decision-gate](phase-h1-admin-decision-gate.md), [phase-h-status](phase-h-status.md); platform H0 **PASS**; platform H1 **not started**; Phase H still **in progress** |
+| I | Pilot Readiness | **NOT STARTED** on platform |
 
 Canonical phase definitions remain in [build-phases](build-phases.md). Do not treat module shells or provider ports as deployed product systems.
 

@@ -65,7 +65,7 @@ This ADR freezes the **MVP merchant webhook contract + delivery policy**. Consum
 | 11 | Secret shown **once**; recoverable via `signing_secret_ref` (not one-way hash). Rotation **deferred**. |
 | 12 | HTTP 2xx = transport success. Retry schedule resolves OD-031 (§18). Independent of payment retry. |
 | 13 | Exhaustion → delivery `FAILED`; do **not** auto-disable endpoint; do **not** mutate financial state. |
-| 14 | Operator replay of webhook HTTP **deferred** to Phase H tooling. Semantics reserved in §21. |
+| 14 | Operator replay of webhook HTTP **deferred** to Phase H tooling (**H2+**, not H1 Option A / ADR-033). Semantics reserved in §21. |
 | 15 | Inbound **provider** webhooks ≠ outbound **merchant** webhooks. |
 
 ---
@@ -332,7 +332,7 @@ Attempt 1 is immediate after projection (subject to ACTIVE check).
 
 Independent of payment retry ([ADR-025](./ADR-025-payment-retry-timing-budget-and-recovery-window.md)). Webhook failure **never** changes Bill, PaymentWorkflow, PaymentAttempt, Ledger, Settlement, or SettlementInstruction.
 
-**Exhaustion:** logical delivery `FAILED`. Do not auto-disable endpoint. Durable delivery row is SoT. Worker processing DLQ may hold a **pointer** (delivery id / public event id), **not** a second copy of the merchant payload. Operator HTTP replay UI is **Phase H**.
+**Exhaustion:** logical delivery `FAILED`. Do not auto-disable endpoint. Durable delivery row is SoT. Worker processing DLQ may hold a **pointer** (delivery id / public event id), **not** a second copy of the merchant payload. Operator HTTP replay UI is **Phase H tooling** — **not** H0 and **not** H1 Option A ([ADR-033](./ADR-033-privileged-admin-grant-management-and-approval.md) defers replay to H2+). Automatic delivery semantics in this ADR are unchanged.
 
 ---
 
@@ -391,18 +391,17 @@ Fake/local HTTP sink: **nonProductionOnly**. Production/sandbox fail closed with
 
 ---
 
-## 15. Deferred notifications (not blocking webhooks)
+## 15. Deferred notifications (G3+ scope)
 
-Remain open ([OD-005](./open/OD-005-notification-rules.md)):
+Core G2 consumer notification policy is **Accepted** in [ADR-031](./ADR-031-consumer-notification-contact-channel-and-delivery-policy.md) (resolves [OD-005](./open/OD-005-notification-rules.md) for local G2).
 
-- consumer contact destination (auth email is **not** notification destination)
-- use-case catalogue and copy
-- email vs SMS MVP
-- preferences / opt-out
-- templates / versioning
-- notification intent idempotency
+Remain explicitly deferred:
 
-Do **not** create a notification ADR until those can be Accepted without invention.
+- SMS channel and phone contacts
+- bill due reminder cadence
+- marketing / optional preferences
+- final marketing/legal copy
+- production email vendor ([OD-035](./open/OD-035-email-provider.md))
 
 ---
 
@@ -433,7 +432,7 @@ Do **not** create a notification ADR until those can be Accepted without inventi
 
 ## Dependencies / open questions
 
-- OD-005 consumer notification rules — **open** (does not block G0 webhooks)
+- OD-005 consumer notification rules — **resolved** (ADR-031); SMS/reminders/prefs deferred G3+
 - OD-034 webhook endpoint Merchant API — **open** (portal/internal for MVP)
 - OD-025 secrets product — **open** (ref + SecretProvider sufficient for local)
 - Signing secret rotation protocol — deferred

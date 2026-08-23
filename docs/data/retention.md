@@ -32,6 +32,10 @@ Long-lived where justified. Exact retention **TBD.**
 
 Operational retention. Exact period **TBD.**
 
+## Consumer notification delivery records
+
+Operational retention for `consumer_notifications` and delivery attempts. Contact email values must be minimised/anonymised on consumer deletion per privacy policy. Exact period **TBD** ([OD-014](../decisions/open/OD-014-legal-retention.md)).
+
 ## Analytics
 
 Separate retention/minimisation policy from transactional stores. **TBD.**

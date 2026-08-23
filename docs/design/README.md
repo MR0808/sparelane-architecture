@@ -51,6 +51,8 @@ Do not invent requirement, test, view, or ADR IDs — frontmatter on each design
 | [SEQ-SEC-002](security/provider-webhook-verification.md) | Provider Webhook Verification | accepted | `providerWebhookVerification` |
 | [SEQ-SEC-003](security/merchant-api-authentication.md) | Merchant API Authentication | accepted | — |
 | [SEQ-SEC-004](security/admin-privileged-action.md) | Admin Privileged Action | accepted | — |
+| [SEQ-SEC-005](security/admin-read-only-control-plane.md) | Admin Read-Only Control Plane | accepted | — |
+| [SEQ-SEC-006](security/admin-grant-dual-control.md) | Admin Grant Dual-Control | accepted | — |
 
 ## Data
 

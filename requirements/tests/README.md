@@ -11,6 +11,8 @@ Stable IDs are referenced from requirement `tests:` frontmatter.
 | `E2E-SET-###` | End-to-end settlement |
 | `INT-API-###` / `INT-PSP-###` | Integration |
 | `SEC-TEN-###` / `SEC-AUTH-###` | Security |
+| `ADM-AUTH-###` / `ADM-DATA-###` / `ADM-FIN-###` / `ADM-AUD-###` | Admin H0 control plane |
+| `ADM-PRIV-###` / `ADM-DUAL-###` / `ADM-GRANT-###` | Admin H1 privileged grant management |
 | `OPS-REC-###` | Operations recovery |
 | `CON-API-###` / `CON-WEBHOOK-###` | Contracts |
 

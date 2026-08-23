@@ -1,38 +1,38 @@
 {
-  "generatedAt": "2026-08-22T04:12:11.850Z",
+  "generatedAt": "2026-08-23T02:39:11.093Z",
   "label": "Generated from repository state",
   "requirements": {
-    "total": 71,
-    "mvp": 68,
+    "total": 86,
+    "mvp": 83,
     "future": 3,
-    "blocked": 12,
-    "missingArchitecture": 0,
+    "blocked": 14,
+    "missingArchitecture": 4,
     "missingTests": 38,
     "mvpVerified": 0,
     "foundationImplemented": 15,
-    "productImplemented": 20
+    "productImplemented": 32
   },
   "decisions": {
-    "adrs": 30,
-    "open": 34
+    "adrs": 33,
+    "open": 35
   },
   "tests": {
-    "total": 28
+    "total": 42
   },
   "designs": {
-    "total": 31,
-    "sequence": 28,
+    "total": 37,
+    "sequence": 34,
     "state": 3,
     "invalidTraceability": 0
   },
   "architecture": {
-    "views": 59
+    "views": 60
   },
   "contracts": {
     "openapi": "present"
   },
   "docs": {
-    "count": 239
+    "count": 259
   },
   "implementation": {
     "phaseAGate": "pass_with_documented_non_blocking_risks",
@@ -51,7 +51,17 @@
     "phaseFPhasesCompleted": "F0-F2",
     "phaseF": "pass_with_documented_non_blocking_risks",
     "phaseFVerification": "local_fake_settlement",
-    "nextPhase": "G",
+    "phaseGGate": "pass_with_documented_non_blocking_risks",
+    "phaseGPhasesCompleted": "G0-G2",
+    "phaseG": "pass_with_documented_non_blocking_risks",
+    "phaseGVerification": "local_webhook_sink_fake_email",
+    "phaseH0Gate": "pass",
+    "phaseH0Documented": true,
+    "phaseH0Exit": "pass",
+    "phaseH": "in_progress",
+    "phaseH1Gate": "pass",
+    "phaseH1Documented": true,
+    "nextPhase": "H",
     "label": "Generated from repository state — not live production health"
   }
 }

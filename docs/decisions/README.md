@@ -3,7 +3,7 @@
 **Status:** Current  
 **Owner:** Architecture (TBD)  
 **Last Reviewed:** 2026-08-13  
-**Related ADRs:** ADR-001–027  
+**Related ADRs:** ADR-001–033  
 **Related Views:** —
 
 ## Accepted vs open
@@ -23,7 +23,7 @@ Do not treat open decisions as Accepted architecture. Do not implement against a
 
 ## Indexes
 
-- [Decision register](decision-register.md) — ADR-001–027 status and consequences
+- [Decision register](decision-register.md) — ADR-001–033 status and consequences
 - [Open decisions](open-decisions.md) — TBDs with blocker summary
 - [Architecture traceability](../implementation/architecture-traceability.md) — ADR → docs → modules → tests
 
@@ -58,3 +58,9 @@ Do not treat open decisions as Accepted architecture. Do not implement against a
 | [ADR-025](./ADR-025-payment-retry-timing-budget-and-recovery-window.md) | Payment Retry Timing, Budget and Recovery Window | Accepted |
 | [ADR-026](./ADR-026-collection-ledger-posting-minimal-coa.md) | Collection Ledger Posting and Minimal Chart of Accounts | Accepted |
 | [ADR-027](./ADR-027-settlement-obligation-eligibility-cardinality.md) | Settlement Obligation, Eligibility and Cardinality Policy | Accepted |
+| [ADR-028](./ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) | Settlement Execution, Payout Destination and Instruction Idempotency | Accepted |
+| [ADR-029](./ADR-029-settlement-finality-reconciliation-payout-accounting.md) | Settlement Finality, Reconciliation and Payout Accounting | Accepted |
+| [ADR-030](./ADR-030-merchant-webhook-contract-signing-and-delivery.md) | Merchant Webhook Contract, Signing and Delivery | Accepted |
+| [ADR-031](./ADR-031-consumer-notification-contact-channel-and-delivery-policy.md) | Consumer Notification Contact, Channel and Delivery Policy | Accepted |
+| [ADR-032](./ADR-032-platform-admin-authority-read-only-control-plane.md) | Platform Admin Authority and Read-Only Control Plane Policy | Accepted |
+| [ADR-033](./ADR-033-privileged-admin-grant-management-and-approval.md) | Privileged Admin Grant Management and Dual-Control Approval | Accepted |

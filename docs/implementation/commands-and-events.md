@@ -26,7 +26,43 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `ReconcileSettlement` | Settlement | F2: finality → optional PROCESSING / payout journal + SETTLED / FAILED / hold ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)) |
 | `ProjectMerchantWebhook` | Webhooks | Idempotent curated projection; closed catalogue ([ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md)) |
 | `DeliverMerchantWebhook` | Webhooks | Signed HTTP outside TX; same `evt_` on retry |
-| `NotifyConsumer` | Notifications | Email/SMS — **deferred** past G0/G1 (OD-005) |
+| `AddConsumerNotificationContact` | Notifications | Portal: add email → `PENDING` ([ADR-031](../decisions/ADR-031-consumer-notification-contact-channel-and-delivery-policy.md)) |
+| `VerifyConsumerNotificationContact` | Notifications | Verification → `ACTIVE` |
+| `SetDefaultConsumerNotificationContact` | Notifications | Explicit default per channel |
+| `DisableConsumerNotificationContact` / `RevokeConsumerNotificationContact` | Notifications | Lifecycle |
+| `ProjectConsumerNotification` | Notifications | Idempotent closed mapping → intent row |
+| `DeliverConsumerNotification` | Notifications | EmailProvider call outside TX |
+| `NotifyConsumer` | Notifications | **Legacy alias** — prefer Project + Deliver |
+
+## Admin read queries (H0 — no mutations)
+
+Internal BFF vocabulary for `/admin/v1/*`. All require active `PlatformAdminGrant` + closed read capability ([ADR-032](../decisions/ADR-032-platform-admin-authority-read-only-control-plane.md)).
+
+| Query | Capability | Notes |
+| --- | --- | --- |
+| `GetAdminOperationalSnapshot` | `admin.dashboard.view` | DB readiness, outbox backlog, scheduler lag, high-level error metrics — not public `/health` |
+| `GetAdminMerchantByPublicId` | `admin.merchant.view` | Exact `mrc_…` only |
+| `GetAdminConsumerByPublicId` | `admin.consumer.view` | Exact `con_…` only — no email search |
+| `GetAdminBillByPublicId` | `admin.bill.view` | Exact bill public ID |
+| `GetAdminPaymentWorkflowByPublicId` | `admin.payment.view` | Safe operational projection |
+| `GetAdminSettlementByPublicId` | `admin.settlement.view` | No payout destination ref |
+| `QueryAdminAuditEvents` | `admin.audit.view` | Paginated read-only |
+| `QueryAdminSecurityEvents` | `admin.security_event.view` | Paginated read-only |
+
+No H0 commands for grant changes, suspensions, replays, or financial corrections.
+
+## Admin privileged commands (H1 Option A — grant management only)
+
+Session BFF `POST /admin/v1/*` only. Require active `PlatformAdminGrant` + `admin.grant.manage` + recent MFA + dual-control workflow ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)).
+
+| Command | Notes |
+| --- | --- |
+| `RequestPrivilegedAction` | Create `PrivilegedActionRequest` for `admin.grant.create` \| `admin.grant.revoke`; reason + fingerprint; → `pending` |
+| `ApprovePrivilegedAction` | Approver ≠ requester; recent MFA; → `approved` or `denied` |
+| `ExecutePrivilegedAction` | Apply grant create/revoke once; recent MFA; → `executed` or `failed` |
+| `CancelPrivilegedAction` | Optional MVP; cancel `approved` pre-execute if product implements |
+
+No H1 commands for merchant suspend, user disable, DLQ/webhook/notification/financial replay, or financial corrections.
 
 ## Important domain events (internal)
 
@@ -51,7 +87,14 @@ Names are internal implementation vocabulary. External webhook type names remain
 | `WebhookDelivered` | Logical delivery SUCCEEDED (2xx) |
 | `WebhookDeliveryFailed` | Attempt failed / delivery exhausted FAILED |
 | `WebhookDeliveryCancelled` | Endpoint not ACTIVE; no HTTP |
+| `ConsumerNotificationContactAdded` | Contact row created |
+| `ConsumerNotificationContactVerified` | Contact ACTIVE |
+| `ConsumerNotificationProjected` | Intent persisted |
+| `ConsumerNotificationDelivered` | Provider accepted email |
+| `ConsumerNotificationDeliveryFailed` | Exhausted / rejected |
+| `ConsumerNotificationSkipped` | No ACTIVE destination |
+| `NotificationQueued` | **Legacy** — prefer explicit consumer notification events |
 
-Internal names need not equal merchant webhook types (`payment.collected`, etc.). Closed external catalogue: [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).
+Internal names need not equal merchant webhook types (`payment.collected`, etc.). Closed merchant catalogue: [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md). Consumer notifications: [ADR-031](../decisions/ADR-031-consumer-notification-contact-channel-and-delivery-policy.md).
 
 F1 does **not** emit batch events (`BatchCreated`, etc.).

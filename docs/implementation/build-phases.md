@@ -153,33 +153,53 @@ Product config (backup cardinality) is **Partial** — [OD-003](../decisions/ope
 | --- | --- |
 | **G0** | Merchant webhook domain, closed catalogue, envelope, HMAC, SSRF, projection, delivery identity, retry policy, Fake/local HTTP sink |
 | **G1** | Portal/internal endpoint management + production-safe HTTPS delivery |
-| **G2+** | Consumer notifications — **deferred** until OD-005 (contact, copy, channels, preferences, templates) |
+| **G2** | Consumer notification contact + email foundation + 3 mandatory payment notifications ([ADR-031](../decisions/ADR-031-consumer-notification-contact-channel-and-delivery-policy.md)) |
+| **G3+** | SMS, preferences, bill due reminders — **deferred** (not required for canonical Phase G completion) |
 
-Canonical Phase G is **not** complete after G0/G1.
+**Platform status:** [phase-g-status](./phase-g-status.md) — **PASS WITH DOCUMENTED NON-BLOCKING RISKS** (local webhook sink + Fake email; production providers open).
+
+Canonical Phase G scope is **G0 + G1 + G2** for local/platform evidence. G3+ enhancements remain future work.
 
 **Open decisions**
 
 | Stage | Blocks? | Items |
 | --- | --- | --- |
-| Local G0/G1 | No | Fake/local webhook sink; Fake email/SMS unused until G2 |
+| Local G0/G1/G2 | No | Fake webhook sink; Fake email for G2 local |
 | Sandbox webhooks | Soft | Secrets product (OD-025) for signing_secret_ref |
-| Pilot / Production notifications | **Yes** for notify | OD-005 contact/copy; email/SMS vendor |
-| Production | Soft | Vendor selection for email/SMS when G2 starts |
+| Pilot / Production consumer email | **Yes** | [OD-035](../decisions/open/OD-035-email-provider.md) vendor; OD-025 credentials |
+| Production SMS / reminders | **Yes** | G3+ scope |
 
 ---
 
 ## Phase H — Security/Admin Hardening
 
-**Delivers:** admin workflows, audit completeness, security controls, operational tooling (DLQ replay UI).
+**Delivers:** admin workflows, audit completeness, security controls, operational tooling (DLQ replay UI — **H2+**, not H0/H1).
 
 **Depends on:** A–G core paths exist.
+
+**Binding H0 gate:** [phase-h0-admin-decision-gate](./phase-h0-admin-decision-gate.md) — [ADR-032](../decisions/ADR-032-platform-admin-authority-read-only-control-plane.md).
+
+**Binding H1 gate:** [phase-h1-admin-decision-gate](./phase-h1-admin-decision-gate.md) — [ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md) Option A (grant management only).
+
+**Engineering sub-phases (local):**
+
+| Slice | Scope |
+| --- | --- |
+| **H0** | Persisted `PlatformAdminGrant`; read-only admin control plane (`/admin`, `/admin/v1/*`); safe exact-ID lookups; audit/security read views; audit completeness inventory; **no mutations, no DLQ UI, no grant CRUD** |
+| **H1** | **Grant management only** — `admin.grant.create` / `admin.grant.revoke`; capability `admin.grant.manage`; PrivilegedActionRequest dual-control + recent MFA; **no** DLQ/webhook replay, suspend, financial corrections |
+| **H2+** | Durable DLQ + replay policy; merchant/user lifecycle mutations; support tooling, SIEM export, scoped PII lookup, financial corrections — separately gated |
+
+**Platform status:** [phase-h-status](./phase-h-status.md) — H0 gate **PASS**; H1 gate **PASS**; platform H0 **PASS**; platform H1 **not started**; Phase H **in progress**. Canonical Phase H **not complete** after H0 or H1 Option A.
 
 **Open decisions**
 
 | Stage | Blocks? | Items |
 | --- | --- | --- |
-| Pilot | Partial | Admin MFA, dual-control for privileged financial ops |
-| Production | Partial | SIEM, break-glass, PCI program evidence |
+| Local H0 | No | Fake/dev admin identity under existing gates |
+| Local H1 grant management | No (policy bound) | Fake/dev MFA may stub `PrivilegedAuthenticationContext` under existing gates |
+| Pilot | Partial | Admin MFA provider ([OD-024](../decisions/open/OD-024-mfa-passkey.md)); break-glass still open ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md)) |
+| Production admin | **Yes** | IdP + admin MFA provider (OD-023/OD-024) |
+| Production | Partial | SIEM, break-glass; durable DLQ + replay policy (**H2+**) |
 
 ---
 

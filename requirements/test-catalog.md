@@ -19,6 +19,13 @@ Phase B adds **local product isolation evidence** for SEC-TEN-001 aligned paths 
 | `INT-PSP-###` | PSP / provider integration |
 | `SEC-TEN-###` | Tenant isolation |
 | `SEC-AUTH-###` | Auth / credential / signature checks |
+| `ADM-AUTH-###` | Platform admin authority / control-plane access |
+| `ADM-DATA-###` | Admin read-model safety / PII minimisation |
+| `ADM-FIN-###` | Admin financial mutation boundary |
+| `ADM-AUD-###` | Admin audit read-only / append-only |
+| `ADM-PRIV-###` | Privileged action request controls (reason, recent MFA) |
+| `ADM-DUAL-###` | Dual-control / maker-checker for privileged admin actions |
+| `ADM-GRANT-###` | Platform admin grant create/revoke lifecycle |
 | `OPS-REC-###` | Ops recovery (ledger, DLQ) |
 | `CON-API-###` | Contract / OpenAPI conformance |
 | `CON-WEBHOOK-###` | Webhook contract scenarios |

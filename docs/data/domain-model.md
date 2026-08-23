@@ -19,6 +19,7 @@ Sparelane account holder.
 
 ```text
 Consumer
+    ├── Notification Contacts (communication destinations)
     ├── Payment Methods
     ├── Merchant Connections
     ├── Wallet capability (optional)
@@ -26,6 +27,8 @@ Consumer
 ```
 
 Authentication credentials are **not** part of the Consumer business entity. Identity/authentication remains a separate concern.
+
+**Notification contacts** (`ConsumerNotificationContact`) are communication destinations owned by the Notifications module — not authentication email ([ADR-031](../decisions/ADR-031-consumer-notification-contact-channel-and-delivery-policy.md)).
 
 Classification: typically Confidential (profile); related secrets Restricted.
 

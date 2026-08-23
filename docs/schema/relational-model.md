@@ -23,10 +23,73 @@ Tenant enforcement: foreign keys + application checks; PostgreSQL RLS optional l
 | Aspect | Design |
 | --- | --- |
 | PK | `id` |
-| Public | optional `public_id` |
+| Public | **REQUIRED** unique `public_id` (`usr_…`) — grant targeting and admin APIs use this only ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)) |
 | Key fields | `email` (unique where used), `status`, IdP subject refs |
 | Secrets | Out of scope if provider-managed; no password hashes required in this design if IdP owns auth |
 | Sensitive | Confidential |
+
+---
+
+## external_identities
+
+**Purpose:** External IdP subject link to `users`. Email at link time is not an authoritative delivery or admin identifier.
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| FKs | `user_id` → users |
+| Unique | `(issuer, subject)` |
+| Fields | `email_at_link_time` (optional snapshot), `last_authenticated_at` |
+| Sensitive | Confidential |
+
+Identity resolution: `ExternalIdentity → User → …` ([ADR-032](../decisions/ADR-032-platform-admin-authority-read-only-control-plane.md)).
+
+---
+
+## platform_admin_grants
+
+**Purpose:** Explicit persisted platform-admin authority. Identity module owned. **Merchant roles do not imply this grant.**
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| FKs | `user_id` → users (**unique** — at most one grant per user) |
+| Fields | `status` (`active` \| `revoked` — [PlatformAdminGrantStatus](./enums.md)), `created_at`, `updated_at`, `revoked_at` (optional; set when status → `revoked`) |
+| Sensitive | Restricted operational metadata |
+
+Authority chain: `ExternalIdentity → User → active PlatformAdminGrant → AdminPrincipal`.
+
+Only `status = active` confers admin. No environment variable, email allowlist, or merchant membership substitutes for this row.
+
+**H1 management:** create/revoke only via PrivilegedActionRequest dual-control workflow ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)). H0 reads persisted grants only (no CRUD UI). Bootstrap of the first admin is an out-of-band runbook — never `ENV_ADMIN_EMAIL`.
+
+---
+
+## privileged_action_requests
+
+**Purpose:** Dual-control privileged action requests for H1 grant management ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)).
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| Public | `public_id` (`par_…` proposed) UNIQUE |
+| Fields | `action` (`admin.grant.create` \| `admin.grant.revoke`), `risk_class` (`HIGH`), `target_type` (`user`), `target_public_id` (`usr_…`), `payload_fingerprint`, `payload` (minimal safe JSON), `reason` (16–500 chars), `status` ([PrivilegedActionRequestStatus](./enums.md)), `requester_user_id` → users, `expires_at`, `executed_at` (optional), `execution_result` (optional), timestamps |
+| Indexes | `public_id`, `status`, `requester_user_id`, `expires_at` |
+| Sensitive | Restricted — reason must not contain secrets/PII dumps |
+
+---
+
+## privileged_action_approvals
+
+**Purpose:** Approval or denial decisions on a PrivilegedActionRequest.
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| FKs | `request_id` → privileged_action_requests; `approver_user_id` → users (must ≠ requester) |
+| Fields | `decision` (`approved` \| `denied`), `reason` (optional), `mfa_satisfied_at`, `created_at` |
+| Constraints | Approver ≠ requester; at most one approving decision that advances the request to `approved` |
+| Sensitive | Restricted |
 
 ---
 
@@ -397,6 +460,56 @@ N ACTIVE subscribed endpoints ⇒ N delivery rows, one shared `evt_…`.
 | Fields | `attempt_number` (starts at 1), `status` (`WebhookAttemptStatus`), `http_status`, `next_retry_at`, `error_class`, timestamps |
 | Unique | `(webhook_delivery_id, attempt_number)` |
 | Note | Avoid storing full merchant response bodies. Do **not** use unique `(webhook_event_id, attempt_number)` once multiple endpoints exist. |
+
+---
+
+## consumer_notification_contacts
+
+**Purpose:** Consumer-owned notification destinations (separate from auth identity).
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| Public | `public_id` (`cnc_…`) UNIQUE |
+| Ownership | `consumer_id` NOT NULL FK → consumers |
+| Fields | `channel` (`EMAIL` MVP), `email_address` (normalised lowercase), `status` (`ConsumerNotificationContactStatus`), `verified_at`, `is_default`, timestamps |
+| Unique | `(consumer_id, channel, email_address)` among non-`REVOKED` rows |
+| Partial unique | at most one `ACTIVE` `is_default=true` per `(consumer_id, channel)` |
+| Sensitive | Confidential — email is personal data; no plaintext in logs/audit |
+
+Auth/`users.email` is **not** mirrored here automatically ([ADR-031](../decisions/ADR-031-consumer-notification-contact-channel-and-delivery-policy.md)).
+
+---
+
+## consumer_notifications
+
+**Purpose:** Logical consumer notification intent (one per business reference).
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| Public | `public_id` (`ntf_…`) UNIQUE |
+| Ownership | `consumer_id` NOT NULL |
+| FKs | optional `consumer_notification_contact_id`, `payment_workflow_id` (when payment-scoped) |
+| Fields | `notification_type`, `template_id`, `template_version`, `business_reference` UNIQUE, `status` (`ConsumerNotificationStatus`), `skip_reason`, `correlation_id`, timestamps |
+| Idempotency | `business_reference = notify:{type}:{payment_workflow_public_id}` for G2 payment types |
+
+No raw email body or provider secrets stored.
+
+---
+
+## consumer_notification_delivery_attempts
+
+**Purpose:** Provider transport attempts per logical notification.
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| FKs | `consumer_notification_id` NOT NULL |
+| Fields | `attempt_number`, `status` (`ConsumerNotificationAttemptStatus`), `provider_outcome`, `provider_message_ref`, `error_class`, `next_retry_at`, timestamps |
+| Unique | `(consumer_notification_id, attempt_number)` |
+
+Do not store full provider response bodies with PII.
 
 ---
 

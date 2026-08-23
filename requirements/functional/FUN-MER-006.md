@@ -4,6 +4,7 @@ title: Receive signed webhook
 type: functional
 area: merchant
 status: accepted
+implementationStatus: implemented
 priority: must
 mvp: true
 architecture:
@@ -52,3 +53,5 @@ Signed at-least-once delivery (ADR-009) with curated events (ADR-023).
 ## Notes
 
 MVP merchant integration scope. Consumer notifications are not this requirement (OD-005). Endpoint Merchant API CRUD is OD-034.
+
+**Platform (2026-08-22):** Implemented locally — G0/G1 integration tests + `npm run test:phase-g0` / `test:phase-g1`. At-least-once only; production KMS secret store still OD-025.

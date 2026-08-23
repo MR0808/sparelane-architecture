@@ -901,7 +901,7 @@ views {
 
   dynamic view adminPrivilegedAction {
     title '09 Flows / Security / Admin Privileged Action'
-    description 'Privileged admin actions require MFA/session validation, explicit authorisation and durable audit. Financial investigation may touch settlement services but must not mutate the ledger directly through admin UI. Dual-control workflows remain TBD.'
+    description 'H1 Option A grant mutations: PrivilegedActionRequest dual control + recent MFA (ADR-033). H0 is read-only — see adminReadOnlyControlPlane. No DLQ/webhook replay, suspend, or financial correction in H1. Ledger must not be mutated through admin UI.'
 
     sparelaneAdmin -> sparelane.experience.adminPortal 'initiates privileged action'
     sparelane.experience.adminPortal -> sparelane.edgeLayer.adminBff 'submits privileged request'
@@ -910,6 +910,20 @@ views {
     sparelane.edgeLayer.adminBff -> sparelane.merchantDomain.merchantService 'performs authorised privileged operation'
     sparelane.edgeLayer.adminBff -> sparelane.riskPlatform.auditService 'records durable audit event'
     sparelane.riskPlatform.auditService -> sparelane.data.auditDb 'persists actor, action, target, result'
+  }
+
+  dynamic view adminReadOnlyControlPlane {
+    title '09 Flows / Security / Admin Read-Only Control Plane (H0)'
+    description 'H0 admin inspection: persisted PlatformAdminGrant, /admin + /admin/v1 BFF, closed read capabilities, safe exact-ID lookups, audit/security read views. No mutations, no DLQ replay, no grant management. ADR-032.'
+
+    sparelaneAdmin -> sparelane.experience.adminPortal 'opens admin home or lookup'
+    sparelane.experience.adminPortal -> sparelane.edgeLayer.adminBff 'GET read request'
+    sparelane.edgeLayer.adminBff -> sparelane.identity.identityService 'authenticate + resolve PlatformAdminGrant'
+    sparelane.edgeLayer.adminBff -> sparelane.identity.authorization 'check closed read capability'
+    sparelane.edgeLayer.adminBff -> sparelane.merchantDomain.merchantService 'safe read projection (merchant/bill/workflow)'
+    sparelane.edgeLayer.adminBff -> sparelane.settlementPlatform.settlementService 'safe settlement read projection'
+    sparelane.edgeLayer.adminBff -> sparelane.riskPlatform.auditService 'paginated audit read'
+    sparelane.edgeLayer.adminBff -> sparelane.operations.observability 'OperationalSnapshot (admin only)'
   }
 
   dynamic view successfulPaymentDataPath {

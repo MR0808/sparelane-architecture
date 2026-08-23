@@ -38,3 +38,5 @@ Logs must not contain:
 - authentication tokens
 
 Avoid unnecessary personal information in logs and traces.
+
+**Consumer notification email addresses** must not appear in application logs, metrics labels, domain event payloads, or routine audit metadata. Use opaque contact public IDs in operational records ([ADR-031](../decisions/ADR-031-consumer-notification-contact-channel-and-delivery-policy.md)).

@@ -34,6 +34,9 @@
 - webhook retry
 - webhook SSRF denylist
 - HMAC exact-bytes signing
+- consumer notification contact boundary (auth email not used)
+- consumer notification idempotency and SKIPPED/no-destination
+- Fake email provider nonProductionOnly
 
 ## Security
 

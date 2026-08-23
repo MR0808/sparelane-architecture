@@ -116,3 +116,31 @@ Per attempt row (append-oriented):
 | SUCCEEDED / FAILED | terminal for that attempt |
 
 Retries reuse the same `webhook_events.public_id`. New attempt row; fresh signature timestamp. [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).
+
+---
+
+## PrivilegedActionRequest (H1 Option A)
+
+Grant create/revoke only ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)). Status values: `pending` \| `approved` \| `denied` \| `expired` \| `executed` \| `failed` \| `cancelled`.
+
+| From | To | Gate |
+| --- | --- | --- |
+| — | pending | Request + recent MFA + `admin.grant.manage` + reason + valid `usr_…` |
+| pending | approved | One approver ≠ requester + recent MFA + fingerprint match + not expired |
+| pending | denied | Eligible deny ≠ requester + recent MFA |
+| pending | expired | Clock ≥ `expires_at` |
+| approved | executed | Recent MFA + fingerprint match + idempotent grant apply |
+| approved | failed | Execute rejected after approval (e.g. last-admin race) |
+| approved | cancelled | Optional pre-execute cancel (MVP may omit) |
+
+Terminal: `executed`, `denied`, `expired`, `failed` (and `cancelled` if used).
+
+### PlatformAdminGrant status
+
+| From | To | Gate |
+| --- | --- | --- |
+| — | active | Bootstrap runbook **or** executed `admin.grant.create` |
+| active | revoked | Executed `admin.grant.revoke` (dual control; not last active admin) |
+| revoked | active | Executed `admin.grant.create` reactivation |
+
+Only `active` confers `AdminPrincipal`.

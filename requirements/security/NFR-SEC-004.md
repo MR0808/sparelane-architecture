@@ -11,6 +11,7 @@ architecture:
 flows:
   - adminPrivilegedAction
 adrs:
+  - ADR-032
   - ADR-012
 contracts:
   - docs/security/admin-access.md
@@ -38,3 +39,5 @@ Security architecture baseline.
 ## Notes
 
 Stored under `requirements/security/` for navigation; type is non-functional.
+
+H0 read-only admin control plane may proceed locally with gated dev/test identity per [ADR-032](../../docs/decisions/ADR-032-platform-admin-authority-read-only-control-plane.md). **Production admin deployment** remains blocked until [OD-024](../../docs/decisions/open/OD-024-mfa-passkey.md) is satisfied.

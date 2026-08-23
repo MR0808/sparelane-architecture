@@ -146,11 +146,24 @@ const phaseBFile = path.join(root, 'docs', 'implementation', 'phase-b-status.md'
 const phaseCFile = path.join(root, 'docs', 'implementation', 'phase-c-status.md')
 const phaseDFile = path.join(root, 'docs', 'implementation', 'phase-d-status.md')
 const phaseFFile = path.join(root, 'docs', 'implementation', 'phase-f-status.md')
+const phaseGFile = path.join(root, 'docs', 'implementation', 'phase-g-status.md')
+const phaseH0GateFile = path.join(root, 'docs', 'implementation', 'phase-h0-admin-decision-gate.md')
+const phaseHStatusFile = path.join(root, 'docs', 'implementation', 'phase-h-status.md')
+const phaseH1ScopeFile = path.join(root, 'docs', 'implementation', 'phase-h1-decision-gate-scope.md')
+const phaseH1GateFile = path.join(root, 'docs', 'implementation', 'phase-h1-admin-decision-gate.md')
 const phaseAPresent = fs.existsSync(phaseAFile)
 const phaseBPresent = fs.existsSync(phaseBFile)
 const phaseCPresent = fs.existsSync(phaseCFile)
 const phaseDPresent = fs.existsSync(phaseDFile)
 const phaseFPresent = fs.existsSync(phaseFFile)
+const phaseGPresent = fs.existsSync(phaseGFile)
+const phaseH0GatePresent = fs.existsSync(phaseH0GateFile)
+const phaseHStatusPresent = fs.existsSync(phaseHStatusFile)
+const phaseHStatusText = phaseHStatusPresent ? fs.readFileSync(phaseHStatusFile, 'utf8') : ''
+const phaseH0PlatformPass = /Platform H0 status:[\s\S]*?\*\*PASS\*\*/.test(phaseHStatusText)
+const phaseHInProgress = /Canonical Phase H status:[\s\S]*?\*\*IN PROGRESS\*\*/.test(phaseHStatusText)
+const phaseH1ScopePresent = fs.existsSync(phaseH1ScopeFile)
+const phaseH1GatePresent = fs.existsSync(phaseH1GateFile)
 const phaseA = phaseAPresent
   ? {
       gate: 'pass_with_documented_non_blocking_risks',
@@ -220,7 +233,7 @@ const phaseF = phaseFPresent
       gate: 'pass_with_documented_non_blocking_risks',
       phasesCompleted: 'F0-F2',
       nextPhase: 'G',
-      nextPhaseStatus: 'not_started',
+      nextPhaseStatus: phaseGPresent ? 'pass_with_documented_non_blocking_risks' : 'not_started',
       documented: true,
       verification: 'local_fake_settlement',
     }
@@ -228,6 +241,24 @@ const phaseF = phaseFPresent
       gate: 'not_started',
       phasesCompleted: '',
       nextPhase: 'G',
+      nextPhaseStatus: 'not_started',
+      documented: false,
+      verification: '',
+    }
+
+const phaseG = phaseGPresent
+  ? {
+      gate: 'pass_with_documented_non_blocking_risks',
+      phasesCompleted: 'G0-G2',
+      nextPhase: 'H',
+      nextPhaseStatus: 'in_progress',
+      documented: true,
+      verification: 'local_webhook_sink_fake_email',
+    }
+  : {
+      gate: 'not_started',
+      phasesCompleted: '',
+      nextPhase: 'H',
       nextPhaseStatus: 'not_started',
       documented: false,
       verification: '',
@@ -278,7 +309,17 @@ const health = {
     phaseFPhasesCompleted: phaseF.phasesCompleted,
     phaseF: phaseF.gate,
     phaseFVerification: phaseF.verification || 'none',
-    nextPhase: phaseFPresent ? 'G' : phaseDPresent ? 'E' : 'D',
+    phaseGGate: phaseG.gate,
+    phaseGPhasesCompleted: phaseG.phasesCompleted,
+    phaseG: phaseG.gate,
+    phaseGVerification: phaseG.verification || 'none',
+    phaseH0Gate: phaseH0GatePresent ? 'pass' : 'not_documented',
+    phaseH0Documented: phaseH0GatePresent,
+    phaseH0Exit: phaseH0PlatformPass ? 'pass' : phaseH0GatePresent ? 'gate_only' : 'not_documented',
+    phaseH: phaseHInProgress || phaseH0PlatformPass ? 'in_progress' : 'not_started',
+    phaseH1Gate: phaseH1GatePresent ? 'pass' : phaseH1ScopePresent ? 'scoped_not_started' : 'not_documented',
+    phaseH1Documented: phaseH1GatePresent || phaseH1ScopePresent,
+    nextPhase: phaseGPresent ? 'H' : phaseFPresent ? 'G' : phaseDPresent ? 'E' : 'D',
     label: 'Generated from repository state — not live production health',
   },
 }

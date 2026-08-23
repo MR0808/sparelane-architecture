@@ -19,4 +19,5 @@ Deletion request
 - Revoke sessions and disable payment-method use for new collections where product rules allow
 - Do **not** imply financial journal entries are deleted
 - Merchant connections and in-flight workflows may block or delay completion until resolved (**product rules TBD**)
+- **Notification contacts** must be revoked on deletion/anonymisation; no future consumer email delivery ([ADR-031](../decisions/ADR-031-consumer-notification-contact-channel-and-delivery-policy.md))
 - Exact retention of operational payment history **TBD**

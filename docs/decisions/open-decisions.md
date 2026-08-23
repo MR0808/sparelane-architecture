@@ -81,9 +81,23 @@ Do not create duplicate ODs for soft-before-backup, ACTION_REQUIRED-vs-FAILED, o
 | Platform Phase D gate | [PASS WITH DOCUMENTED NON-BLOCKING RISKS](../implementation/phase-d-status.md) |
 | Remains OPEN (blocks sandbox/pilot money) | [OD-008](./open/OD-008-psp-selection.md) PSP selection; [OD-010](./open/OD-010-provider-capability-matrix.md) capability matrix |
 | Remains OPEN | OD-003 backup cardinality; OD-017 broker; OD-013 PCI validation; OD-025 secrets/KMS |
-| Deferred product (not new ODs) | UNKNOWN automatic reconciliation worker; notification consumers (OD-005) |
+| Deferred product (not new ODs) | UNKNOWN automatic reconciliation worker; SMS/reminders/preferences (G3+) |
 
 No OD is marked resolved merely because FakePSP local evidence exists.
+
+---
+
+## Phase G2 consumer notification decision gate
+
+Architecture [ADR-031](./ADR-031-consumer-notification-contact-channel-and-delivery-policy.md) freezes consumer notification **G2 MVP** that blocked platform G2:
+
+| Effect | Detail |
+| --- | --- |
+| **Resolved** | [OD-005](./open/OD-005-notification-rules.md) → ADR-031 (contact model, email MVP, 3 payment notifications, templates, delivery/idempotency) |
+| Remains OPEN | [OD-035](./open/OD-035-email-provider.md) real email vendor; [OD-014](./open/OD-014-legal-retention.md) exact retention |
+| Explicitly deferred G3+ | SMS, bill due reminders, marketing/preferences |
+
+Gate: [phase-g2-consumer-notification-decision-gate.md](../implementation/phase-g2-consumer-notification-decision-gate.md).
 
 ---
 
@@ -145,13 +159,14 @@ Do not treat ADR-029 as selecting a banking partner, inventing fees, or requirin
 
 ## Phase G impact
 
-ADR-030 freezes **merchant webhook** contracts. Canonical Phase G still includes notifications.
+ADR-030 freezes **merchant webhook** contracts. ADR-031 freezes **consumer notification** G2 policy.
 
 | Effect | Open decisions |
 | --- | --- |
 | **Resolved** | [OD-031](./open/OD-031-webhook-retry-bounds.md) → ADR-030 (5 attempts; 1m/5m/30m/6h; Retry-After on 429/503) |
-| Remains OPEN | [OD-005](./open/OD-005-notification-rules.md) consumer notification rules/copy/contact — does **not** block G0 webhooks |
+| **Resolved** | [OD-005](./open/OD-005-notification-rules.md) → ADR-031 (contact, G2 catalogue, email MVP, templates, delivery) |
 | Remains OPEN | [OD-034](./open/OD-034-webhook-endpoint-api.md) Merchant API endpoint CRUD — portal/internal for MVP |
+| Remains OPEN | [OD-035](./open/OD-035-email-provider.md) transactional email vendor — blocks pilot/production email |
 
 ---
 
@@ -165,7 +180,7 @@ ADR-030 freezes **merchant webhook** contracts. Canonical Phase G still includes
 | [OD-002](./open/OD-002-due-date-local-clock.md) | Exact due-date local capture clock time | pilot | resolved |
 | [OD-003](./open/OD-003-backup-cardinality.md) | Payment-method backup cardinality / wallet ordering | development | open |
 | [OD-004](./open/OD-004-wallet-product-rules.md) | Wallet product rules (enablement, funding, spend) | wallet-only | open |
-| [OD-005](./open/OD-005-notification-rules.md) | Consumer notification rules and copy | non-blocking | open |
+| [OD-005](./open/OD-005-notification-rules.md) | Consumer notification rules and copy | non-blocking | resolved |
 | [OD-006](./open/OD-006-timezone-change-policy.md) | Merchant timezone change handling policy | pilot | resolved |
 | [OD-007](./open/OD-007-multi-workflow-per-bill.md) | Multi-workflow-per-bill (future) | non-blocking | deferred |
 
@@ -204,9 +219,9 @@ ADR-030 freezes **merchant webhook** contracts. Canonical Phase G still includes
 | ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
 | [OD-023](./open/OD-023-identity-provider.md) | Identity provider | sandbox | open |
-| [OD-024](./open/OD-024-mfa-passkey.md) | MFA / passkey implementation | pilot | open |
+| [OD-024](./open/OD-024-mfa-passkey.md) | MFA / passkey implementation | pilot | open (policy narrowed by ADR-033) |
 | [OD-025](./open/OD-025-secrets-kms.md) | Secrets product / KMS/HSM | pilot | open |
-| [OD-026](./open/OD-026-dual-control-break-glass.md) | Dual-control / break-glass workflows | non-blocking | open |
+| [OD-026](./open/OD-026-dual-control-break-glass.md) | Dual-control / break-glass workflows | non-blocking | open (grants resolved by ADR-033; break-glass deferred) |
 | [OD-027](./open/OD-027-rls-vs-app-tenancy.md) | PostgreSQL RLS vs app-only tenancy | non-blocking | open |
 | [OD-028](./open/OD-028-oauth-mtls-merchant-api.md) | OAuth/mTLS for enterprise merchant API | non-blocking | open |
 
@@ -220,14 +235,16 @@ ADR-030 freezes **merchant webhook** contracts. Canonical Phase G still includes
 | [OD-032](./open/OD-032-public-id-prefixes.md) | Public ID prefix final spelling | non-blocking | open |
 | [OD-033](./open/OD-033-attempt-api-visibility.md) | Payment-attempt merchant API visibility | non-blocking | open |
 | [OD-034](./open/OD-034-webhook-endpoint-api.md) | Webhook endpoint management via API | non-blocking | open |
+| [OD-035](./open/OD-035-email-provider.md) | Transactional email provider selection | pilot | open |
 
 
 ## Highest-priority before production cutover
 
 1. OD-008 PSP + OD-009 settlement partner (live money movement)
-2. OD-023 Identity provider + OD-024 admin MFA
+2. OD-023 Identity provider + OD-024 admin MFA (**policy** for privileged recent MFA / production admin MFA required bound by ADR-033; provider/implementation still open)
 3. OD-025 Secrets manager product
 4. OD-017 Queue/broker + OD-019 DB hosting topology
 5. OD-014 Legal retention + OD-012 wallet regulatory posture (if wallet enabled)
 6. ~~OD-002 Due-date local clock + OD-006 timezone-change policy~~ → **resolved by ADR-025**
 7. ~~OD-031 Webhook retry bounds~~ → **resolved by ADR-030**
+8. ~~OD-026 dual-control for platform admin grants~~ → **resolved by ADR-033**; break-glass remains NOT SUPPORTED / deferred H2+
