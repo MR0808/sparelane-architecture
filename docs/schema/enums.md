@@ -329,6 +329,46 @@ cancelled
 
 `cancelled` is optional pre-execute cancel; not required for MVP if unused.
 
+## DeadLetterWorkType
+
+Closed work-type catalogue for durable DLQ ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)):
+
+```text
+merchant.webhook.delivery
+consumer.notification.delivery
+financial.work
+```
+
+Only `merchant.webhook.delivery` is manually replayable in H2.
+
+## DeadLetterStatus
+
+```text
+OPEN
+REPLAY_REQUESTED
+REPLAYING
+RESOLVED
+REPLAY_FAILED
+```
+
+## OperatorReplayAction
+
+Closed H2 replay catalogue:
+
+```text
+admin.webhook.replay
+```
+
+## OperatorReplayRequestStatus
+
+```text
+requested
+executing
+succeeded
+failed
+denied
+```
+
 ## JournalEntrySide
 
 ```text

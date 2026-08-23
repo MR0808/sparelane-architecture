@@ -469,7 +469,7 @@ Legacy name `NotifyConsumer` maps to projection + delivery orchestration — pre
 | Bill due reminder cadence | Future OD / G3+ |
 | Final marketing/legal email copy | Product/compliance |
 | Email vendor | [OD-035](./open/OD-035-email-provider.md) |
-| Operator notification replay UI | Phase H |
+| Operator notification replay UI | **Deferred past H2** — [ADR-034](./ADR-034-durable-dead-letter-and-operator-replay-policy.md) Option A excludes notification replay. `NO_ACTIVE_CONTACT` / `SKIPPED` must never be manually replayed merely because a contact later exists. Future gate required before any `admin.notification.replay`. |
 | Locale/i18n | Future |
 
 ---

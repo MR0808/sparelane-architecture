@@ -64,6 +64,19 @@ Session BFF `POST /admin/v1/*` only. Require active `PlatformAdminGrant` + `admi
 
 No H1 commands for merchant suspend, user disable, DLQ/webhook/notification/financial replay, or financial corrections.
 
+## Admin DLQ / replay (H2 Option A)
+
+Session BFF under `/admin/v1/*`. Require active `PlatformAdminGrant` ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)).
+
+| Command / query | Capability | Notes |
+| --- | --- | --- |
+| `ListDeadLetters` / `GetDeadLetter` | `admin.dlq.view` | Safe metadata only |
+| `RequestWebhookReplay` | `admin.webhook.replay` | Creates `OperatorReplayRequest` (`rpl_…`) + outbox; MFA ≤15m + reason |
+| `CreateDeadLetter` | (internal ops) | On exhaustion — not an admin API |
+| `ReplayWebhookDelivery` | (worker) | notification-worker transport; same delivery; attempt 6+ |
+
+**Forbidden:** `ReplayAnyWork`, notification replay commands, payment/settlement/ledger replay commands via admin.
+
 ## Important domain events (internal)
 
 | Event | Meaning |
@@ -87,6 +100,9 @@ No H1 commands for merchant suspend, user disable, DLQ/webhook/notification/fina
 | `WebhookDelivered` | Logical delivery SUCCEEDED (2xx) |
 | `WebhookDeliveryFailed` | Attempt failed / delivery exhausted FAILED |
 | `WebhookDeliveryCancelled` | Endpoint not ACTIVE; no HTTP |
+| `DeadLetterOpened` | Durable DeadLetterItem persisted/updated OPEN |
+| `WebhookReplayRequested` | OperatorReplayRequest accepted |
+| `WebhookReplaySucceeded` / `WebhookReplayFailed` | Manual replay outcome |
 | `ConsumerNotificationContactAdded` | Contact row created |
 | `ConsumerNotificationContactVerified` | Contact ACTIVE |
 | `ConsumerNotificationProjected` | Intent persisted |

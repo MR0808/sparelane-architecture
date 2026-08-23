@@ -7,6 +7,7 @@ status: open
 related:
   - docs/security/admin-access.md
   - docs/decisions/ADR-033-privileged-admin-grant-management-and-approval.md
+  - docs/decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md
   - docs/decisions/open/OD-023-identity-provider.md
 ---
 
@@ -22,11 +23,11 @@ Admin/consumer assurance; production admin deployment; populating `PrivilegedAut
 
 ## Blocking stage
 
-`pilot` (production admin still blocked until provider MFA can satisfy ADR-033 context)
+`pilot` (production admin still blocked until provider MFA can satisfy ADR-033/ADR-034 context)
 
 ## Status
 
-`open` — **policy portion narrowed/resolved by ADR-033; implementation remains open.**
+`open` — **policy portion narrowed/resolved by ADR-033 and reused by ADR-034; implementation remains open.**
 
 ## Notes
 
@@ -35,6 +36,12 @@ Admin/consumer assurance; production admin deployment; populating `PrivilegedAut
 - Recent MFA required for privileged grant **request / approve / execute**
 - Max MFA age **15 minutes** via provider-neutral `PrivilegedAuthenticationContext`
 - Production admin MFA required before production admin deployment ([NFR-SEC-004](../../../requirements/security/NFR-SEC-004.md))
+
+**H2 reuse in [ADR-034](../ADR-034-durable-dead-letter-and-operator-replay-policy.md):**
+
+- Operator webhook replay uses the **same** ≤15 minute `PrivilegedAuthenticationContext` freshness
+- Do **not** invent a second MFA freshness window for replay
+- Provider implementation remains open (this OD)
 
 **Still open (do not treat as closed):**
 

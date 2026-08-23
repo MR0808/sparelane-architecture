@@ -14,12 +14,15 @@ flows:
   - dlqReplay
 adrs:
   - ADR-017
+  - ADR-034
 contracts:
   - docs/operations/async-processing.md
+  - docs/operations/dead-letter-handling.md
 modules:
   - Workers
 tests:
   - OPS-REC-002
+  - ADM-DLQ-001
 designs:
   - SEQ-OPS-003
 ---
@@ -27,16 +30,17 @@ designs:
 
 ## Requirement
 
-Poison or repeatedly failing messages must be routed to a DLQ with operable replay runbooks.
+Poison or repeatedly failing messages must be routed to a durable DLQ with operable replay runbooks for the closed replay catalogue only.
 
 ## Rationale
 
-Reliability patterns from ADR-016/017 and financial invariants.
+Reliability patterns from ADR-016/017/034 and financial invariants.
 
 ## Acceptance Criteria
 
 - Behaviour is covered by financial invariant tests and/or resilience docs.
 - Runbooks exist for operator response where applicable.
+- Generic financial command replay via DLQ is prohibited (ADR-034).
 
 ## Implementation evidence (Phase A)
 

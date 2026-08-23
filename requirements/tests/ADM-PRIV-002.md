@@ -2,7 +2,7 @@
 id: ADM-PRIV-002
 title: Recent MFA required for grant privileged steps
 type: security
-status: specified
+status: verified
 relatedRequirements:
   - FUN-ADM-005
   - NFR-SEC-009
@@ -33,3 +33,10 @@ Prove request, approve, and execute each require recent MFA (≤15 minutes) via 
 ## Implementation status
 
 **Specified** — not verified. [ADR-033](../../docs/decisions/ADR-033-privileged-admin-grant-management-and-approval.md); OD-024 provider still open.
+
+
+## Evidence
+
+**verified** (local platform evidence) against `sparelane-platform` (`npm run test:phase-h1`, `docs/development/phase-h1-test-evidence.md`).
+
+Production IdP MFA satisfaction is **not** claimed (OD-024 still open).

@@ -47,3 +47,4 @@ Gates: [phase-f0-settlement-decision-gate](./phase-f0-settlement-decision-gate.m
 | G3+ | SMS, preferences, bill reminders — deferred |
 | Must not | Mutate payment/settlement/ledger; expose internal events wholesale; auto-select Fake in sandbox/production; infer auth email as destination |
 | Isolated from | payment-worker / settlement-worker ([ADR-019](../decisions/ADR-019-financial-workload-isolation.md)) |
+| H2 replay | Executes `ReplayWebhookDelivery` only ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)); may persist `DeadLetterItem` on webhook exhaustion; **never** executes financial commands or notification operator replay |

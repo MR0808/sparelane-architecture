@@ -13,7 +13,7 @@ Protections for money-movement correctness and abuse resistance.
 | Incorrect merchant association | Tenant-scoped authorisation; preserved merchant references; reconciliation matching |
 | Unauthorised refund/adjustment (future) | Explicit permissions; audit; constrained financial workflows (product rules TBD) |
 | Replayed provider events | Signature verification; replay window; event idempotency |
-| Admin privilege misuse | MFA; least privilege; durable audit; scoped support access; **H0/H1: no admin financial mutation** ([ADR-032](../decisions/ADR-032-platform-admin-authority-read-only-control-plane.md), [ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)) |
+| Admin privilege misuse | MFA; least privilege; durable audit; scoped support access; **H0/H1/H2: no admin financial mutation** ([ADR-032](../decisions/ADR-032-platform-admin-authority-read-only-control-plane.md), [ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md), [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)) |
 
 ## Cross-cutting mechanisms
 
@@ -27,12 +27,16 @@ Protections for money-movement correctness and abuse resistance.
 - **Merchant isolation** on Settlement, payout destination, instruction, and provider request (FIN-INV-08)
 - **Recovery policy** ([ADR-024](../decisions/ADR-024-payment-recovery-ordering-and-exhaustion.md)): no blind retry/backup while UNKNOWN; workflow-scoped method exclusions (no global card revocation from a single decline); terminal states not silently overwritten; late success after FAILED is reconciliation/integrity, not auto-COLLECTED
 
-## H0 / H1 admin boundary (binding)
+## H0 / H1 / H2 admin boundary (binding)
 
 - Platform admin authority **does not bypass** payment, settlement, or ledger state machines.
 - H0 admin control plane has **no financial mutation** endpoints — no workflow/attempt/journal/settlement updates, no payment/settlement execution, no balance correction UI.
 - **H1 admin grant management never authorises financial mutation, replay, or correction** — PrivilegedActionRequest covers `admin.grant.create` / `admin.grant.revoke` only ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)).
+- **H2 operator replay never executes financial business commands** — closed catalogue is `admin.webhook.replay` only ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)). Prohibited: payment execute/result/retry, settlement execute/reconcile, ledger append, financial outbox command replay, force-success.
+- Financial dead-letter items (if persisted) are **inspect-only**; UI must state manual replay prohibited — use domain recovery/reconciliation.
+- Payment/settlement **UNKNOWN** outcomes remain under reconciliation policy — they must not become generic replayable DLQ work.
+- Webhook/notification transport replay (when allowed) must **not** mutate Bill / PaymentWorkflow / PaymentAttempt / Journal / Settlement / SettlementInstruction.
 - Financial **read** projections only via application read ports with safe fields.
-- Privileged financial corrections remain **H2+** domain use cases — never raw admin DB writes.
+- Privileged financial corrections remain **separate ADR / later gate** — never raw admin DB writes; never via H2 DLQ replay.
 
 See also money-domain docs under [`docs/money/`](../money/).

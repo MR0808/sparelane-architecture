@@ -4,7 +4,7 @@ title: Platform admin grant lifecycle
 type: functional
 area: admin
 status: accepted
-implementationStatus: designed
+implementationStatus: implemented
 priority: must
 mvp: true
 architecture:
@@ -54,4 +54,4 @@ Capability `admin.grant.manage` gates request/approve/execute. Merchant suspend,
 
 ## Implementation notes
 
-implementationStatus: designed — awaiting platform H1 Option A implementation.
+implementationStatus: implemented — platform H1 PASS (local evidence in sparelane-platform `npm run test:phase-h1`). Production IdP MFA still blocked by OD-024 provider readiness.

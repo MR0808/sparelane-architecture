@@ -65,7 +65,7 @@ This ADR freezes the **MVP merchant webhook contract + delivery policy**. Consum
 | 11 | Secret shown **once**; recoverable via `signing_secret_ref` (not one-way hash). Rotation **deferred**. |
 | 12 | HTTP 2xx = transport success. Retry schedule resolves OD-031 (§18). Independent of payment retry. |
 | 13 | Exhaustion → delivery `FAILED`; do **not** auto-disable endpoint; do **not** mutate financial state. |
-| 14 | Operator replay of webhook HTTP **deferred** to Phase H tooling (**H2+**, not H1 Option A / ADR-033). Semantics reserved in §21. |
+| 14 | Operator replay of webhook HTTP **bound by [ADR-034](./ADR-034-durable-dead-letter-and-operator-replay-policy.md)** (H2 Option A). Automatic delivery semantics in this ADR unchanged. See §16. |
 | 15 | Inbound **provider** webhooks ≠ outbound **merchant** webhooks. |
 
 ---
@@ -332,7 +332,7 @@ Attempt 1 is immediate after projection (subject to ACTIVE check).
 
 Independent of payment retry ([ADR-025](./ADR-025-payment-retry-timing-budget-and-recovery-window.md)). Webhook failure **never** changes Bill, PaymentWorkflow, PaymentAttempt, Ledger, Settlement, or SettlementInstruction.
 
-**Exhaustion:** logical delivery `FAILED`. Do not auto-disable endpoint. Durable delivery row is SoT. Worker processing DLQ may hold a **pointer** (delivery id / public event id), **not** a second copy of the merchant payload. Operator HTTP replay UI is **Phase H tooling** — **not** H0 and **not** H1 Option A ([ADR-033](./ADR-033-privileged-admin-grant-management-and-approval.md) defers replay to H2+). Automatic delivery semantics in this ADR are unchanged.
+**Exhaustion:** logical delivery `FAILED`. Do not auto-disable endpoint. Durable delivery row is SoT. Worker processing DLQ may hold a **pointer** (delivery id / public event id), **not** a second copy of the merchant payload. Operator HTTP replay is bound by **[ADR-034](./ADR-034-durable-dead-letter-and-operator-replay-policy.md)** (H2 Option A; not H0/H1). Automatic delivery semantics in this ADR are unchanged (max 5 automatic attempts).
 
 ---
 
@@ -385,9 +385,9 @@ Fake/local HTTP sink: **nonProductionOnly**. Production/sandbox fail closed with
 
 **Logs:** event `type`, outcome, HTTP status class, attempt number, correlation id. Never secret, signature input, Authorization, full body.
 
-**Audit:** endpoint created / disabled / revoked / subscription changed. Successful automated delivery = delivery row, not audit. Manual replay (when added) = audit.
+**Audit:** endpoint created / disabled / revoked / subscription changed. Successful automated delivery = delivery row, not audit. Manual operator replay = audit per [ADR-034](./ADR-034-durable-dead-letter-and-operator-replay-policy.md).
 
-**Security signals:** SSRF blocked; cross-tenant endpoint action; signing-secret misuse if detectable. Ordinary `5xx` from merchant = **not** a security incident.
+**Security signals:** SSRF blocked; cross-tenant endpoint action; signing-secret misuse if detectable. Ordinary `5xx` from merchant (including after authorised operator replay) = **not** a security incident.
 
 ---
 
@@ -402,6 +402,28 @@ Remain explicitly deferred:
 - marketing / optional preferences
 - final marketing/legal copy
 - production email vendor ([OD-035](./open/OD-035-email-provider.md))
+
+---
+
+## 16. Operator replay (H2 — bound by ADR-034)
+
+Automatic max-5 retry budget is unchanged. Manual replay is a **separate** operator-requested attempt:
+
+| Rule | Binding |
+| --- | --- |
+| Catalogue | `admin.webhook.replay` only |
+| Delivery identity | Reuse existing `WebhookDelivery` (event × endpoint); append attempt |
+| Attempt numbers | Continue history (attempt 6+); never reset automatic history |
+| Event identity | Same `evt_`, immutable body, type/version, merchant |
+| Endpoint | Must be `ACTIVE` immediately before send; do not reactivate DISABLED/REVOKED |
+| Subscription | Do **not** require current subscription match for historical delivery |
+| URL | Current endpoint URL (G1 URL mutation unsupported ⇒ current == original) |
+| Signature | Fresh timestamp + HMAC with current valid signing secret |
+| After manual failure | **No** automatic restart of 5-attempt schedule |
+| Success | Delivery may transition `FAILED` → `SUCCEEDED`; attempt history retained |
+| Transport | At-least-once; merchant dedupe by `evt_` required |
+
+Full operator/DLQ policy: [ADR-034](./ADR-034-durable-dead-letter-and-operator-replay-policy.md). Decision summary row 14 and exhaustion text refer to this section (formerly reserved as §21).
 
 ---
 

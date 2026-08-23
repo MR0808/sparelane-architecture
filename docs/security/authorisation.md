@@ -24,7 +24,7 @@ Do not define detailed RBAC database schema beyond H0/H1 `PlatformAdminGrant` + 
 | Consumer | Deny (not merchant member) | Own resources | Deny | **Deny** |
 | Merchant user / admin | Per membership role | Deny | Deny (portal session ≠ API key) | **Deny** |
 | Merchant machine credential | Deny | Deny | Per scopes | **Deny** |
-| **Platform admin** (active grant) | **Deny** (not merchant member) | **Deny** (not consumer) | **Deny** | **Allow** — H0 closed read capabilities; H1 `admin.grant.manage` with dual-control + recent MFA ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)) |
+| **Platform admin** (active grant) | **Deny** (not merchant member) | **Deny** (not consumer) | **Deny** | **Allow** — H0 closed read capabilities; H1 `admin.grant.manage` with dual-control + recent MFA ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)); H2 `admin.dlq.view` / `admin.webhook.replay` ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)) |
 
 Platform admin cross-tenant **reads** use explicit admin read APIs — not merchant context spoofing. Grant create/revoke uses PrivilegedActionRequest only — never single-actor mutation.
 
@@ -49,6 +49,15 @@ Closed catalogue — see [admin-access.md](./admin-access.md). Unknown capabilit
 ## H1 grant capability
 
 `admin.grant.manage` — request/approve/execute grant create/revoke only. Dual-control + recent MFA required. See [admin-access.md](./admin-access.md) §H1 and [OD-026](../decisions/open/OD-026-dual-control-break-glass.md) (grants resolved by ADR-033; break-glass still open / not supported).
+
+## H2 DLQ / replay capabilities
+
+| Capability | Permits |
+| --- | --- |
+| `admin.dlq.view` | Durable dead-letter list/detail |
+| `admin.webhook.replay` | Closed webhook replay request only |
+
+Recent MFA ≤15m + reason required for replay. No dual control for webhook replay. No notification/financial/generic replay capabilities. See [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md).
 
 ## Machine vs interactive authorisation
 

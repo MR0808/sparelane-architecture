@@ -4,7 +4,7 @@ title: Dual control for platform admin grant changes
 type: non-functional
 area: security
 status: accepted
-implementationStatus: designed
+implementationStatus: implemented
 priority: must
 mvp: true
 architecture:
@@ -54,4 +54,4 @@ Dual-control matrices for non-grant mutations remain deferred (OD-026 residual).
 
 ## Implementation notes
 
-implementationStatus: designed — awaiting platform H1 Option A implementation.
+implementationStatus: implemented — platform H1 PASS (local evidence in sparelane-platform `npm run test:phase-h1`). Production IdP MFA still blocked by OD-024 provider readiness.

@@ -2,7 +2,7 @@
 id: ADM-DUAL-001
 title: Requester cannot approve own privileged grant action
 type: security
-status: specified
+status: verified
 relatedRequirements:
   - FUN-ADM-005
   - NFR-SEC-010
@@ -33,3 +33,10 @@ Prove dual-control separation for `admin.grant.create` / `admin.grant.revoke`.
 ## Implementation status
 
 **Specified** — not verified. [ADR-033](../../docs/decisions/ADR-033-privileged-admin-grant-management-and-approval.md).
+
+
+## Evidence
+
+**verified** (local platform evidence) against `sparelane-platform` (`npm run test:phase-h1`, `docs/development/phase-h1-test-evidence.md`).
+
+Production IdP MFA satisfaction is **not** claimed (OD-024 still open).

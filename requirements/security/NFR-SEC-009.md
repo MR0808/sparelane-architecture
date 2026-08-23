@@ -4,7 +4,7 @@ title: Recent MFA for privileged admin actions
 type: non-functional
 area: security
 status: accepted
-implementationStatus: designed
+implementationStatus: implemented
 priority: must
 mvp: true
 architecture:
@@ -50,4 +50,4 @@ H0 read-only inspection does not require per-GET recent MFA beyond existing sess
 
 ## Implementation notes
 
-implementationStatus: designed. Local/dev may use gated test doubles for MFA timestamps; must not weaken production requirements.
+implementationStatus: implemented — platform H1 PASS (local evidence in sparelane-platform `npm run test:phase-h1`). Production IdP MFA still blocked by OD-024 provider readiness.

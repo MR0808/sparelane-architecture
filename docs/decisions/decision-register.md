@@ -1,6 +1,6 @@
 # Architecture Decision Register
 
-Quick-reference governance index for ADR-001 through ADR-033.
+Quick-reference governance index for ADR-001 through ADR-034.
 
 **Accepted** ADRs are binding implementation constraints unless superseded by a later ADR.
 
@@ -39,6 +39,7 @@ Quick-reference governance index for ADR-001 through ADR-033.
 | [ADR-031](./ADR-031-consumer-notification-contact-channel-and-delivery-policy.md) | Consumer notification contact, email MVP, G2 catalogue, templates, delivery/idempotency; SMS/prefs deferred | Accepted | Notifications / Privacy | ADR-019/030; resolves OD-005 core | Platform G2 consumer email + Fake provider |
 | [ADR-032](./ADR-032-platform-admin-authority-read-only-control-plane.md) | Platform admin authority + H0 read-only control plane; no mutations/replay/grant UI | Accepted | Security / Admin | ADR-012/014; OD-024/026 open for prod/H1 | Platform H0 admin BFF + `/admin` shell; H1 mutations deferred |
 | [ADR-033](./ADR-033-privileged-admin-grant-management-and-approval.md) | H1 Option A: grant create/revoke only; dual control + recent MFA; PrivilegedActionRequest | Accepted | Security / Admin | ADR-012/032; OD-024 policy narrowed; OD-026 grants resolved; break-glass deferred | Platform H1 grant management; replay/suspend deferred H2+ |
+| [ADR-034](./ADR-034-durable-dead-letter-and-operator-replay-policy.md) | H2 Option A: durable DLQ + closed webhook replay only; financial/notification replay prohibited/deferred | Accepted | Security / Ops / Admin | ADR-017/030/031/032/033; OD-024 MFA reuse; OD-026 webhook dual-control not required | Platform H2 durable DLQ + webhook replay; Phase H still incomplete |
 
 ## Complementary pairs (not duplicates)
 
@@ -52,6 +53,8 @@ Quick-reference governance index for ADR-001 through ADR-033.
 | ADR-030 / ADR-031 | Merchant outbound HTTPS webhooks vs consumer email notifications |
 | ADR-012 / ADR-032 | Privileged audit principle vs H0 read-only control plane scope (mutations H1+) |
 | ADR-032 / ADR-033 | H0 read-only control plane vs H1 grant-management dual-control slice |
+| ADR-033 / ADR-034 | Grant dual-control mutations vs durable DLQ + closed webhook transport replay |
+| ADR-030 / ADR-034 | Automatic webhook delivery/retry vs operator manual replay policy |
 | ADR-013 / ADR-016 | Logical separation vs consistency mechanism between the stores |
 | ADR-026 / ADR-027 | Collection journal CoA vs settlement obligation/eligibility policy |
 | ADR-027 / ADR-028 | Settlement obligation/eligibility vs instruction execution / destination / idempotency |
@@ -59,4 +62,4 @@ Quick-reference governance index for ADR-001 through ADR-033.
 
 ## None superseded or rejected
 
-No ADRs in 001–033 are Superseded or Rejected at this gate. ADR-032 unblocks platform H0. ADR-033 unblocks platform H1 grant management (Option A). ADR-031 resolves OD-005 core. Endpoint Merchant API remains OD-034. Email vendor remains OD-035. OD-024 MFA provider and OD-026 break-glass remain open.
+No ADRs in 001–034 are Superseded or Rejected at this gate. ADR-032 unblocks platform H0. ADR-033 unblocks platform H1 grant management (Option A). ADR-034 unblocks platform H2 durable DLQ + webhook replay (Option A). ADR-031 resolves OD-005 core. Endpoint Merchant API remains OD-034. Email vendor remains OD-035. OD-024 MFA provider remains open. OD-026 break-glass remains open (grants + webhook-replay dual-control slices resolved).

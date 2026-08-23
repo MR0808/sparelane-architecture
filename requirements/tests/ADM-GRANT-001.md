@@ -2,7 +2,7 @@
 id: ADM-GRANT-001
 title: Self-grant prohibited
 type: security
-status: specified
+status: verified
 relatedRequirements:
   - FUN-ADM-006
   - NFR-SEC-010
@@ -30,3 +30,10 @@ Prove an admin cannot request `admin.grant.create` targeting their own `usr_…`
 ## Implementation status
 
 **Specified** — not verified. [ADR-033](../../docs/decisions/ADR-033-privileged-admin-grant-management-and-approval.md).
+
+
+## Evidence
+
+**verified** (local platform evidence) against `sparelane-platform` (`npm run test:phase-h1`, `docs/development/phase-h1-test-evidence.md`).
+
+Production IdP MFA satisfaction is **not** claimed (OD-024 still open).

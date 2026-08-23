@@ -513,6 +513,37 @@ Do not store full provider response bodies with PII.
 
 ---
 
+## dead_letter_items
+
+**Purpose:** Durable operational evidence of exhausted / manual-intervention async work ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)). Owned by operations — not an admin copy of domain entities.
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| Public | `public_id` (`dlq_…`) UNIQUE |
+| Fields | `work_type` (`DeadLetterWorkType`), `source_kind`, `source_identity`, `replay_reference` (typed JSON pointer), `status` (`DeadLetterStatus`), `failed_at`, `failure_code`, `attempt_count`, `correlation_id`, `causation_id`, `replay_count`, timestamps |
+| Unique | `(work_type, source_identity)` |
+| Forbidden | webhook signing secret, contact email, provider token, bank details, PAN/CVV, auth subject, API credential, raw PSP payload |
+
+Persistence eligibility ≠ replay eligibility. Only `merchant.webhook.delivery` is manually replayable in H2.
+
+---
+
+## operator_replay_requests
+
+**Purpose:** Execute-once operator replay request for closed catalogue actions ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)). Not dual-control `PrivilegedActionRequest`.
+
+| Aspect | Design |
+| --- | --- |
+| PK | `id` |
+| Public | `public_id` (`rpl_…`) UNIQUE |
+| FKs | `dead_letter_id` → dead_letter_items; `requester_user_id` → users |
+| Fields | `action` (`admin.webhook.replay` only in H2), `reason` (16–500), `status` (`OperatorReplayRequestStatus`), `mfa_satisfied_at`, `executed_at` (optional), `result` (optional), timestamps |
+| Concurrency | At most one active (`requested`/`executing`) per dead_letter_id |
+| Mutability | Terminal outcomes immutable; intentional later retry ⇒ new row |
+
+---
+
 ## audit_events
 
 **Purpose:** Append-only security/admin audit.

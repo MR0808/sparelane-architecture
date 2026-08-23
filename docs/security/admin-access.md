@@ -6,6 +6,8 @@ Controls for Sparelane administrative operations.
 
 **H1 binding policy:** [ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md) — grant management only (Option A).
 
+**H2 binding policy:** [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md) — durable DLQ inspection + closed webhook replay only (Option A).
+
 ## H0 — platform admin authority
 
 - **Persisted grant only:** `PlatformAdminGrant` on `users` — resolved via `ExternalIdentity → User → active grant → AdminPrincipal`
@@ -73,8 +75,8 @@ Request, approve, and execute each require recent MFA (`PrivilegedAuthentication
 
 - merchant suspend / unsuspend
 - user disable / enable
-- all DLQ / webhook / notification / financial replay
-- durable DLQ operator store
+- all DLQ / webhook / notification / financial replay (bound later by ADR-034 for DLQ + webhook only)
+- durable DLQ operator store (ADR-034)
 - PII / support search
 - financial corrections
 - break-glass (**NOT SUPPORTED**)
@@ -85,16 +87,48 @@ Request, approve, and execute each require recent MFA (`PrivilegedAuthentication
 
 See [SEQ-SEC-006](../design/security/admin-grant-dual-control.md) for the H1 grant dual-control sequence.
 
+## H2 — durable DLQ and webhook replay (Option A)
+
+Binding: [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md).
+
+### Capabilities
+
+| Capability | Permits |
+| --- | --- |
+| `admin.dlq.view` | List/detail durable `DeadLetterItem` (`dlq_…`) safe metadata |
+| `admin.webhook.replay` | Create `OperatorReplayRequest` for eligible webhook DLQ only |
+
+Deny-by-default. No `admin.notification.replay`. No generic replay capability. H0/H1 capabilities unchanged.
+
+### Replay controls
+
+- Closed action: `admin.webhook.replay` only (MEDIUM risk)
+- Recent MFA ≤15 minutes via `PrivilegedAuthenticationContext` (reuse ADR-033 freshness; [OD-024](../decisions/open/OD-024-mfa-passkey.md) provider still open)
+- Mandatory reason 16–500 chars
+- **No dual control** for webhook replay ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md) H2 slice)
+- Financial / notification / arbitrary queue replay **prohibited**
+- UI: `/admin/dlq`; BFF: `/admin/v1/dead-letters*`
+
+### Explicitly not in H2
+
+- notification replay (preserve ADR-031)
+- financial corrections / payment-settlement-ledger command replay
+- break-glass / impersonation
+- merchant/user lifecycle mutations
+- dismiss-without-replay mutation
+
+See [SEQ-OPS-003](../design/operations/dlq-replay.md) and [SEQ-OPS-005](../design/operations/operator-webhook-replay.md).
+
 ## Production controls (canonical, some deferred)
 
-- MFA required for administrator authentication ([NFR-SEC-004](../../requirements/security/NFR-SEC-004.md); [OD-024](../decisions/open/OD-024-mfa-passkey.md) — policy portion for privileged steps bound by ADR-033; provider still open)
-- recent MFA (≤15 min) for privileged grant request/approve/execute ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md); [NFR-SEC-009](../../requirements/security/NFR-SEC-009.md))
+- MFA required for administrator authentication ([NFR-SEC-004](../../requirements/security/NFR-SEC-004.md); [OD-024](../decisions/open/OD-024-mfa-passkey.md) — policy portion for privileged steps bound by ADR-033/ADR-034; provider still open)
+- recent MFA (≤15 min) for privileged grant request/approve/execute ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md); [NFR-SEC-009](../../requirements/security/NFR-SEC-009.md)) and for H2 webhook replay ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md); [NFR-SEC-011](../../requirements/security/NFR-SEC-011.md))
 - short-lived admin sessions (exact TTL TBD)
 - no shared admin accounts
-- durable audit trail for **privileged mutations** ([ADR-012](../decisions/ADR-012-privileged-admin-audit.md)) — H1 grant request/approve/execute catalogue
+- durable audit trail for **privileged mutations** ([ADR-012](../decisions/ADR-012-privileged-admin-audit.md)) — H1 grant catalogue; H2 webhook replay catalogue
 - elevated mutations visible in audit with actor, action, target, result, correlation IDs
 - support access scoped to legitimate need (tenant/case scoping TBD — future roles)
-- financial mutations tightly controlled — **none in H0 or H1 Option A**
+- financial mutations tightly controlled — **none in H0, H1, or H2 Option A** (H2 webhook replay is transport-only)
 - production secret access restricted (via secrets management; no casual UI exposure)
 - **no direct ledger mutation through admin UI** — ledger append-only via constrained financial write paths ([ADR-013](../decisions/ADR-013-ledger-operational-separation.md))
 
@@ -102,14 +136,14 @@ See [SEQ-SEC-006](../design/security/admin-grant-dual-control.md) for the H1 gra
 
 Emergency elevated access may be required for incident response.
 
-**NOT SUPPORTED** in H0 or H1 ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)). Break-glass remains deferred H2+ ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md)). Dual-control for **platform admin grants** is resolved by ADR-033.
+**NOT SUPPORTED** in H0, H1, or H2 ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md), [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)). Break-glass remains deferred ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md)). Dual-control for **platform admin grants** is resolved by ADR-033; webhook replay dual-control is **not required** by ADR-034.
 
-## Future privileged actions (H2+ examples — not H1)
+## Future privileged actions (H3+ examples — not H2)
 
 - merchant approval / suspension
 - credential revocation assistance
-- webhook / DLQ replay for authorised operators
+- notification replay (separate gate; preserve ADR-031)
 - payment investigation tooling with mutation paths
 - production configuration changes affecting financial flows
 
-General privileged-mutation pattern: [SEQ-SEC-004](../design/security/admin-privileged-action.md). H1 grant flow: [SEQ-SEC-006](../design/security/admin-grant-dual-control.md).
+General privileged-mutation pattern: [SEQ-SEC-004](../design/security/admin-privileged-action.md). H1 grant flow: [SEQ-SEC-006](../design/security/admin-grant-dual-control.md). H2 DLQ/webhook: [SEQ-OPS-003](../design/operations/dlq-replay.md), [SEQ-OPS-005](../design/operations/operator-webhook-replay.md).

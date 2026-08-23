@@ -161,6 +161,7 @@ const phaseH0GatePresent = fs.existsSync(phaseH0GateFile)
 const phaseHStatusPresent = fs.existsSync(phaseHStatusFile)
 const phaseHStatusText = phaseHStatusPresent ? fs.readFileSync(phaseHStatusFile, 'utf8') : ''
 const phaseH0PlatformPass = /Platform H0 status:[\s\S]*?\*\*PASS\*\*/.test(phaseHStatusText)
+const phaseH1PlatformPass = /Platform H1 status:[\s\S]*?\*\*PASS\*\*/.test(phaseHStatusText)
 const phaseHInProgress = /Canonical Phase H status:[\s\S]*?\*\*IN PROGRESS\*\*/.test(phaseHStatusText)
 const phaseH1ScopePresent = fs.existsSync(phaseH1ScopeFile)
 const phaseH1GatePresent = fs.existsSync(phaseH1GateFile)
@@ -318,6 +319,7 @@ const health = {
     phaseH0Exit: phaseH0PlatformPass ? 'pass' : phaseH0GatePresent ? 'gate_only' : 'not_documented',
     phaseH: phaseHInProgress || phaseH0PlatformPass ? 'in_progress' : 'not_started',
     phaseH1Gate: phaseH1GatePresent ? 'pass' : phaseH1ScopePresent ? 'scoped_not_started' : 'not_documented',
+    phaseH1Exit: phaseH1PlatformPass ? 'pass' : phaseH1GatePresent ? 'gate_only' : 'not_documented',
     phaseH1Documented: phaseH1GatePresent || phaseH1ScopePresent,
     nextPhase: phaseGPresent ? 'H' : phaseFPresent ? 'G' : phaseDPresent ? 'E' : 'D',
     label: 'Generated from repository state — not live production health',

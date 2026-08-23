@@ -68,8 +68,9 @@ Do not invent requirement, test, view, or ADR IDs — frontmatter on each design
 | --- | --- | --- | --- |
 | [SEQ-OPS-001](operations/payment-provider-timeout.md) | Payment Provider Timeout | accepted | `paymentProviderTimeout` |
 | [SEQ-OPS-002](operations/ledger-posting-recovery.md) | Ledger Posting Recovery | accepted | `ledgerPostingRecovery` |
-| [SEQ-OPS-003](operations/dlq-replay.md) | DLQ Replay | accepted | `dlqReplay` |
+| [SEQ-OPS-003](operations/dlq-replay.md) | Durable DLQ creation and inspection | accepted | `dlqReplay` |
 | [SEQ-OPS-004](operations/settlement-provider-outage.md) | Settlement Provider Outage | accepted | `settlementProviderOutage` |
+| [SEQ-OPS-005](operations/operator-webhook-replay.md) | Operator webhook replay | accepted | `dlqReplay` |
 
 ## State Models
 

@@ -1,6 +1,6 @@
 ---
 id: SEQ-OPS-003
-title: DLQ Replay
+title: Durable DLQ creation and inspection
 type: sequence
 area: operations
 status: accepted
@@ -8,69 +8,63 @@ mvp: true
 likec4:
   - dlqReplay
 requirements:
-  - NFR-OPS-004
-  - NFR-REL-005
+  - NFR-REL-004
+  - NFR-REL-006
+  - FUN-ADM-007
 adrs:
-  - ADR-012
-  - ADR-016
   - ADR-017
+  - ADR-034
 tests:
+  - ADM-DLQ-001
+  - ADM-DLQ-002
   - OPS-REC-002
 ---
 
-# DLQ Replay
+# Durable DLQ creation and inspection
 
 ## Purpose
 
-Failed messages enter DLQ after bounded retries. Operators inspect authoritative state and replay only when safe. Financial side effects must not be blindly repeated. Operator action is audited.
+After bounded automatic retries exhaust, operations persists a durable `DeadLetterItem`. Admins inspect safe metadata. Financial items are inspect-only. Webhook items may later enter closed replay (SEQ-OPS-005). Blind financial replay is prohibited.
 
 ## Preconditions
 
-- Message exhausted bounded retries and is in Dead Letter Queue.
-- Admin has privileged access with MFA.
+- Async work exhausted automatic handling
+- Admin has `admin.dlq.view` for inspection
 
 ## Mermaid
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant Bus as Event Bus
-    participant DLQ as Dead Letter Queue
+    participant W as Worker
+    participant ODB as Operational DB
     participant Admin as Sparelane Admin
     participant Portal as Admin Portal
     participant BFF as Admin BFF
-    participant ODB as Operational DB
-    participant LDB as Ledger DB
-    participant LC as Ledger Consumer
     participant Aud as Audit Service
 
-    Bus->>DLQ: Route failed message after bounded retries
-    Admin->>Portal: Investigate DLQ item
-    Portal->>BFF: Open DLQ investigation
-    BFF->>ODB: Check authoritative workflow / settlement state
-    BFF->>LDB: Check ledger posting state when financial
-
-    alt Replay safe
-        BFF->>Bus: Replay message
-        Bus->>LC: Idempotent processing absorbs duplicates
-    else Not safe
-        BFF-->>Portal: Hold — do not replay
+    W->>ODB: Persist exhaustion outcome on authoritative domain row
+    W->>ODB: Create or update DeadLetterItem OPEN dlq_
+    Note over W,ODB: Pointer reference only - no secret payload dump
+    Admin->>Portal: Open /admin/dlq
+    Portal->>BFF: GET /admin/v1/dead-letters
+    BFF->>ODB: List safe DLQ metadata
+    BFF-->>Portal: work type, source ids, status, eligibility
+    alt financial or notification work
+        Note over Portal: Manual replay prohibited - domain recovery only
+    else merchant.webhook.delivery
+        Note over Portal: Eligible for closed webhook replay SEQ-OPS-005
     end
-
-    BFF->>Aud: Audit operator replay decision
+    BFF->>Aud: Optional read audit if required by policy
 ```
 
-## Important invariants
+## Postconditions
 
-- Inspect Operational DB / Ledger DB before replay.
-- Financial consumers remain idempotent.
-- Every operator replay is audited (ADR-012).
+- Durable DLQ evidence exists and survives restart
+- No financial command executed from inspection
+- No raw secrets exposed in admin views
 
-## Failure notes
+## Failure modes
 
-- Blind replay of money side effects is forbidden.
-- If journal already exists, replay must no-op.
-
-## Related
-
-LikeC4: `dlqReplay`.
+- Duplicate exhaustion redelivery must not create a second logical `(work_type, source_identity)` row
+- Missing capability denies list/detail

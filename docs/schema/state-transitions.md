@@ -100,7 +100,10 @@ Only `ACTIVE` may receive HTTP delivery.
 | From | To |
 | --- | --- |
 | PENDING | SUCCEEDED, FAILED, CANCELLED |
-| SUCCEEDED / FAILED / CANCELLED | terminal |
+| FAILED | SUCCEEDED (operator manual replay success only — [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)) |
+| SUCCEEDED / CANCELLED | terminal |
+
+Automatic exhaustion ends at `FAILED`. Manual operator replay may later succeed without creating a new delivery identity. Attempt history retains prior failures.
 
 ---
 
@@ -115,7 +118,37 @@ Per attempt row (append-oriented):
 | RETRY_PENDING | DELIVERING |
 | SUCCEEDED / FAILED | terminal for that attempt |
 
-Retries reuse the same `webhook_events.public_id`. New attempt row; fresh signature timestamp. [ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md).
+Retries reuse the same `webhook_events.public_id`. New attempt row; fresh signature timestamp. Automatic budget max 5 ([ADR-030](../decisions/ADR-030-merchant-webhook-contract-signing-and-delivery.md)). Manual operator replay appends attempt 6+ without resetting history ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)).
+
+---
+
+## DeadLetterItem (H2)
+
+| From | To | Gate |
+| --- | --- | --- |
+| — | OPEN | Exhaustion persist |
+| OPEN | REPLAY_REQUESTED | Accepted webhook `OperatorReplayRequest` |
+| REPLAY_REQUESTED | REPLAYING | Worker claim |
+| REPLAYING | RESOLVED | Manual webhook 2xx |
+| REPLAYING | REPLAY_FAILED | Manual attempt failed |
+| REPLAY_FAILED | OPEN | Available for another operator decision |
+| REPLAY_FAILED | REPLAY_REQUESTED | New `rpl_` accepted |
+
+No dismiss transition in H2 MVP.
+
+---
+
+## OperatorReplayRequest (H2)
+
+| From | To | Gate |
+| --- | --- | --- |
+| — | requested | `admin.webhook.replay` + MFA ≤15m + reason + eligible DLQ |
+| requested | executing | Worker claim (execute-once) |
+| executing | succeeded | Transport 2xx |
+| executing | failed | Transport failure / eligibility fail after accept |
+| — | denied | Authz/MFA/reason/catalogue rejection (may be audit-only without row) |
+
+Terminal: `succeeded`, `failed`, `denied`.
 
 ---
 

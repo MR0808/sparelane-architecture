@@ -38,6 +38,8 @@ Stable opaque identifiers for external contracts.
 | `wh_` | Webhook Endpoint |
 | `key_` | API Credential (public key id / prefix only) |
 | `jt_` | Journal Transaction (internal/ops; not merchant API) |
+| `dlq_` | DeadLetterItem (admin/ops) |
+| `rpl_` | OperatorReplayRequest (admin/ops) |
 
 Public IDs:
 

@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-08-23T02:39:11.093Z",
+  "generatedAt": "2026-08-23T10:12:03.551Z",
   "label": "Generated from repository state",
   "requirements": {
-    "total": 86,
-    "mvp": 83,
+    "total": 92,
+    "mvp": 89,
     "future": 3,
-    "blocked": 14,
+    "blocked": 15,
     "missingArchitecture": 4,
     "missingTests": 38,
     "mvpVerified": 0,
     "foundationImplemented": 15,
-    "productImplemented": 32
+    "productImplemented": 36
   },
   "decisions": {
-    "adrs": 33,
+    "adrs": 34,
     "open": 35
   },
   "tests": {
-    "total": 42
+    "total": 51
   },
   "designs": {
-    "total": 37,
-    "sequence": 34,
+    "total": 38,
+    "sequence": 35,
     "state": 3,
     "invalidTraceability": 0
   },
@@ -32,7 +32,7 @@
     "openapi": "present"
   },
   "docs": {
-    "count": 259
+    "count": 264
   },
   "implementation": {
     "phaseAGate": "pass_with_documented_non_blocking_risks",
@@ -60,6 +60,7 @@
     "phaseH0Exit": "pass",
     "phaseH": "in_progress",
     "phaseH1Gate": "pass",
+    "phaseH1Exit": "pass",
     "phaseH1Documented": true,
     "nextPhase": "H",
     "label": "Generated from repository state — not live production health"

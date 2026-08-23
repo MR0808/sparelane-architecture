@@ -2,7 +2,7 @@
 id: ADM-PRIV-001
 title: PrivilegedActionRequest reason required
 type: security
-status: specified
+status: verified
 relatedRequirements:
   - FUN-ADM-005
   - NFR-SEC-010
@@ -34,3 +34,10 @@ Prove grant privileged requests require a compliant reason string.
 ## Implementation status
 
 **Specified** — not verified. Links [ADR-033](../../docs/decisions/ADR-033-privileged-admin-grant-management-and-approval.md).
+
+
+## Evidence
+
+**verified** (local platform evidence) against `sparelane-platform` (`npm run test:phase-h1`, `docs/development/phase-h1-test-evidence.md`).
+
+Production IdP MFA satisfaction is **not** claimed (OD-024 still open).

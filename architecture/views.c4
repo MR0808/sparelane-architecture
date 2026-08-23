@@ -1006,18 +1006,20 @@ views {
   }
 
   dynamic view dlqReplay {
-    title '09 Flows / Operations / DLQ Replay'
-    description 'Failed messages enter DLQ after bounded retries. Operators inspect authoritative state and replay only when safe. Financial side effects must not be blindly repeated. Operator action is audited.'
+    title '09 Flows / Operations / Durable DLQ and Webhook Replay'
+    description 'Exhausted async work persists durable DeadLetterItem evidence. Admins inspect via Admin BFF. Closed webhook replay creates OperatorReplayRequest; notification-worker performs one HTTP attempt preserving evt_. Financial replay is prohibited — no Admin path to payment/settlement/ledger command handlers.'
 
-    sparelane.events.eventBus -> sparelane.events.deadLetterQueue 'routes failed message after bounded retries'
-    sparelaneAdmin -> sparelane.experience.adminPortal 'investigates DLQ item'
-    sparelane.experience.adminPortal -> sparelane.edgeLayer.adminBff 'opens DLQ investigation'
-    sparelane.edgeLayer.adminBff -> sparelane.data.operationalDb 'checks authoritative workflow/settlement state'
-    sparelane.edgeLayer.adminBff -> sparelane.data.ledgerDb 'checks ledger posting state when financial'
-    sparelane.edgeLayer.adminBff -> sparelane.events.deadLetterQueue 'determines replay safety'
-    sparelane.edgeLayer.adminBff -> sparelane.events.eventBus 'replays message when safe'
-    sparelane.events.eventBus -> sparelane.fundsPlatform.ledgerService 'idempotent processing absorbs duplicates'
-    sparelane.edgeLayer.adminBff -> sparelane.riskPlatform.auditService 'audits operator replay action'
+    sparelane.operations.notificationWorker -> sparelane.data.operationalDb 'persists DeadLetterItem on webhook exhaustion'
+    sparelaneAdmin -> sparelane.experience.adminPortal 'inspects /admin/dlq'
+    sparelane.experience.adminPortal -> sparelane.edgeLayer.adminBff 'lists or details dead letters'
+    sparelane.edgeLayer.adminBff -> sparelane.identity.authorization 'requires admin.dlq.view or admin.webhook.replay'
+    sparelane.edgeLayer.adminBff -> sparelane.data.operationalDb 'reads DeadLetterItem safe metadata'
+    sparelane.edgeLayer.adminBff -> sparelane.data.operationalDb 'creates OperatorReplayRequest for webhook only'
+    sparelane.edgeLayer.adminBff -> sparelane.riskPlatform.auditService 'audits replay request'
+    sparelane.edgeLayer.adminBff -> sparelane.events.eventBus 'outbox ReplayWebhookDelivery'
+    sparelane.events.eventBus -> sparelane.operations.notificationWorker 'executes webhook transport replay'
+    sparelane.operations.notificationWorker -> sparelane.data.operationalDb 'appends delivery attempt same evt_'
+    sparelane.operations.notificationWorker -> sparelane.riskPlatform.auditService 'audits replay outcome'
   }
 
   dynamic view settlementProviderOutage {
