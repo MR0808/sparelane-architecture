@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-25T00:36:37.172Z",
+  "generatedAt": "2026-08-25T02:21:37.477Z",
   "label": "Generated from repository state",
   "requirements": {
     "total": 94,
@@ -13,7 +13,7 @@
     "productImplemented": 41
   },
   "decisions": {
-    "adrs": 39,
+    "adrs": 41,
     "open": 36
   },
   "tests": {
@@ -32,7 +32,7 @@
     "openapi": "present"
   },
   "docs": {
-    "count": 278
+    "count": 282
   },
   "implementation": {
     "phaseAGate": "pass_with_documented_non_blocking_risks",
@@ -74,10 +74,12 @@
     "phaseI": "pass_with_documented_non_blocking_risks",
     "nextPhase": "MVP_ACCEPTANCE",
     "nextPhaseStatus": "local_evidence_complete_external_blockers_remain",
-    "mvpAcceptance": "not_accepted_external_blockers",
-    "mvpAcceptanceBlockerCount": 2,
+    "mvpAcceptance": "not_accepted_external_implementation_live_evidence",
+    "mvpAcceptanceBlockerCount": 0,
     "mvpAcceptanceBlockerCategories": {
-      "EXTERNAL_VENDOR_DECISION": 2
+      "EXTERNAL_VENDOR_DECISION": 0,
+      "EXTERNAL_IMPLEMENTATION": 4,
+      "LIVE_EVIDENCE": 2
     },
     "localMvpBlockers": 0,
     "track1a": "pass",
@@ -88,16 +90,22 @@
     "track1f": "pass",
     "finInv07": "verified_local_fake",
     "mvpAcceptanceGapPlan": "docs/implementation/mvp-acceptance-gap-plan.md",
-    "nextActivity": "OD_025_MANAGED_SECRETS_KMS_DECISION_GATE",
+    "nextActivity": "ADR_040_MANAGED_SECRETS_PLATFORM_IMPLEMENTATION",
     "track2a": "pass",
     "track2": "pass_od008_stripe_connect",
     "track2b": "pass_od009_stripe_payouts",
+    "track2c": "pass_od025_managed_secrets",
+    "track3": "pass_od023_auth0",
     "od008": "resolved_adr038_stripe_connect",
     "od036": "resolved_adr037",
     "od009": "resolved_adr039_stripe_manual_payouts",
     "od010": "resolved_adr038_adr039",
+    "od025": "resolved_adr040_aws_secrets_kms_split",
+    "od023": "resolved_adr041_auth0",
     "stripePaymentAdapter": "external_implementation_pending",
     "stripeSettlementAdapter": "external_implementation_pending",
+    "managedSecretsBackend": "external_implementation_pending",
+    "auth0AuthenticationProvider": "external_implementation_pending",
     "label": "Generated from repository state — not live production health"
   }
 }

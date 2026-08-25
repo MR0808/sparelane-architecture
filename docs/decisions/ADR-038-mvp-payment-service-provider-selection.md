@@ -200,7 +200,7 @@ Future SecretProvider must supply at least:
 | Webhook signing secret (`whsec_…`) | If webhooks enabled |
 | Connect client id / OAuth secrets | If OAuth onboarding used |
 
-No production FakePaymentProvider. No secrets in source. OD-025 remains open.
+No production FakePaymentProvider. No secrets in source. Credentials via [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md) Secrets Manager (OD-025 **resolved**).
 
 ### PCI / privacy
 
@@ -248,7 +248,7 @@ ADR-037 legal-review requirement before live production remains. This ADR is arc
 - Real Stripe adapter + conformance suite still required  
 - Consumer ACTION_REQUIRED / Elements onboarding UI still to implement  
 - Stripe idempotency 24h retention must be respected in ops  
-- OD-025 before live/sandbox secrets wiring  
+- OD-025 secrets architecture closed ([ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md)); backends EXTERNAL_IMPLEMENTATION before live keys 
 
 ## Alternatives considered
 

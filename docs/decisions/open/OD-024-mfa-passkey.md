@@ -8,6 +8,7 @@ related:
   - docs/security/admin-access.md
   - docs/decisions/ADR-033-privileged-admin-grant-management-and-approval.md
   - docs/decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md
+  - docs/decisions/ADR-041-mvp-production-identity-provider-selection.md
   - docs/decisions/open/OD-023-identity-provider.md
 ---
 
@@ -15,7 +16,7 @@ related:
 
 ## Decision required
 
-MFA / passkey **implementation** (IdP/vendor, enrolment, passkey product mechanics).
+MFA / passkey **implementation** (enrolment UX, passkey product mechanics beyond admin privileged path).
 
 ## Why it matters
 
@@ -23,30 +24,20 @@ Admin/consumer assurance; production admin deployment; populating `PrivilegedAut
 
 ## Blocking stage
 
-`pilot` (production admin still blocked until provider MFA can satisfy ADR-033/ADR-034 context)
+`pilot` (production admin still blocked until Auth0 adapter MFA path is implemented)
 
 ## Status
 
-`open` — **policy portion narrowed/resolved by ADR-033 and reused by ADR-034; implementation remains open.**
+`open` — **narrowed**:
+
+| Portion | Status |
+| --- | --- |
+| Policy (when / max age) | **Resolved** by [ADR-033](../ADR-033-privileged-admin-grant-management-and-approval.md) / reused by ADR-034 |
+| IdP / MFA vendor for admin | **Resolved** by [ADR-041](../ADR-041-mvp-production-identity-provider-selection.md) — **Auth0** |
+| Claim mapping (`amr`/`auth_time` → `mfaSatisfiedAt`) | **Bound** in ADR-041 |
+| Adapter + step-up UX implementation | **EXTERNAL_IMPLEMENTATION** (open) |
+| Consumer MFA/passkey product rules beyond admin | Still product-open |
 
 ## Notes
 
-**Policy resolved in [ADR-033](../ADR-033-privileged-admin-grant-management-and-approval.md):**
-
-- Recent MFA required for privileged grant **request / approve / execute**
-- Max MFA age **15 minutes** via provider-neutral `PrivilegedAuthenticationContext`
-- Production admin MFA required before production admin deployment ([NFR-SEC-004](../../../requirements/security/NFR-SEC-004.md))
-
-**H2 reuse in [ADR-034](../ADR-034-durable-dead-letter-and-operator-replay-policy.md):**
-
-- Operator webhook replay uses the **same** ≤15 minute `PrivilegedAuthenticationContext` freshness
-- Do **not** invent a second MFA freshness window for replay
-- Provider implementation remains open (this OD)
-
-**Still open (do not treat as closed):**
-
-- IdP / MFA / passkey **vendor and product** ([OD-023](./OD-023-identity-provider.md))
-- How the provider surfaces `mfaSatisfiedAt` / step-up into Sparelane
-- Consumer MFA/passkey product rules beyond admin privileged steps
-
-This OD remains **open** (same pattern as OD-011 narrowed-but-open). Historical OD retained; do not delete.
+Do not treat OD-024 as an independent EXTERNAL_VENDOR_DECISION blocker after ADR-041. Remaining work is implementation/evidence, not vendor selection.

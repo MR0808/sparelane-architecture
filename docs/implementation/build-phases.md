@@ -165,8 +165,8 @@ Canonical Phase G scope is **G0 + G1 + G2** for local/platform evidence. G3+ enh
 | Stage | Blocks? | Items |
 | --- | --- | --- |
 | Local G0/G1/G2 | No | Fake webhook sink; Fake email for G2 local |
-| Sandbox webhooks | Soft | Secrets product (OD-025) for signing_secret_ref |
-| Pilot / Production consumer email | **Yes** | [OD-035](../decisions/open/OD-035-email-provider.md) vendor; OD-025 credentials |
+| Sandbox webhooks | Soft | Managed-secret backends (ADR-040) for signing_secret_ref |
+| Pilot / Production consumer email | **Yes** | [OD-035](../decisions/open/OD-035-email-provider.md) vendor; ADR-040 credentials |
 | Production SMS / reminders | **Yes** | G3+ scope |
 
 ---
@@ -224,11 +224,10 @@ Canonical Phase G scope is **G0 + G1 + G2** for local/platform evidence. G3+ enh
 
 **Open decisions that block production money movement / live sandbox**
 
-1. ~~PSP + settlement partner~~ → ADR-038 / ADR-039; remaining: Stripe PaymentProvider + SettlementProvider adapters + LIVE_EVIDENCE + OD-025 secrets
+1. ~~PSP + settlement partner~~ → ADR-038 / ADR-039; ~~OD-025~~ → ADR-040; remaining: managed-secret backends + Stripe PaymentProvider + SettlementProvider adapters + LIVE_EVIDENCE
 2. Identity provider + admin MFA ([OD-023](../decisions/open/OD-023-identity-provider.md), [OD-024](../decisions/open/OD-024-mfa-passkey.md))
-3. Secrets manager / KMS ([OD-025](../decisions/open/OD-025-secrets-kms.md))
-4. Queue/broker + DB hosting topology ([OD-017](../decisions/open/OD-017-queue-broker.md), [OD-019](../decisions/open/OD-019-db-topology.md))
-5. Legal retention (+ wallet licensing **if** wallet enabled)
+3. Queue/broker + DB hosting topology ([OD-017](../decisions/open/OD-017-queue-broker.md), [OD-019](../decisions/open/OD-019-db-topology.md))
+4. Legal retention (+ wallet licensing **if** wallet enabled)
 6. Due-date local clock default + timezone-change policy — **resolved by ADR-025** for product behaviour; production hosting still TBD
 7. Email vendor ([OD-035](../decisions/open/OD-035-email-provider.md)); SIEM ([OD-021](../decisions/open/OD-021-observability-siem.md)); production alert thresholds TBD
 

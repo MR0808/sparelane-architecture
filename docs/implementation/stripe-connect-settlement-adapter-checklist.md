@@ -13,7 +13,7 @@
 
 | Item | Notes |
 | --- | --- |
-| Credential resolver | OD-025 SecretProvider; same platform `sk_` as PSP adapter |
+| Credential resolver | ADR-040 SecretProvider; same platform `sk_` as PSP adapter (Secrets Manager) |
 | Connected account context | Mandatory `acct_…`; fail closed if missing |
 | Manual payout only | Assert/configure schedule interval `manual` |
 | Fee collector precondition | Connected accounts must use platform-paid Stripe fees (`fees_collector=application`) |

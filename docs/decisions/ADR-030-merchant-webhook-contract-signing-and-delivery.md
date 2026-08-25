@@ -456,7 +456,7 @@ Full operator/DLQ policy: [ADR-034](./ADR-034-durable-dead-letter-and-operator-r
 
 - OD-005 consumer notification rules — **resolved** (ADR-031); SMS/reminders/prefs deferred G3+
 - OD-034 webhook endpoint Merchant API — **open** (portal/internal for MVP)
-- OD-025 secrets product — **open** (ref + SecretProvider sufficient for local)
+- OD-025 secrets product — **resolved** by [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md) (backends EXTERNAL_IMPLEMENTATION; local SecretProvider still valid)
 - Signing secret rotation protocol — deferred
 - Endpoint verification challenge — deferred
 

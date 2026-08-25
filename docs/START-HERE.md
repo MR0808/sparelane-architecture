@@ -3,7 +3,7 @@
 **Status:** Current  
 **Owner:** Architecture (TBD)  
 **Last Reviewed:** 2026-08-20  
-**Related ADRs:** ADR-001–039 (Accepted)  
+**Related ADRs:** ADR-001–041 (Accepted)  
 **Related Views:** `01 Overview / System Context`, `01 Overview / Architecture Map`, `01 Overview / Platform Architecture`
 
 Sparelane architecture portal entry point. Prefer this page over browsing folders blindly.
@@ -25,7 +25,7 @@ Sparelane is a payment reliability platform that sits between consumers and merc
 | **Contracts** ([contracts/](contracts/README.md), [`openapi.yaml`](../contracts/openapi.yaml)) | Merchant API and webhook/event shapes |
 | **Requirements** ([requirements/](../requirements/README.md)) | Behaviour/quality statements with traceability into views, ADRs, contracts, tests (portal routes `/requirements`, `/requirements/traceability`) |
 | **Implementation** ([implementation/](implementation/README.md)) | Build blueprint, modules, deployables, phases — not application code |
-| **Implementation status** ([phase A](implementation/phase-a-status.md) … [phase I](implementation/phase-i-status.md)) | Phases A–I **PASS** (local Fake); **MVP acceptance NOT ACCEPTED — EXTERNAL BLOCKERS** — [gap plan](implementation/mvp-acceptance-gap-plan.md) (**2** vendor blockers: OD-023, OD-025); Track 2B OD-009 **PASS** ([ADR-039](decisions/ADR-039-mvp-settlement-provider-selection.md)); next **OD-025** |
+| **Implementation status** ([phase A](implementation/phase-a-status.md) … [phase I](implementation/phase-i-status.md)) | Phases A–I **PASS** (local Fake); **MVP acceptance NOT ACCEPTED** — [gap plan](implementation/mvp-acceptance-gap-plan.md) (**0** vendor blockers; EXTERNAL_IMPLEMENTATION + LIVE_EVIDENCE remain); Track 3 OD-023 **PASS** ([ADR-041](decisions/ADR-041-mvp-production-identity-provider-selection.md) Auth0); next **ADR-040 managed-secrets implementation** |
 | **Runbooks** ([operations/runbooks/](operations/runbooks/README.md)) | Operator response for provider outages, DLQ, ledger lag, webhook backlog |
 
 Also see the [architecture map](architecture-map.md) and [Architecture Portal v1](governance/architecture-v1.md).

@@ -13,7 +13,7 @@
 
 | Item | Notes |
 | --- | --- |
-| Credential resolver | Via future SecretProvider (OD-025); never env hardcode in production |
+| Credential resolver | Via SecretProvider / ADR-040 Secrets Manager (`sk_…`); never env hardcode in sandbox/production |
 | Connected account context | `merchantContext.providerAccountRef` = `acct_…`; fail closed if missing/live |
 | Token handling | Platform `pm_…`; clone to connected account before direct charge |
 | `executePayment` | Create+confirm PaymentIntent on connected account; auto-capture; `off_session` |

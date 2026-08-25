@@ -193,7 +193,7 @@ Out of MVP product scope. If available balance insufficient or payouts blocked â
 
 ## OD-025 secrets
 
-Settlement adapter uses the same Stripe platform secret key (connected-account header) and optional payout webhook signing secret as ADR-038. No separate banking partner secrets for MVP.
+Settlement adapter uses the same Stripe platform secret key (connected-account header) and optional payout webhook signing secret as ADR-038, retrieved via [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md) Secrets Manager. No separate banking partner secrets for MVP.
 
 ## Fake / production
 
@@ -224,7 +224,7 @@ FakeSettlementProvider remains local/CI only. Production/sandbox fail-closed wit
 - Connected-account onboarding must set fee collector + manual schedule
 - Platform bears Stripe processing fees (commercial COGS)
 - 24h idempotency retention ops discipline
-- OD-025 before live keys
+- OD-025 secrets architecture closed (ADR-040); backends EXTERNAL_IMPLEMENTATION before live keys
 - AU legal review before production
 
 ## Alternatives considered

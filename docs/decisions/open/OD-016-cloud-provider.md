@@ -29,3 +29,5 @@ Hosting
 ## Notes
 
 Unresolved item tracked separately from Accepted ADRs. See the [open decisions index](../open-decisions.md).
+
+**Narrowed by [ADR-040](../ADR-040-mvp-managed-secrets-and-key-management-policy.md):** MVP money-path secrets require AWS Secrets Manager + KMS. Selecting a non-AWS primary cloud for OD-016 requires a superseding secrets ADR before production cutover.

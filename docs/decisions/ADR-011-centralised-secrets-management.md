@@ -21,7 +21,7 @@ Principles:
 - audit of access where supported
 - no secret values in application logs
 
-**Vendor TBD.**
+**Vendor TBD** → **Resolved for MVP by [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md)** (split AWS Secrets Manager + KMS-envelope Postgres).
 
 ## Consequences
 

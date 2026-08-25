@@ -41,7 +41,7 @@ See also [requirements README](../../requirements/README.md).
 | ADR-008 Idempotent Merchant API | [merchant-api](../integrations/merchant-api.md), OpenAPI | Bills, API layer | Duplicate bill submission — Phase C INT-API-001 local evidence |
 | ADR-009 Signed at-least-once webhooks | [webhooks](../integrations/webhooks.md), [webhook-security](../security/webhook-security.md) | Webhooks | Webhook retry e2e; signature security; ADR-030 freezes package |
 | ADR-010 PCI boundary | [pci-boundary](../security/pci-boundary.md) | Payment Methods, PSP adapter | Security tests; no CHD in logs |
-| ADR-011 Centralised secrets | [secrets-management](../security/secrets-management.md) | config/secrets, Integrations | Secret handling acceptance |
+| ADR-011 Centralised secrets | [secrets-management](../security/secrets-management.md); [ADR-040](../decisions/ADR-040-mvp-managed-secrets-and-key-management-policy.md) | config/secrets, Integrations | Secret handling acceptance |
 | ADR-012 Privileged admin audit | [audit](../security/audit.md), [admin-access](../security/admin-access.md) | Audit, Admin surfaces | Admin privileged action audited |
 | ADR-013 Ledger/operational separation | [data-stores](../data/data-stores.md), [relational-model](../schema/relational-model.md) | Ledger vs operational packages | Separate schemas/access paths |
 | ADR-014 Merchant tenant isolation | [tenant-isolation](../data/tenant-isolation.md) | All merchant-scoped modules | Invariant #8; IDOR security |
@@ -81,7 +81,7 @@ Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-a
 | Phase D payment reliability | Recorded — [phase-d-status](phase-d-status.md). FakePSP collection; real PSP still open. |
 | Phase E ledger (E0–E1) | Collection journal ADR-026 locally evidenced; not bank-cash verified. |
 | Phase F settlement (F0–F2) | Recorded — [phase-f-status](phase-f-status.md). Local Fake settlement complete; OD-009 **resolved** ([ADR-039](../decisions/ADR-039-mvp-settlement-provider-selection.md)); live Stripe SettlementProvider + LIVE_EVIDENCE pending. |
-| Phase G notifications & webhooks (G0–G2) | Recorded — [phase-g-status](phase-g-status.md). Local webhook sink + Fake email; OD-025/OD-035/OD-034 open; G3+ deferred. |
+| Phase G notifications & webhooks (G0–G2) | Recorded — [phase-g-status](phase-g-status.md). Local webhook sink + Fake email; OD-025 **resolved** (ADR-040); OD-035/OD-034 open; G3+ deferred. |
 | Phase H H0 admin gate | [phase-h0-admin-decision-gate](phase-h0-admin-decision-gate.md) **PASS** — ADR-032; platform H0 **PASS** |
 | Phase H H1 admin gate | [phase-h1-admin-decision-gate](phase-h1-admin-decision-gate.md) **PASS** — ADR-033 Option A; platform H1 **PASS** (local) |
 | Phase H H2 replay gate | [phase-h2-admin-decision-gate](phase-h2-admin-decision-gate.md) **PASS** — ADR-034 Option A; platform H2 **PASS** (local); canonical Phase H **PASS WITH DOCUMENTED NON-BLOCKING RISKS** |

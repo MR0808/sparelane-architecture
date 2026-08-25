@@ -1,31 +1,34 @@
 # MVP acceptance gap plan
 
-**Gate result:** **MVP ACCEPTANCE: NOT ACCEPTED — EXTERNAL BLOCKERS**  
-**Date:** 2026-08-25 (Track 1F evidence alignment)  
+**Gate result:** **MVP ACCEPTANCE: NOT ACCEPTED — EXTERNAL_IMPLEMENTATION + LIVE_EVIDENCE** (independent EXTERNAL_VENDOR_DECISION count: **0**)  
+**Date:** 2026-08-25 (Track 3 OD-023 Accept)  
 **Evidence:** `sparelane-platform` Track 1A–1E docs; architecture Phase A–I local Fake complete  
 **FIN-INV-07 decision:** [phase-fin-inv-07-decision-gate](./phase-fin-inv-07-decision-gate.md) — **PASS** ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md))  
 **FIN-INV-07 verification:** **`VERIFIED_LOCAL_FAKE`** (Track 1C + Track 1E from-zero ×2 + post-zero regression) — **not** `product_verified`
 
 Phase I (local Fake pilot readiness) is complete. Tracks 1A–1E closed. **No LOCAL_IMPLEMENTATION or LOCAL_VALIDATION blockers remain.**
 
-## Hard blockers summary (recalculated Track 2B OD-009 Accept)
+## Hard blockers summary (recalculated Track 3 OD-023 Accept)
 
 | # | Blocker | Taxonomy | Independently counted? |
 | --- | --- | --- | --- |
-| 1 | [OD-023](../decisions/open/OD-023-identity-provider.md) production identity provider | **EXTERNAL_VENDOR_DECISION** | **Yes** |
-| 2 | [OD-025](../decisions/open/OD-025-secrets-kms.md) managed secrets / KMS | **EXTERNAL_VENDOR_DECISION** | **Yes** |
+| — | *(none)* | — | **Independent EXTERNAL_VENDOR_DECISION count: 0** |
 
-**Independent EXTERNAL_VENDOR_DECISION count:** **2** (was 3; OD-009 closed by ADR-039).
+**Independent EXTERNAL_VENDOR_DECISION count:** **0** (was 1; OD-023 closed by ADR-041).
 
-### Documented money-path follow-ups (not independent vendor decisions)
+**MVP acceptance remains NOT ACCEPTED** — EXTERNAL_IMPLEMENTATION + LIVE_EVIDENCE remain.
+
+### Documented follow-ups (not independent vendor decisions)
 
 | Item | Taxonomy | Notes |
 | --- | --- | --- |
+| Managed secret backends (Secrets Manager + KMS envelope) | **EXTERNAL_IMPLEMENTATION** | ADR-040 — **next recommended** |
 | Stripe Connect PaymentProvider adapter | **EXTERNAL_IMPLEMENTATION** | ADR-038 |
 | Stripe Connect SettlementProvider adapter | **EXTERNAL_IMPLEMENTATION** | ADR-039 |
-| Live Stripe sandbox E2E (pay + settle) | **LIVE_EVIDENCE** | After adapters + OD-025 (+ IdP as needed) |
-| [OD-010](../decisions/open/OD-010-provider-capability-matrix.md) | **resolved** | ADR-038 + ADR-039 |
-| [OD-024](../decisions/open/OD-024-mfa-passkey.md) | EXTERNAL_IMPLEMENTATION | Downstream of OD-023 |
+| Auth0 AuthenticationProvider + admin MFA step-up | **EXTERNAL_IMPLEMENTATION** | ADR-041; OD-024 narrowed |
+| Live Stripe sandbox E2E (pay + settle) | **LIVE_EVIDENCE** | After secrets + Stripe adapters |
+| Live Auth0 sandbox auth/MFA evidence | **LIVE_EVIDENCE** | After Auth0 adapter |
+| [OD-024](../decisions/open/OD-024-mfa-passkey.md) | EXTERNAL_IMPLEMENTATION | Narrowed; not a vendor blocker |
 | [OD-035](../decisions/open/OD-035-email-provider.md) | LIVE_EVIDENCE / pilot | Local Fake satisfies G2 |
 
 ### Closed (removed from blocker list)
@@ -42,6 +45,8 @@ Phase I (local Fake pilot readiness) is complete. Tracks 1A–1E closed. **No LO
 | OD-008 PSP vendor selection | Track 2 — **CLOSED** (ADR-038) |
 | OD-009 settlement partner | Track 2B — **CLOSED** (ADR-039) |
 | OD-010 capability matrix | Track 2B — **CLOSED** (ADR-038+039) |
+| OD-025 managed secrets / KMS | Track 2C — **CLOSED** (ADR-040) |
+| OD-023 production IdP | Track 3 — **CLOSED** (ADR-041) |
 
 ## Execution tracks
 
@@ -109,52 +114,69 @@ Gate date: 2026-08-25. Binding: [ADR-039](../decisions/ADR-039-mvp-settlement-pr
 - OD-009 **resolved**; OD-010 **resolved**; settlement adapter **not** implemented
 - Independent EXTERNAL_VENDOR_DECISION count → **2** (OD-023, OD-025)
 
-### Track 2C — **NEXT: OD-025 MANAGED SECRETS / KMS DECISION GATE**
+### Track 2C — OD-025 MANAGED SECRETS / KMS — **PASS**
 
-Required before live/sandbox Stripe credential wiring for PSP + settlement adapters. Parallel Track 3: OD-023 IdP.
+Gate date: 2026-08-25. Binding: [ADR-040](../decisions/ADR-040-mvp-managed-secrets-and-key-management-policy.md).
 
-### Track 3 — SECURITY / IDP
+- **Selected:** Split — AWS Secrets Manager (low-cardinality) + KMS-envelope Postgres (high-cardinality webhooks)
+- Sandbox uses **real** managed architecture (Stripe test keys); fail closed preserved
+- OD-025 **resolved**; backends **not** implemented
+- Independent EXTERNAL_VENDOR_DECISION count → **1** (OD-023)
+- Money path: managed-secrets EXTERNAL_IMPLEMENTATION → Stripe adapters → LIVE_EVIDENCE
 
-1. Resolve OD-023 (architecture-first decision gate).
-2. Complete OD-024 MFA provider integration against ADR-033/036 (downstream of OD-023).
-3. Production auth/MFA evidence.
+### Track 3 — OD-023 PRODUCTION IdP — **PASS**
 
-### Track 4 — OPS / COMPLIANCE (mostly non-blocking for MVP local gate)
+Gate date: 2026-08-25. Binding: [ADR-041](../decisions/ADR-041-mvp-production-identity-provider-selection.md).
+
+- **Selected:** Auth0 human IdP; Sparelane remains authorisation SoT
+- ADR-033 MFA: Auth0 step-up + `amr` contains `mfa` → `mfaSatisfiedAt` (≤15 min); fail closed
+- OD-023 **resolved**; OD-024 **narrowed**; Auth0 adapter **not** implemented
+- Independent EXTERNAL_VENDOR_DECISION count → **0**
+- **MVP acceptance still NOT ACCEPTED**
+
+### Track 4 — **NEXT: ADR-040 MANAGED SECRETS PLATFORM IMPLEMENTATION**
+
+Architecture/vendor decision work for MVP is complete unless a new blocker appears. Next = platform EXTERNAL_IMPLEMENTATION:
+
+1. Managed-secret backends (ADR-040) — unblocks Stripe + Auth0 live credentials
+2. Stripe PaymentProvider + SettlementProvider
+3. Auth0 AuthenticationProvider + admin step-up
+4. LIVE_EVIDENCE (Stripe sandbox E2E; Auth0 MFA sandbox)
+
+### Track 4 notes — OPS / COMPLIANCE (mostly non-blocking for MVP local gate)
 
 OD-021 SIEM, external pen-test, PCI/SOC certification — production-oriented; keep as **NON_BLOCKING_RISK** / **COMPLIANCE_EXTERNAL** unless criteria explicitly require them for MVP acceptance.
 
 ## Dependency graph
 
 ```text
-~~OD-036~~ ADR-037 → ~~OD-008~~ ADR-038 → Stripe PaymentProvider adapter ─┐
-~~OD-009~~ ADR-039 → Stripe SettlementProvider adapter ────────────────────┼→ LIVE_EVIDENCE
-OD-025 managed secrets ────────────────────────────────────────────────────┘
-OD-023 IdP → OD-024 MFA → production auth
+~~OD-036~~ ADR-037 → ~~OD-008~~ ADR-038 → Stripe PaymentProvider ─┐
+~~OD-009~~ ADR-039 → Stripe SettlementProvider ───────────────────┼→ LIVE_EVIDENCE
+~~OD-025~~ ADR-040 → managed-secret backends ─────────────────────┤
+~~OD-023~~ ADR-041 → Auth0 AuthenticationProvider + MFA step-up ──┘
 ```
 
-## Why next is OD-025
+## Why next is managed-secrets implementation
 
 | Question | Answer |
 | --- | --- |
-| Are money vendors selected? | **Yes** — Stripe PSP + settlement (ADR-038/039) |
-| Can live adapters ship secrets without OD-025? | **No** for production/sandbox fail-closed design |
-| Exact next activity | **OD-025 MANAGED SECRETS / KMS DECISION GATE** |
+| Remaining EXTERNAL_VENDOR_DECISION? | **None** |
+| Does MVP acceptance pass? | **No** — implementation + LIVE_EVIDENCE remain |
+| Exact next activity | **ADR-040 managed-secrets EXTERNAL_IMPLEMENTATION** (before live Stripe/Auth0 secrets) |
 
-## MVP requirement matrix (Track 2B PASS)
+## MVP requirement matrix (Track 3 PASS)
 
 | Criterion area | Classification |
 | --- | --- |
-| Local Fake collection / ledger / settlement | **LOCAL_PASS** |
+| Local Fake collection / ledger / settlement / auth | **LOCAL_PASS** |
 | FIN-INV-01…10 | **LOCAL_PASS** (`VERIFIED_LOCAL_FAKE`) |
-| PSP vendor decision | **CLOSED** (ADR-038) |
-| Settlement vendor decision | **CLOSED** (ADR-039) |
-| Provider capability matrix | **CLOSED** (OD-010) |
-| Stripe PaymentProvider adapter | **EXTERNAL_IMPLEMENTATION** |
-| Stripe SettlementProvider adapter | **EXTERNAL_IMPLEMENTATION** |
-| Live money E2E | **LIVE_EVIDENCE_PENDING** |
-| Production IdP / MFA | **EXTERNAL_BLOCKED** (OD-023; OD-024 downstream) |
-| Managed secrets | **EXTERNAL_BLOCKED** (OD-025) |
+| PSP / settlement / secrets / IdP vendor decisions | **CLOSED** (ADR-038/039/040/041) |
+| Managed-secret backends | **EXTERNAL_IMPLEMENTATION** |
+| Stripe PaymentProvider + SettlementProvider | **EXTERNAL_IMPLEMENTATION** |
+| Auth0 AuthenticationProvider + MFA step-up | **EXTERNAL_IMPLEMENTATION** |
+| Live money / auth E2E | **LIVE_EVIDENCE_PENDING** |
 | AU legal perimeter confirmation | **NON_BLOCKING_RISK** |
+| MVP acceptance | **NOT ACCEPTED** |
 
 ## Non-blocking risks (not blockers)
 
@@ -165,3 +187,4 @@ OD-023 IdP → OD-024 MFA → production auth
 - Operating model + Stripe vendors selected; AU licensing/perimeter counsel before live production
 - Stripe idempotency key retention (~24h) — reconcile before late re-POST
 - Platform bears Stripe processing fees under `fees_collector=application` (commercial COGS)
+- OD-016 cloud provider still open; ADR-040 requires AWS for MVP money-path secrets

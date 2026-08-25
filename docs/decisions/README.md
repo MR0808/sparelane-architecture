@@ -70,3 +70,5 @@ Do not treat open decisions as Accepted architecture. Do not implement against a
 | [ADR-037](./ADR-037-collection-funds-flow-merchant-of-record.md) | Collection Funds-Flow and Merchant-of-Record Operating Model | Accepted |
 | [ADR-038](./ADR-038-mvp-payment-service-provider-selection.md) | MVP Payment Service Provider Selection | Accepted |
 | [ADR-039](./ADR-039-mvp-settlement-provider-selection.md) | MVP Settlement Provider Selection | Accepted |
+| [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md) | MVP Managed Secrets and Key Management Policy | Accepted |
+| [ADR-041](./ADR-041-mvp-production-identity-provider-selection.md) | MVP Production Identity Provider Selection | Accepted |

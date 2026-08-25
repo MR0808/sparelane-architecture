@@ -1,6 +1,6 @@
 # Architecture Decision Register
 
-Quick-reference governance index for ADR-001 through ADR-039.
+Quick-reference governance index for ADR-001 through ADR-041.
 
 **Accepted** ADRs are binding implementation constraints unless superseded by a later ADR.
 
@@ -16,7 +16,7 @@ Quick-reference governance index for ADR-001 through ADR-039.
 | [ADR-008](./ADR-008-idempotent-merchant-api.md) | Idempotent merchant mutations | Accepted | Integrations / API | OpenAPI; retention TBD | Idempotency-Key + fingerprint storage |
 | [ADR-009](./ADR-009-signed-at-least-once-webhooks.md) | Signed at-least-once webhooks | Accepted | Integrations | ADR-017, ADR-023 | Stable event IDs; merchant-side idempotency |
 | [ADR-010](./ADR-010-pci-boundary.md) | Raw CHD remains in PSP trust boundary | Accepted | Security / PCI | ADR-001; SAQ TBD | Explicit scope boundary; no CVV persistence |
-| [ADR-011](./ADR-011-centralised-secrets-management.md) | Centralised secrets management | Accepted | Security / Ops | Vendor TBD | No secrets in source control |
+| [ADR-011](./ADR-011-centralised-secrets-management.md) | Centralised secrets management | Accepted | Security / Ops | Vendor → ADR-040 | No secrets in source control |
 | [ADR-012](./ADR-012-privileged-admin-audit.md) | Privileged admin actions auditable | Accepted | Security | Audit store | Durable audit; no secret/CHD in logs |
 | [ADR-013](./ADR-013-ledger-operational-separation.md) | Ledger independent of operational workflow data | Accepted | Data / Money | ADR-004, ADR-016 | Separate logical SoTs |
 | [ADR-014](./ADR-014-merchant-tenant-isolation.md) | Merchant tenant isolation mandatory | Accepted | Security / Data | RLS optional TBD | Explicit merchant context everywhere |
@@ -45,6 +45,8 @@ Quick-reference governance index for ADR-001 through ADR-039.
 | [ADR-037](./ADR-037-collection-funds-flow-merchant-of-record.md) | Option C connected/sub-merchant; merchant MoR; Sparelane NO_CUSTODY; Phase F reinterpretation | Accepted | Money / Payments / Regulatory | Resolves OD-036; constrains OD-008/009; clarifies ADR-026/029 economics | Unblocks OD-008 resume; no vendor selected |
 | [ADR-038](./ADR-038-mvp-payment-service-provider-selection.md) | MVP PSP = Stripe Connect direct charges; platform pm_ + clone; acct_ as providerAccountRef | Accepted | Payments / Integrations | Resolves OD-008; ADR-037; OD-009 further narrowed | Unblocks Stripe adapter design; not live evidence |
 | [ADR-039](./ADR-039-mvp-settlement-provider-selection.md) | MVP SettlementProvider = Stripe Connect manual payouts; gross via fees_collector=application; SETTLED on paid | Accepted | Money / Settlement | Resolves OD-009/010; ADR-027/028/029/037/038 | Unblocks settlement adapter design; not live evidence |
+| [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md) | MVP secrets = AWS Secrets Manager (low-card) + KMS-envelope Postgres (high-card webhooks); fail closed | Accepted | Security / Ops | Resolves OD-025; implements ADR-011; narrows OD-016 | Unblocks managed-secret backends; not implemented |
+| [ADR-041](./ADR-041-mvp-production-identity-provider-selection.md) | MVP human IdP = Auth0; Sparelane remains authZ SoT; MFA via amr+auth_time step-up for ADR-033 | Accepted | Security / Identity | Resolves OD-023; narrows OD-024; ADR-032/033/040 | Unblocks Auth0 AuthenticationProvider; not live evidence |
 
 ## Complementary pairs (not duplicates)
 
@@ -62,6 +64,8 @@ Quick-reference governance index for ADR-001 through ADR-039.
 | ADR-030 / ADR-034 | Automatic webhook delivery/retry vs operator manual replay policy |
 | ADR-034 / ADR-035 | Admin/ops hardening (H2) vs pilot readiness local evidence scope (I) |
 | ADR-004 / ADR-036 | Append-only ledger principle vs MVP compensating correction workflow policy |
+| ADR-011 / ADR-040 | Centralised secrets principle vs concrete MVP AWS split backends |
+| ADR-033 / ADR-041 | Privileged MFA policy (≤15m server-derived) vs Auth0 amr/auth_time step-up binding |
 | ADR-038 / ADR-039 | Stripe Connect collection (direct charges) vs Stripe Connect settlement (manual payouts) |
 | ADR-029 / ADR-039 | Payout journal / SETTLED mechanics vs concrete Stripe `paid` finality binding |
 | ADR-029 / ADR-037 | Payout journal mechanics vs provider-mediated settlement (no Sparelane custody) |
@@ -73,4 +77,4 @@ Quick-reference governance index for ADR-001 through ADR-039.
 
 ## None superseded or rejected
 
-No ADRs in 001–039 are Superseded or Rejected at this gate. ADR-038 resolves OD-008; ADR-039 resolves OD-009 and closes OD-010 capability matrix for selected vendors. **Stripe PSP + settlement adapters and LIVE_EVIDENCE remain pending.** Independent EXTERNAL_VENDOR_DECISION blockers: OD-023, OD-025. Track 2B OD-009 PASS documented.
+No ADRs in 001–041 are Superseded or Rejected at this gate. ADR-041 resolves OD-023. **Independent EXTERNAL_VENDOR_DECISION blockers: 0.** Remaining money/auth path: EXTERNAL_IMPLEMENTATION (managed secrets, Stripe adapters, Auth0 AuthenticationProvider) + LIVE_EVIDENCE. **MVP acceptance still NOT ACCEPTED.** Track 3 OD-023 PASS documented.

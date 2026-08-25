@@ -224,7 +224,7 @@ Gate: [phase-i-pilot-readiness-decision-gate](../implementation/phase-i-pilot-re
 
 | ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| [OD-016](./open/OD-016-cloud-provider.md) | Cloud provider | development | open |
+| [OD-016](./open/OD-016-cloud-provider.md) | Cloud provider | development | open (**narrowed** by ADR-040 — MVP money-path secrets assume AWS) |
 | [OD-017](./open/OD-017-queue-broker.md) | Queue / event broker | production | open |
 | [OD-018](./open/OD-018-outbox-publish.md) | Outbox publish mechanism (polling vs CDC) | development | open |
 | [OD-019](./open/OD-019-db-topology.md) | Physical DB topology (shared vs separate ledger DB) | production | open |
@@ -236,9 +236,9 @@ Gate: [phase-i-pilot-readiness-decision-gate](../implementation/phase-i-pilot-re
 
 | ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| [OD-023](./open/OD-023-identity-provider.md) | Identity provider | sandbox | open |
-| [OD-024](./open/OD-024-mfa-passkey.md) | MFA / passkey implementation | pilot | open (policy narrowed by ADR-033) |
-| [OD-025](./open/OD-025-secrets-kms.md) | Secrets product / KMS/HSM | pilot | open |
+| [OD-023](./open/OD-023-identity-provider.md) | Identity provider | sandbox | **resolved** by [ADR-041](./ADR-041-mvp-production-identity-provider-selection.md) (Auth0) |
+| [OD-024](./open/OD-024-mfa-passkey.md) | MFA / passkey implementation | pilot | open (**narrowed** by ADR-033 policy + ADR-041 Auth0 MFA path; implementation pending) |
+| [OD-025](./open/OD-025-secrets-kms.md) | Secrets product / KMS/HSM | pilot | **resolved** by [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md) |
 | [OD-026](./open/OD-026-dual-control-break-glass.md) | Dual-control / break-glass workflows | non-blocking | open (grants + ledger corrections resolved; break-glass deferred) |
 | [OD-027](./open/OD-027-rls-vs-app-tenancy.md) | PostgreSQL RLS vs app-only tenancy | non-blocking | open |
 | [OD-028](./open/OD-028-oauth-mtls-merchant-api.md) | OAuth/mTLS for enterprise merchant API | non-blocking | open |
@@ -258,15 +258,16 @@ Gate: [phase-i-pilot-readiness-decision-gate](../implementation/phase-i-pilot-re
 
 ## Highest-priority before production cutover
 
-1. **OD-025** secrets/KMS (before live Stripe keys for PSP + settlement adapters) + Stripe EXTERNAL_IMPLEMENTATION → LIVE_EVIDENCE
-2. OD-023 Identity provider + OD-024 admin MFA (**policy** bound by ADR-033; provider still open)
-3. ~~OD-025~~ remains priority with adapters (listed above)
-4. OD-017 Queue/broker + OD-019 DB hosting topology
-5. OD-014 Legal retention + OD-012 wallet regulatory posture (if wallet enabled)
-6. ~~OD-002 Due-date local clock + OD-006 timezone-change policy~~ → **resolved by ADR-025**
-7. ~~OD-031 Webhook retry bounds~~ → **resolved by ADR-030**
-8. ~~OD-026 dual-control for platform admin grants~~ → **resolved by ADR-033**; ~~ledger corrections~~ → **resolved by ADR-036**; break-glass deferred
-9. ~~OD-036 collection funds-flow / MoR~~ → **resolved by ADR-037**
-10. ~~OD-008 PSP selection~~ → **resolved by ADR-038**
-11. ~~OD-009 settlement partner~~ → **resolved by ADR-039**
-12. ~~OD-010 provider capability matrix~~ → **resolved by ADR-038 + ADR-039**
+1. **EXTERNAL_IMPLEMENTATION:** ADR-040 managed-secret backends → Stripe Payment/Settlement adapters → Auth0 AuthenticationProvider → LIVE_EVIDENCE
+2. ~~OD-023~~ → **resolved by ADR-041**; OD-024 MFA implementation narrowed (Auth0) — EXTERNAL_IMPLEMENTATION
+3. OD-017 Queue/broker + OD-019 DB hosting topology
+4. OD-014 Legal retention + OD-012 wallet regulatory posture (if wallet enabled)
+5. ~~OD-002 Due-date local clock + OD-006 timezone-change policy~~ → **resolved by ADR-025**
+6. ~~OD-031 Webhook retry bounds~~ → **resolved by ADR-030**
+7. ~~OD-026 dual-control for platform admin grants~~ → **resolved by ADR-033**; ~~ledger corrections~~ → **resolved by ADR-036**; break-glass deferred
+8. ~~OD-036 collection funds-flow / MoR~~ → **resolved by ADR-037**
+9. ~~OD-008 PSP selection~~ → **resolved by ADR-038**
+10. ~~OD-009 settlement partner~~ → **resolved by ADR-039**
+11. ~~OD-010 provider capability matrix~~ → **resolved by ADR-038 + ADR-039**
+12. ~~OD-025 secrets/KMS~~ → **resolved by ADR-040**
+13. ~~OD-023 identity provider~~ → **resolved by ADR-041**
