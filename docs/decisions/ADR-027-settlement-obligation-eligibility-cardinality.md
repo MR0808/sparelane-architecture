@@ -102,7 +102,9 @@ MVP Settlement amount is **gross** merchant payable from ADR-026.
 | Chargebacks | **NO / deferred** |
 | Adjustments | **NO / deferred** |
 
-**Production blocker (documented):** real-world net merchant payout cannot be production-ready until a later CoA/policy ADR defines fee/reserve netting. Local/fake F0 may still prove obligation + eligibility mechanics on gross amounts.
+**Production blocker (documented historically):** real-world **net** merchant payout cannot be production-ready until a later CoA/policy ADR defines fee/reserve netting.
+
+**MVP executable path ([ADR-039](./ADR-039-mvp-settlement-provider-selection.md)):** keep Settlement amount **gross**; configure Stripe connected accounts with **`fees_collector=application`** so Stripe processing fees are billed to the platform and do not reduce connected-account available balance below the gross capture. Local/fake F0 continues to prove obligation + eligibility on gross amounts.
 
 Fee/reserve recognition, if any, must use **separate** journals/processes later — not mutate Settlement `amount_minor` after create.
 
@@ -239,7 +241,7 @@ CANCELLED terminal
 | --- | --- |
 | SettlementBatch | **Optional execution grouping**; **not** created in F0; no cadence policy required for F0 ([OD-011](./open/OD-011-settlement-batching.md) remains open) |
 | SettlementInstruction | **External transfer execution**; **not** created/sent in F0 |
-| Settlement provider | Provider-neutral; [OD-009](./open/OD-009-settlement-partner.md) remains open |
+| Settlement provider | **Resolved** — [ADR-039](./ADR-039-mvp-settlement-provider-selection.md) Stripe Connect manual payouts |
 | Settlement CoA journal | **Not** posted in F0 |
 
 ### 16. Eligibility outcome table
@@ -292,14 +294,14 @@ F0 proves **one Settlement domain obligation**. It does **not** prove **one bank
 
 ### 20. Deferred (explicitly open)
 
-- OD-009 settlement partner
+- ~~OD-009 settlement partner~~ → **resolved by [ADR-039](./ADR-039-mvp-settlement-provider-selection.md)**
 - OD-011 batch schedule/cadence (further narrowed by ADR-028: no MVP batching)
-- Settlement CoA (Dr payable / Cr cash or clearing) at execution time
-- Fee/reserve/net payout policy
+- Settlement CoA (Dr payable / Cr cash or clearing) at execution time — payout journal per ADR-029; Stripe `paid` finality per ADR-039
+- Fee/reserve/**net** payout policy (MVP executes **gross** via `fees_collector=application`)
 - Product CANCELLED triggers
 - Refund/chargeback interaction with open Settlements
 
-Payout destination MVP persistence/selection/verification: **resolved in ADR-028** (vendor onboarding mechanics may remain open with OD-009).
+Payout destination MVP persistence/selection/verification: **resolved in ADR-028**; Stripe `ba_…` binding: **ADR-039**.
 
 ## Consequences
 
@@ -338,11 +340,11 @@ Payout destination MVP persistence/selection/verification: **resolved in ADR-028
 
 ## Dependencies / Open Questions
 
-- [OD-009](./open/OD-009-settlement-partner.md) partner — open
+- [OD-009](./open/OD-009-settlement-partner.md) partner — **resolved** ([ADR-039](./ADR-039-mvp-settlement-provider-selection.md))
 - [OD-011](./open/OD-011-settlement-batching.md) cadence — open (batching **role** decided: optional later grouping)
 - [OD-015](./open/OD-015-kyb-evidence-retention.md) evidence retention — open
-- Fee/reserve CoA — open (production net payout blocker)
-- Settlement execution accounting — open (not F0)
+- Fee/reserve **net** CoA — open (MVP executes gross via ADR-039 `fees_collector=application`)
+- Settlement execution accounting — ADR-029 + ADR-039 Stripe `paid` binding
 
 ## Related Architecture
 

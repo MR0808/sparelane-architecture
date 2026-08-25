@@ -73,6 +73,20 @@ payment-collection:{paymentWorkflowPublicId}
 
 where `{paymentWorkflowPublicId}` is the Payment Workflow opaque public id (`pay_…`).
 
+**Binding MVP payout format ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)):**
+
+```text
+settlement-payout:{settlementPublicId}
+```
+
+**Binding MVP correction format ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)):**
+
+```text
+ledger-correction:{parPublicId}
+```
+
+where `{parPublicId}` is the PrivilegedActionRequest opaque public id (`par_…`). Duplicate execute of the same `par_…` must resolve to the same journal (`already_applied`).
+
 Do not maintain a redundant parallel `ledger_posting_keys` table unless an implementation ADR justifies it; unique `business_reference` is sufficient.
 ---
 

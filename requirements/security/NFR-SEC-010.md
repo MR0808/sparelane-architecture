@@ -50,7 +50,7 @@ ADR-033 resolves OD-026 for grant actions only (Option B). Prevents unilateral p
 
 Stored under `requirements/security/` for navigation; type is non-functional.
 
-Dual-control matrices for non-grant mutations remain deferred (OD-026 residual).
+Dual-control matrices for non-grant mutations remain deferred (OD-026 residual) except MVP ledger corrections ([ADR-036](../../docs/decisions/ADR-036-financial-compensating-correction-policy.md) / [NFR-SEC-012](./NFR-SEC-012.md)).
 
 ## Implementation notes
 

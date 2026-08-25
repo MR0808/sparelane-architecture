@@ -152,6 +152,8 @@ const phaseHStatusFile = path.join(root, 'docs', 'implementation', 'phase-h-stat
 const phaseH1ScopeFile = path.join(root, 'docs', 'implementation', 'phase-h1-decision-gate-scope.md')
 const phaseH1GateFile = path.join(root, 'docs', 'implementation', 'phase-h1-admin-decision-gate.md')
 const phaseH2GateFile = path.join(root, 'docs', 'implementation', 'phase-h2-admin-decision-gate.md')
+const phaseIGateFile = path.join(root, 'docs', 'implementation', 'phase-i-pilot-readiness-decision-gate.md')
+const phaseIStatusFile = path.join(root, 'docs', 'implementation', 'phase-i-status.md')
 const phaseAPresent = fs.existsSync(phaseAFile)
 const phaseBPresent = fs.existsSync(phaseBFile)
 const phaseCPresent = fs.existsSync(phaseCFile)
@@ -170,6 +172,24 @@ const phaseHCanonicalPass = /Canonical Phase H status:[\s\S]*?\*\*PASS WITH DOCU
 const phaseH1ScopePresent = fs.existsSync(phaseH1ScopeFile)
 const phaseH1GatePresent = fs.existsSync(phaseH1GateFile)
 const phaseH2GatePresent = fs.existsSync(phaseH2GateFile)
+const phaseIGatePresent = fs.existsSync(phaseIGateFile)
+const phaseIStatusPresent = fs.existsSync(phaseIStatusFile)
+const phaseIStatusText = phaseIStatusPresent ? fs.readFileSync(phaseIStatusFile, 'utf8') : ''
+const phaseIGatePass = phaseIGatePresent && /Architecture gate:[\s\S]*?\*\*PASS\*\*/.test(phaseIStatusText)
+const phaseI0PlatformPass = /Platform I0 status:[\s\S]*?\*\*PASS\*\*/.test(phaseIStatusText)
+const phaseI1PlatformPass = /Platform I1 status:[\s\S]*?\*\*PASS\*\*/.test(phaseIStatusText)
+const phaseI2PlatformPass = /Platform I2 status:[\s\S]*?\*\*PASS\*\*/.test(phaseIStatusText)
+const phaseI3PlatformPass = /Platform I3 status:[\s\S]*?\*\*PASS\*\*/.test(phaseIStatusText)
+const phaseICanonicalPass =
+  /Canonical Phase I status:[\s\S]*?\*\*PASS WITH DOCUMENTED NON-BLOCKING RISKS\*\*/.test(
+    phaseIStatusText,
+  )
+const phaseIPlatformStarted =
+  /Platform:[\s\S]*?\*\*STARTED\*\*/.test(phaseIStatusText) ||
+  phaseI0PlatformPass ||
+  phaseI1PlatformPass ||
+  phaseI2PlatformPass ||
+  phaseI3PlatformPass
 const phaseA = phaseAPresent
   ? {
       gate: 'pass_with_documented_non_blocking_risks',
@@ -335,7 +355,63 @@ const health = {
       : phaseH0PlatformPass || phaseH1PlatformPass || phaseH2PlatformPass
         ? 'in_progress'
         : 'not_started',
-    nextPhase: phaseHCanonicalPass ? 'I' : phaseGPresent ? 'H' : phaseFPresent ? 'G' : phaseDPresent ? 'E' : 'D',
+    phaseIGate: phaseIGatePass ? 'pass' : phaseIGatePresent ? 'documented_not_pass' : 'not_documented',
+    phaseIDocumented: phaseIGatePresent || phaseIStatusPresent,
+    phaseI0Exit: phaseI0PlatformPass ? 'pass' : phaseIGatePass ? 'gate_only' : 'not_documented',
+    phaseI1Exit: phaseI1PlatformPass ? 'pass' : phaseIGatePass ? 'gate_only' : 'not_documented',
+    phaseI2Exit: phaseI2PlatformPass ? 'pass' : phaseIGatePass ? 'gate_only' : 'not_documented',
+    phaseI3Exit: phaseI3PlatformPass ? 'pass' : phaseIGatePass ? 'gate_only' : 'not_documented',
+    phaseI: phaseICanonicalPass
+      ? 'pass_with_documented_non_blocking_risks'
+      : phaseIPlatformStarted
+        ? 'in_progress'
+        : phaseIGatePass
+          ? 'not_started_gate_pass'
+          : 'not_started',
+    nextPhase: phaseICanonicalPass
+      ? 'MVP_ACCEPTANCE'
+      : phaseHCanonicalPass
+        ? 'I'
+        : phaseGPresent
+          ? 'H'
+          : phaseFPresent
+            ? 'G'
+            : phaseDPresent
+              ? 'E'
+              : 'D',
+    nextPhaseStatus: phaseICanonicalPass
+      ? 'local_evidence_complete_external_blockers_remain'
+      : phaseHCanonicalPass
+        ? phaseIPlatformStarted
+          ? 'in_progress'
+          : phaseIGatePass
+            ? 'architecture_gate_pass_platform_not_started'
+            : 'not_started'
+        : undefined,
+    mvpAcceptance: 'not_accepted_external_blockers',
+    mvpAcceptanceBlockerCount: 2,
+    mvpAcceptanceBlockerCategories: {
+      EXTERNAL_VENDOR_DECISION: 2,
+    },
+    localMvpBlockers: 0,
+    track1a: 'pass',
+    track1b: 'pass',
+    track1c: 'pass',
+    track1d: 'pass',
+    track1e: 'pass',
+    track1f: 'pass',
+    finInv07: 'verified_local_fake',
+    mvpAcceptanceGapPlan: 'docs/implementation/mvp-acceptance-gap-plan.md',
+    nextActivity: 'OD_025_MANAGED_SECRETS_KMS_DECISION_GATE',
+    track2a: 'pass',
+    track2: 'pass_od008_stripe_connect',
+    track2b: 'pass_od009_stripe_payouts',
+    od008: 'resolved_adr038_stripe_connect',
+    od036: 'resolved_adr037',
+    od009: 'resolved_adr039_stripe_manual_payouts',
+    od010: 'resolved_adr038_adr039',
+    stripePaymentAdapter: 'external_implementation_pending',
+    stripeSettlementAdapter: 'external_implementation_pending',
     label: 'Generated from repository state — not live production health',
   },
 }

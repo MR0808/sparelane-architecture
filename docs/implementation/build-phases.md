@@ -132,7 +132,7 @@ Product config (backup cardinality) is **Partial** — [OD-003](../decisions/ope
 | Local F0 | No | Fake KYB / `APPROVED_FOR_SETTLEMENT` |
 | Local F1 | No | Fake settlement adapter + Fake destinations ([ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
 | Local F2 | No | Fake finality + gross payout journal ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)) |
-| Sandbox | **Yes** for live payout sandbox | Settlement/banking partner ([OD-009](../decisions/open/OD-009-settlement-partner.md)) |
+| Sandbox | **Yes** for live payout sandbox | Stripe SettlementProvider adapter (OD-009 **resolved** ADR-039; EXTERNAL_IMPLEMENTATION) |
 | Pilot / Production money | **Yes** | Partner + fee/net (if commercial net required) + live reconcile adapters; batch cadence ([OD-011](../decisions/open/OD-011-settlement-batching.md)) only if aggregation enabled |
 
 **Platform status:** [phase-f-status](./phase-f-status.md) — **PASS WITH DOCUMENTED NON-BLOCKING RISKS** (local Fake settlement only).
@@ -210,13 +210,28 @@ Canonical Phase G scope is **G0 + G1 + G2** for local/platform evidence. G3+ enh
 
 **Depends on:** A–H for scoped pilot features.
 
-**Open decisions that block production money movement**
+**Binding local evidence policy:** [ADR-035](../decisions/ADR-035-pilot-readiness-local-evidence-policy.md) — Fake-provider local pilot readiness only. Gate: [phase-i-pilot-readiness-decision-gate](./phase-i-pilot-readiness-decision-gate.md). Status: [phase-i-status](./phase-i-status.md) — **PASS WITH DOCUMENTED NON-BLOCKING RISKS** (I0–I3 local Fake evidence).
 
-1. PSP + settlement partner
-2. Identity provider + admin MFA
-3. Secrets manager / KMS
-4. Queue/broker + DB hosting topology
+**Engineering sub-phases (local):**
+
+| Slice | Scope |
+| --- | --- |
+| **I0** | Pilot readiness inventory + runbook/alert catalogue alignment + checklist scaffolding — **no new product domain** |
+| **I1** | Fake-provider A→H end-to-end pilot journey harness + FIN-INV consolidation |
+| **I2** | Local crash/restart/duplicate recovery drills (no invented TPS SLOs) |
+| **I3** | Automated security regressions + security readiness checklist (external pen-test deferred) |
+| **Exit** | Phase I local evidence gate — does **not** claim MVP complete or live-partner readiness |
+
+**Open decisions that block production money movement / live sandbox**
+
+1. ~~PSP + settlement partner~~ → ADR-038 / ADR-039; remaining: Stripe PaymentProvider + SettlementProvider adapters + LIVE_EVIDENCE + OD-025 secrets
+2. Identity provider + admin MFA ([OD-023](../decisions/open/OD-023-identity-provider.md), [OD-024](../decisions/open/OD-024-mfa-passkey.md))
+3. Secrets manager / KMS ([OD-025](../decisions/open/OD-025-secrets-kms.md))
+4. Queue/broker + DB hosting topology ([OD-017](../decisions/open/OD-017-queue-broker.md), [OD-019](../decisions/open/OD-019-db-topology.md))
 5. Legal retention (+ wallet licensing **if** wallet enabled)
-6. Due-date local clock default + timezone-change policy
+6. Due-date local clock default + timezone-change policy — **resolved by ADR-025** for product behaviour; production hosting still TBD
+7. Email vendor ([OD-035](../decisions/open/OD-035-email-provider.md)); SIEM ([OD-021](../decisions/open/OD-021-observability-siem.md)); production alert thresholds TBD
 
 **Wallet go-live** additionally blocked by regulatory custody/safeguarding decision — not required for non-wallet MVP.
+
+**Local Phase I (ADR-035) does not require** resolving the production-money ODs above to start I0–I3 Fake evidence.

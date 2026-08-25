@@ -119,31 +119,52 @@ Deny-by-default. No `admin.notification.replay`. No generic replay capability. H
 
 See [SEQ-OPS-003](../design/operations/dlq-replay.md) and [SEQ-OPS-005](../design/operations/operator-webhook-replay.md).
 
+## MVP — compensating ledger correction (ADR-036)
+
+Binding: [ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md). **Not** part of H0–H2 catalogues; closed privileged slice for FIN-INV-07 / FUN-SET-007/008.
+
+### Capability / action
+
+| Capability / action | Risk | Dual control | Recent MFA |
+| --- | --- | --- | --- |
+| `admin.ledger.correct` | CRITICAL | Required | Request / approve / execute ≤15m |
+
+### Binding rules (summary)
+
+- Target: source journal `jt_…` only; eligible `collection` journals under ADR-036 eligibility
+- Effect: append balanced `correction` journal; **no** PaymentWorkflow / Settlement status rewrite; **no** PSP refund / payout reverse
+- Dual control: requester ≠ approver; fingerprint immutability; 24h expiry ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md) narrowed for this action)
+- Reason 16–500 chars; durable audit (ADR-012)
+- Prohibited: force-balance, arbitrary debit/credit UI, impersonation, break-glass, Merchant API corrections
+
+See [SEQ-MONEY-007](../design/money/ledger-compensating-correction.md).
+
 ## Production controls (canonical, some deferred)
 
-- MFA required for administrator authentication ([NFR-SEC-004](../../requirements/security/NFR-SEC-004.md); [OD-024](../decisions/open/OD-024-mfa-passkey.md) — policy portion for privileged steps bound by ADR-033/ADR-034; provider still open)
-- recent MFA (≤15 min) for privileged grant request/approve/execute ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md); [NFR-SEC-009](../../requirements/security/NFR-SEC-009.md)) and for H2 webhook replay ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md); [NFR-SEC-011](../../requirements/security/NFR-SEC-011.md))
+- MFA required for administrator authentication ([NFR-SEC-004](../../requirements/security/NFR-SEC-004.md); [OD-024](../decisions/open/OD-024-mfa-passkey.md) — policy portion for privileged steps bound by ADR-033/ADR-034/ADR-036; provider still open)
+- recent MFA (≤15 min) for privileged grant request/approve/execute ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md); [NFR-SEC-009](../../requirements/security/NFR-SEC-009.md)), for H2 webhook replay ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md); [NFR-SEC-011](../../requirements/security/NFR-SEC-011.md)), and for ledger correction ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md); [NFR-SEC-012](../../requirements/security/NFR-SEC-012.md))
 - short-lived admin sessions (exact TTL TBD)
 - no shared admin accounts
-- durable audit trail for **privileged mutations** ([ADR-012](../decisions/ADR-012-privileged-admin-audit.md)) — H1 grant catalogue; H2 webhook replay catalogue
+- durable audit trail for **privileged mutations** ([ADR-012](../decisions/ADR-012-privileged-admin-audit.md)) — H1 grant catalogue; H2 webhook replay catalogue; ADR-036 ledger correction catalogue
 - elevated mutations visible in audit with actor, action, target, result, correlation IDs
 - support access scoped to legitimate need (tenant/case scoping TBD — future roles)
-- financial mutations tightly controlled — **none in H0, H1, or H2 Option A** (H2 webhook replay is transport-only)
+- financial mutations tightly controlled — **none in H0, H1, or H2 Option A** (H2 webhook replay is transport-only); MVP books correction only via ADR-036
 - production secret access restricted (via secrets management; no casual UI exposure)
-- **no direct ledger mutation through admin UI** — ledger append-only via constrained financial write paths ([ADR-013](../decisions/ADR-013-ledger-operational-separation.md))
+- **no direct ledger mutation through admin UI** — ledger append-only via constrained financial write paths ([ADR-013](../decisions/ADR-013-ledger-operational-separation.md)); ADR-036 is append-only compensating journals only
 
 ## Break-glass access
 
 Emergency elevated access may be required for incident response.
 
-**NOT SUPPORTED** in H0, H1, or H2 ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md), [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)). Break-glass remains deferred ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md)). Dual-control for **platform admin grants** is resolved by ADR-033; webhook replay dual-control is **not required** by ADR-034.
+**NOT SUPPORTED** in H0, H1, H2, or ADR-036 ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md), [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md), [ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)). Break-glass remains deferred ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md)). Dual-control for **platform admin grants** is resolved by ADR-033; webhook replay dual-control is **not required** by ADR-034; **ledger corrections** require dual control per ADR-036.
 
-## Future privileged actions (H3+ examples — not H2)
+## Future privileged actions (H3+ examples — not ADR-036)
 
 - merchant approval / suspension
 - credential revocation assistance
 - notification replay (separate gate; preserve ADR-031)
 - payment investigation tooling with mutation paths
 - production configuration changes affecting financial flows
+- PSP refund / payout reverse workflows (explicit future ADRs)
 
-General privileged-mutation pattern: [SEQ-SEC-004](../design/security/admin-privileged-action.md). H1 grant flow: [SEQ-SEC-006](../design/security/admin-grant-dual-control.md). H2 DLQ/webhook: [SEQ-OPS-003](../design/operations/dlq-replay.md), [SEQ-OPS-005](../design/operations/operator-webhook-replay.md).
+General privileged-mutation pattern: [SEQ-SEC-004](../design/security/admin-privileged-action.md). H1 grant flow: [SEQ-SEC-006](../design/security/admin-grant-dual-control.md). H2 DLQ/webhook: [SEQ-OPS-003](../design/operations/dlq-replay.md), [SEQ-OPS-005](../design/operations/operator-webhook-replay.md). Ledger correction: [SEQ-MONEY-007](../design/money/ledger-compensating-correction.md).

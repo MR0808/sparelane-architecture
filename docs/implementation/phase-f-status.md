@@ -3,7 +3,7 @@
 **Status:** Current  
 **Owner:** Engineering / Architecture  
 **Last Reviewed:** 2026-08-22  
-**Related ADRs:** ADR-027, ADR-028, ADR-029 (Accepted); ADR-026 (collection payable source); OD-009, OD-011 remain open  
+**Related ADRs:** ADR-027, ADR-028, ADR-029 (Accepted); ADR-026 (collection payable source); ADR-039 (SettlementProvider = Stripe Connect manual payouts); OD-011 remains open for future batch cadence  
 **Related Views:** Settlement / money designs (STATE-MONEY-001+)
 
 ## Status
@@ -18,8 +18,8 @@ Phase F implements settlement lifecycle: obligation from confirmed collection, e
 
 Phase F does **NOT** implement:
 
-- real settlement partner / banking adapter (OD-009)
-- commercial fee/net payout legs
+- live Stripe SettlementProvider adapter (vendor selected by ADR-039 / OD-009 resolved; EXTERNAL_IMPLEMENTATION pending)
+- commercial fee/net payout legs (MVP uses gross + `fees_collector=application`)
 - `SettlementBatch` production aggregation (OD-011)
 - automatic reconciliation polling cadence
 - business retry / superseding instructions after `FAILED`
@@ -72,9 +72,9 @@ Platform: `npm run test:phase-f`, `npm run test:scenario:phase-f`, `docs/develop
 
 | Risk | Classification |
 | --- | --- |
-| A. OD-009 real settlement partner open | sandbox / production |
+| A. OD-009 vendor closed (ADR-039); live SettlementProvider adapter pending | EXTERNAL_IMPLEMENTATION |
 | B. Fake idempotency ≠ real provider guarantee | production |
-| C. Fee/net payout policy unresolved | production commercial |
+| C. Fee/**net** payout CoA deferred (MVP gross via fees_collector=application) | production commercial |
 | D. SettlementBatch / cadence deferred (OD-011) | production aggregation |
 | E. Automatic reconciliation polling deferred | operations |
 | F. Business retry / superseding instructions deferred | product |

@@ -22,3 +22,7 @@ Actionable operational alerts. Avoid alerting on every individual soft decline.
 - reduce noise; prefer rate/threshold/age over single events where possible
 
 Exact thresholds TBD.
+
+## Phase I (ADR-035)
+
+Alert **categories above are binding** for local pilot readiness catalogue mapping. Platform Phase I0 must map each category to existing metric signals. **Do not invent production numeric thresholds** in I0–I3. Hosted SIEM routing remains [OD-021](../decisions/open/OD-021-observability-siem.md). See [ADR-035](../decisions/ADR-035-pilot-readiness-local-evidence-policy.md).

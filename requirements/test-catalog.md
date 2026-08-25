@@ -30,6 +30,10 @@ Phase B adds **local product isolation evidence** for SEC-TEN-001 aligned paths 
 | `ADM-REPLAY-###` | Closed-catalogue operator replay controls |
 | `WH-REPLAY-###` | Merchant webhook operator replay transport |
 | `OPS-REC-###` | Ops recovery (ledger, DLQ) |
+| `OPS-PILOT-###` | Phase I pilot readiness boundary (local Fake) |
+| `OPS-ALERT-###` | Phase I alert catalogue mapping |
+| `OPS-RUN-###` | Phase I runbook presence / safe actions |
+| `E2E-PILOT-###` | Phase I Fake-provider pilot E2E |
 | `CON-API-###` | Contract / OpenAPI conformance |
 | `CON-WEBHOOK-###` | Webhook contract scenarios |
 | `E2E-WEB-###` | End-to-end merchant webhook |

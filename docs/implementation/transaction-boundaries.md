@@ -98,6 +98,23 @@ Append payout journal `settlement-payout:{settlementPublicId}` (Dr payable / Cr 
 
 Settlement SUBMITTED|PROCESSING → SETTLED + `settled_at` + Outbox `SettlementSettled`.
 
+## Compensating ledger correction (ADR-036)
+
+**No distributed TX with PSP/settlement providers** (none are called). Prefer a single Ledger DB transaction that also records PrivilegedActionRequest execution + audit when those stores share the same DB; otherwise:
+
+### Ledger (+ privileged request) TX
+
+1. Validate PrivilegedActionRequest `approved` + fingerprint + MFA context
+2. `SELECT … FOR UPDATE` source journal; recompute remaining capacity
+3. Append compensating journal (`transaction_type = correction`, `business_reference = ledger-correction:{parPublicId}`, `corrects_journal_transaction_id`)
+4. Mark PrivilegedActionRequest `executed`; append durable audit
+
+Failed validation → no journal write; original history unchanged. Redelivery of same `par_…` → `already_applied`.
+
+### Operational settlement gates (separate TXs)
+
+Create/execute settlement instruction MUST recompute `remaining = collectionAmount − Σ linked corrections` and refuse when remaining ≤ 0 or amount would exceed remaining — **without** rewriting historical Settlement rows as a side effect of correction.
+
 ### Other outcomes (operational only)
 
 | Outcome | Persist |

@@ -65,8 +65,10 @@ See also [requirements README](../../requirements/README.md).
 | ADR-027 Settlement obligation / eligibility | [settlement-state-machine](../money/settlement-state-machine.md), SEQ-MONEY-002, STATE-MONEY-001 | settlement-worker; CreateSettlement; EvaluateSettlementEligibility | Platform F0 + Phase F exit; FIN-INV-04/08 local Fake |
 | ADR-028 Settlement execution / destination / instruction | [settlement-idempotency](../money/settlement-idempotency.md), SEQ-MONEY-002/005, STATE-MONEY-001 | settlement-worker; Create/ExecuteSettlementInstruction; FakeSettlementProvider | Platform F1 + Phase F exit; FIN-INV-05 local Fake (≠ real bank) |
 | ADR-029 Settlement finality / payout CoA | [reconciliation](../money/reconciliation.md), [ledger-model](../money/ledger-model.md), SEQ-MONEY-003/005, STATE-MONEY-001 | settlement-worker; ReconcileSettlement; append settlement-payout journal | Platform F2 + Phase F exit; FIN-INV-05/06/03/09/10 local Fake |
+| ADR-036 Compensating correction policy | [ledger-model](../money/ledger-model.md), SEQ-MONEY-007, financial-integrity, admin-access; FUN-SET-007/008, FUN-ADM-009, NFR-SEC-012 | Admin PrivilegedActionRequest `admin.ledger.correct` → append correction journal (Track 1C) | `test:mvp-track1c` (18 scenarios) + from-zero ×2 (Track 1E) — **VERIFIED_LOCAL_FAKE** |
+| Track 1A FUN-MER-005 / FIN-INV-08–10 | OpenAPI Payment GET; financial-invariant-tests | Merchant `GET /v1/payments/{paymentId}`; settlement/replay/restart Fake suites | `test:mvp-track1a` — VERIFIED_LOCAL_FAKE for FIN-INV-08–10 |
 
-Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-acceptance-criteria](mvp-acceptance-criteria.md), [build-phases](build-phases.md).
+Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-acceptance-criteria](mvp-acceptance-criteria.md) (**NOT ACCEPTED — EXTERNAL BLOCKERS** — [gap plan](mvp-acceptance-gap-plan.md)), [build-phases](build-phases.md).
 
 ## Gaps / notes
 
@@ -78,11 +80,13 @@ Cross-cutting: [financial-invariant-tests](financial-invariant-tests.md), [mvp-a
 | Phase C bill ingestion | Recorded — [phase-c-status](phase-c-status.md). No money movement; payment attempts/PSP/ledger/settlement not implemented. |
 | Phase D payment reliability | Recorded — [phase-d-status](phase-d-status.md). FakePSP collection; real PSP still open. |
 | Phase E ledger (E0–E1) | Collection journal ADR-026 locally evidenced; not bank-cash verified. |
-| Phase F settlement (F0–F2) | Recorded — [phase-f-status](phase-f-status.md). Local Fake settlement; OD-009 / fees / batch / poll / retry / bank-cash remain open. |
+| Phase F settlement (F0–F2) | Recorded — [phase-f-status](phase-f-status.md). Local Fake settlement complete; OD-009 **resolved** ([ADR-039](../decisions/ADR-039-mvp-settlement-provider-selection.md)); live Stripe SettlementProvider + LIVE_EVIDENCE pending. |
 | Phase G notifications & webhooks (G0–G2) | Recorded — [phase-g-status](phase-g-status.md). Local webhook sink + Fake email; OD-025/OD-035/OD-034 open; G3+ deferred. |
 | Phase H H0 admin gate | [phase-h0-admin-decision-gate](phase-h0-admin-decision-gate.md) **PASS** — ADR-032; platform H0 **PASS** |
-| Phase H H1 admin gate | [phase-h1-admin-decision-gate](phase-h1-admin-decision-gate.md) **PASS** — ADR-033 Option A (grant management only); platform H1 **PASS** (local); canonical Phase H still **not complete** |
-| Phase H H2 replay gate | [phase-h2-admin-decision-gate](phase-h2-admin-decision-gate.md) **PASS** — ADR-034 Option A (durable DLQ + webhook replay); platform H2 **not started**; canonical Phase H still **not complete** |
+| Phase H H1 admin gate | [phase-h1-admin-decision-gate](phase-h1-admin-decision-gate.md) **PASS** — ADR-033 Option A; platform H1 **PASS** (local) |
+| Phase H H2 replay gate | [phase-h2-admin-decision-gate](phase-h2-admin-decision-gate.md) **PASS** — ADR-034 Option A; platform H2 **PASS** (local); canonical Phase H **PASS WITH DOCUMENTED NON-BLOCKING RISKS** |
+| Phase I pilot readiness gate | [phase-i-pilot-readiness-decision-gate](phase-i-pilot-readiness-decision-gate.md) **PASS** — ADR-035 local Fake evidence; platform Phase I **PASS WITH DOCUMENTED NON-BLOCKING RISKS** ([phase-i-status](phase-i-status.md); `npm run test:phase-i`) |
+| ADR-035 | Pilot readiness local Fake evidence policy → ops runbooks/alerting + I0–I3 slices; live partners remain OD-008/009/023/024/025/035 |
 | Automated product tests | Specs in this repo; product suites in `sparelane-platform`. FIN-INV local Fake evidence ≠ `product_verified` real rails. |
 | Wallet licensing | Open decision — blocks wallet go-live only; ADR path TBD if custody model changes architecture |
 | Vendor adapters | Interfaces specified; concrete PSP/bank adapters await open decisions |

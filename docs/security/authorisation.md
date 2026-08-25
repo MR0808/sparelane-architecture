@@ -11,7 +11,7 @@ Authorisation enforces what an authenticated actor may do after authentication s
 - **Admin privilege separation** — platform admin is distinct from merchant admin and consumer authority ([ADR-032](../decisions/ADR-032-platform-admin-authority-read-only-control-plane.md))
 - **Machine credential scopes** — API credentials are limited by explicit scopes
 - **Financial operations require explicit permissions** — collection/settlement-sensitive actions are not ambiently available
-- **Sensitive admin mutations require enhanced controls** — MFA/session assurance and audit; dual-control for **platform admin grants** is bound by [ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md). Break-glass remains **NOT SUPPORTED** ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md))
+- **Sensitive admin mutations require enhanced controls** — MFA/session assurance and audit; dual-control for **platform admin grants** is bound by [ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md); dual-control for **ledger compensating corrections** is bound by [ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md) / [NFR-SEC-012](../../requirements/security/NFR-SEC-012.md). Break-glass remains **NOT SUPPORTED** ([OD-026](../decisions/open/OD-026-dual-control-break-glass.md))
 
 Do not define detailed RBAC database schema beyond H0/H1 `PlatformAdminGrant` + PrivilegedActionRequest in this phase.
 
@@ -24,7 +24,7 @@ Do not define detailed RBAC database schema beyond H0/H1 `PlatformAdminGrant` + 
 | Consumer | Deny (not merchant member) | Own resources | Deny | **Deny** |
 | Merchant user / admin | Per membership role | Deny | Deny (portal session ≠ API key) | **Deny** |
 | Merchant machine credential | Deny | Deny | Per scopes | **Deny** |
-| **Platform admin** (active grant) | **Deny** (not merchant member) | **Deny** (not consumer) | **Deny** | **Allow** — H0 closed read capabilities; H1 `admin.grant.manage` with dual-control + recent MFA ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)); H2 `admin.dlq.view` / `admin.webhook.replay` ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)) |
+| **Platform admin** (active grant) | **Deny** (not merchant member) | **Deny** (not consumer) | **Deny** | **Allow** — H0 closed read capabilities; H1 `admin.grant.manage` with dual-control + recent MFA ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)); H2 `admin.dlq.view` / `admin.webhook.replay` ([ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md)); MVP `admin.ledger.correct` with dual-control + recent MFA ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)) |
 
 Platform admin cross-tenant **reads** use explicit admin read APIs — not merchant context spoofing. Grant create/revoke uses PrivilegedActionRequest only — never single-actor mutation.
 
@@ -58,6 +58,10 @@ Closed catalogue — see [admin-access.md](./admin-access.md). Unknown capabilit
 | `admin.webhook.replay` | Closed webhook replay request only |
 
 Recent MFA ≤15m + reason required for replay. No dual control for webhook replay. No notification/financial/generic replay capabilities. See [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md).
+
+## MVP ledger correction capability
+
+`admin.ledger.correct` — request/approve/execute compensating journal append only ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)). Dual-control + recent MFA required ([NFR-SEC-012](../../requirements/security/NFR-SEC-012.md)). See [admin-access.md](./admin-access.md) §MVP compensating ledger correction. OD-026 narrowed for this action; break-glass still NOT SUPPORTED.
 
 ## Machine vs interactive authorisation
 

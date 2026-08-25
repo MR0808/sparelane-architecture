@@ -1,6 +1,6 @@
 # Architecture Decision Register
 
-Quick-reference governance index for ADR-001 through ADR-034.
+Quick-reference governance index for ADR-001 through ADR-039.
 
 **Accepted** ADRs are binding implementation constraints unless superseded by a later ADR.
 
@@ -39,7 +39,12 @@ Quick-reference governance index for ADR-001 through ADR-034.
 | [ADR-031](./ADR-031-consumer-notification-contact-channel-and-delivery-policy.md) | Consumer notification contact, email MVP, G2 catalogue, templates, delivery/idempotency; SMS/prefs deferred | Accepted | Notifications / Privacy | ADR-019/030; resolves OD-005 core | Platform G2 consumer email + Fake provider |
 | [ADR-032](./ADR-032-platform-admin-authority-read-only-control-plane.md) | Platform admin authority + H0 read-only control plane; no mutations/replay/grant UI | Accepted | Security / Admin | ADR-012/014; OD-024/026 open for prod/H1 | Platform H0 admin BFF + `/admin` shell; H1 mutations deferred |
 | [ADR-033](./ADR-033-privileged-admin-grant-management-and-approval.md) | H1 Option A: grant create/revoke only; dual control + recent MFA; PrivilegedActionRequest | Accepted | Security / Admin | ADR-012/032; OD-024 policy narrowed; OD-026 grants resolved; break-glass deferred | Platform H1 grant management; replay/suspend deferred H2+ |
-| [ADR-034](./ADR-034-durable-dead-letter-and-operator-replay-policy.md) | H2 Option A: durable DLQ + closed webhook replay only; financial/notification replay prohibited/deferred | Accepted | Security / Ops / Admin | ADR-017/030/031/032/033; OD-024 MFA reuse; OD-026 webhook dual-control not required | Platform H2 durable DLQ + webhook replay; Phase H still incomplete |
+| [ADR-034](./ADR-034-durable-dead-letter-and-operator-replay-policy.md) | H2 Option A: durable DLQ + closed webhook replay only; financial/notification replay prohibited/deferred | Accepted | Security / Ops / Admin | ADR-017/030/031/032/033; OD-024 MFA reuse; OD-026 webhook dual-control not required | Platform H2 durable DLQ + webhook replay; Phase H local complete for H0–H2 |
+| [ADR-035](./ADR-035-pilot-readiness-local-evidence-policy.md) | Phase I local Fake-provider pilot readiness evidence; live sandbox/prod thresholds deferred | Accepted | Operations / Pilot | ADR-012…034; OD-008/009/021/023/024/025/035 remain open for live/prod | Unblocks platform I0–I3 Fake evidence; does not close MVP or live-partner readiness |
+| [ADR-036](./ADR-036-financial-compensating-correction-policy.md) | MVP Option A: privileged append-only compensating journals; accounting-evidence only; dual control | Accepted | Money / Ledger / Admin | ADR-004/012/013/033; OD-026 corrections resolved; OD-024 MFA provider open | Unblocks platform FIN-INV-07 implementation; not verified until tests pass |
+| [ADR-037](./ADR-037-collection-funds-flow-merchant-of-record.md) | Option C connected/sub-merchant; merchant MoR; Sparelane NO_CUSTODY; Phase F reinterpretation | Accepted | Money / Payments / Regulatory | Resolves OD-036; constrains OD-008/009; clarifies ADR-026/029 economics | Unblocks OD-008 resume; no vendor selected |
+| [ADR-038](./ADR-038-mvp-payment-service-provider-selection.md) | MVP PSP = Stripe Connect direct charges; platform pm_ + clone; acct_ as providerAccountRef | Accepted | Payments / Integrations | Resolves OD-008; ADR-037; OD-009 further narrowed | Unblocks Stripe adapter design; not live evidence |
+| [ADR-039](./ADR-039-mvp-settlement-provider-selection.md) | MVP SettlementProvider = Stripe Connect manual payouts; gross via fees_collector=application; SETTLED on paid | Accepted | Money / Settlement | Resolves OD-009/010; ADR-027/028/029/037/038 | Unblocks settlement adapter design; not live evidence |
 
 ## Complementary pairs (not duplicates)
 
@@ -55,6 +60,12 @@ Quick-reference governance index for ADR-001 through ADR-034.
 | ADR-032 / ADR-033 | H0 read-only control plane vs H1 grant-management dual-control slice |
 | ADR-033 / ADR-034 | Grant dual-control mutations vs durable DLQ + closed webhook transport replay |
 | ADR-030 / ADR-034 | Automatic webhook delivery/retry vs operator manual replay policy |
+| ADR-034 / ADR-035 | Admin/ops hardening (H2) vs pilot readiness local evidence scope (I) |
+| ADR-004 / ADR-036 | Append-only ledger principle vs MVP compensating correction workflow policy |
+| ADR-038 / ADR-039 | Stripe Connect collection (direct charges) vs Stripe Connect settlement (manual payouts) |
+| ADR-029 / ADR-039 | Payout journal / SETTLED mechanics vs concrete Stripe `paid` finality binding |
+| ADR-029 / ADR-037 | Payout journal mechanics vs provider-mediated settlement (no Sparelane custody) |
+| ADR-033 / ADR-036 | Grant dual-control vs ledger-correction dual-control (same PrivilegedActionRequest pattern) |
 | ADR-013 / ADR-016 | Logical separation vs consistency mechanism between the stores |
 | ADR-026 / ADR-027 | Collection journal CoA vs settlement obligation/eligibility policy |
 | ADR-027 / ADR-028 | Settlement obligation/eligibility vs instruction execution / destination / idempotency |
@@ -62,4 +73,4 @@ Quick-reference governance index for ADR-001 through ADR-034.
 
 ## None superseded or rejected
 
-No ADRs in 001–034 are Superseded or Rejected at this gate. ADR-032 unblocks platform H0. ADR-033 unblocks platform H1 grant management (Option A). ADR-034 unblocks platform H2 durable DLQ + webhook replay (Option A). ADR-031 resolves OD-005 core. Endpoint Merchant API remains OD-034. Email vendor remains OD-035. OD-024 MFA provider remains open. OD-026 break-glass remains open (grants + webhook-replay dual-control slices resolved).
+No ADRs in 001–039 are Superseded or Rejected at this gate. ADR-038 resolves OD-008; ADR-039 resolves OD-009 and closes OD-010 capability matrix for selected vendors. **Stripe PSP + settlement adapters and LIVE_EVIDENCE remain pending.** Independent EXTERNAL_VENDOR_DECISION blockers: OD-023, OD-025. Track 2B OD-009 PASS documented.

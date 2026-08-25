@@ -35,9 +35,25 @@ export function HealthPage() {
           <span>Phase F gate: {health.implementation?.phaseFGate ?? health.implementation?.phaseF ?? 'not_started'}</span>
           <span>Sub-phases: {health.implementation?.phaseFPhasesCompleted ?? 'F0-F2'}</span>
           <span>Verification: {health.implementation?.phaseFVerification ?? 'none'} (local Fake)</span>
-          <span>Next phase: {health.implementation?.nextPhase ?? 'G'}</span>
-          <span>Not live production health</span>
           <Link to="/docs/implementation/phase-f-status">Phase F status</Link>
+          <span>Phase G — Notifications &amp; Webhooks</span>
+          <span>Phase G gate: {health.implementation?.phaseGGate ?? health.implementation?.phaseG ?? 'not_started'}</span>
+          <span>Sub-phases: {health.implementation?.phaseGPhasesCompleted ?? 'G0-G2'}</span>
+          <Link to="/docs/implementation/phase-g-status">Phase G status</Link>
+          <span>Phase H — Security / Admin</span>
+          <span>Phase H: {health.implementation?.phaseH ?? 'not_started'}</span>
+          <span>H0/H1/H2 exit: {health.implementation?.phaseH0Exit ?? '—'} / {health.implementation?.phaseH1Exit ?? '—'} / {health.implementation?.phaseH2Exit ?? '—'}</span>
+          <Link to="/docs/implementation/phase-h-status">Phase H status</Link>
+          <span>Phase I — Pilot Readiness</span>
+          <span>Phase I gate: {health.implementation?.phaseIGate ?? 'not_documented'}</span>
+          <span>Phase I: {health.implementation?.phaseI ?? 'not_started'}</span>
+          <span>I0/I1/I2/I3 exit: {health.implementation?.phaseI0Exit ?? '—'} / {health.implementation?.phaseI1Exit ?? '—'} / {health.implementation?.phaseI2Exit ?? '—'} / {health.implementation?.phaseI3Exit ?? '—'}</span>
+          <span>Next: {health.implementation?.nextPhase ?? '—'} ({health.implementation?.nextPhaseStatus ?? '—'})</span>
+          <Link to="/docs/implementation/phase-i-status">Phase I status</Link>
+          <span>MVP acceptance: {health.implementation?.mvpAcceptance ?? 'not_assessed'}</span>
+          <span>MVP blockers: {health.implementation?.mvpAcceptanceBlockerCount ?? '—'}</span>
+          <Link to="/docs/implementation/mvp-acceptance-gap-plan">MVP gap plan</Link>
+          <span>Not live production health</span>
         </div>
         <div className="info-card">
           <strong>Requirements</strong>

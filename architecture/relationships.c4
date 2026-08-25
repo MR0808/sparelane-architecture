@@ -26,8 +26,8 @@ model {
   sparelane.edgeLayer.merchantBff -> sparelane.merchantDomain.integrationService 'configures integration and webhooks'
   sparelane.events.eventBus -[event]-> sparelane.edgeLayer.webhookDelivery 'selects merchant-facing webhook events'
 
-  sparelane -> paymentProvider 'tokenises cards and processes card payments'
-  sparelane -> bankingPartner 'initiates merchant settlement'
+  sparelane -> paymentProvider 'tokenises cards and processes card payments (connected/sub-merchant; merchant MoR — ADR-037)'
+  sparelane -> bankingPartner 'initiates provider-mediated merchant payout (OD-009; may be same PSP connected payout under ADR-037)'
   sparelane -> identityProviders 'authenticates users'
   sparelane -> merchantVerificationProvider 'verifies merchant business'
   sparelane -> emailProvider 'sends transactional email'

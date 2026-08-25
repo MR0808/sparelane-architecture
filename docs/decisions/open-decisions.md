@@ -170,6 +170,23 @@ ADR-030 freezes **merchant webhook** contracts. ADR-031 freezes **consumer notif
 
 ---
 
+## Phase I impact (architecture decision gate)
+
+Architecture [ADR-035](./ADR-035-pilot-readiness-local-evidence-policy.md) freezes **local Fake-provider pilot readiness evidence** that unblocks platform I0–I3:
+
+| Effect | Detail |
+| --- | --- |
+| **Bound (no prior OD id)** | Local Phase I “sandbox E2E” = Fake A→H journey; alert *categories* binding; numeric thresholds remain TBD; FIN-INV = reconciliation evidence; recovery drills without invented TPS; security = automated regressions + checklist; external pen-test deferred |
+| Remains OPEN (blocks live sandbox / production money) | [OD-008](./open/OD-008-psp-selection.md), [OD-009](./open/OD-009-settlement-partner.md), [OD-010](./open/OD-010-provider-capability-matrix.md), [OD-023](./open/OD-023-identity-provider.md), [OD-024](./open/OD-024-mfa-passkey.md), [OD-025](./open/OD-025-secrets-kms.md), [OD-035](./open/OD-035-email-provider.md) |
+| Remains OPEN (ops vendors / SLOs) | [OD-021](./open/OD-021-observability-siem.md); production alert thresholds; restore cadence TBD |
+| Explicitly deferred | Bank-statement reconciliation; external pen-test engagement; H3+ admin product scope |
+
+Do not treat ADR-035 as selecting partners, closing MVP acceptance, or inventing production alert thresholds.
+
+Gate: [phase-i-pilot-readiness-decision-gate](../implementation/phase-i-pilot-readiness-decision-gate.md).
+
+---
+
 ## Catalogue
 
 ### product
@@ -188,9 +205,9 @@ ADR-030 freezes **merchant webhook** contracts. ADR-031 freezes **consumer notif
 
 | ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| [OD-008](./open/OD-008-psp-selection.md) | PSP selection | sandbox | open |
-| [OD-009](./open/OD-009-settlement-partner.md) | Settlement / banking partner | sandbox | open |
-| [OD-010](./open/OD-010-provider-capability-matrix.md) | Provider capability matrix (pre-auth, idempotency keys) | pilot | open |
+| [OD-008](./open/OD-008-psp-selection.md) | PSP selection | sandbox | **resolved** by [ADR-038](./ADR-038-mvp-payment-service-provider-selection.md) (Stripe Connect direct charges) |
+| [OD-009](./open/OD-009-settlement-partner.md) | Settlement / banking partner | sandbox | **resolved** by [ADR-039](./ADR-039-mvp-settlement-provider-selection.md) (Stripe Connect manual payouts) |
+| [OD-010](./open/OD-010-provider-capability-matrix.md) | Provider capability matrix (pre-auth, idempotency keys) | pilot | **resolved** by ADR-038 + ADR-039 |
 | [OD-011](./open/OD-011-settlement-batching.md) | Settlement schedule / batching rules | non-blocking | open |
 
 ### regulatory
@@ -201,6 +218,7 @@ ADR-030 freezes **merchant webhook** contracts. ADR-031 freezes **consumer notif
 | [OD-013](./open/OD-013-pci-validation.md) | PCI validation approach / SAQ level | production | open |
 | [OD-014](./open/OD-014-legal-retention.md) | Legal data retention periods | production | open |
 | [OD-015](./open/OD-015-kyb-evidence-retention.md) | KYC/KYB evidence retention | development | open |
+| [OD-036](./open/OD-036-collection-funds-flow-operating-model.md) | Collection funds-flow / MoR operating model | sandbox | **resolved** by [ADR-037](./ADR-037-collection-funds-flow-merchant-of-record.md) |
 
 ### infrastructure
 
@@ -221,7 +239,7 @@ ADR-030 freezes **merchant webhook** contracts. ADR-031 freezes **consumer notif
 | [OD-023](./open/OD-023-identity-provider.md) | Identity provider | sandbox | open |
 | [OD-024](./open/OD-024-mfa-passkey.md) | MFA / passkey implementation | pilot | open (policy narrowed by ADR-033) |
 | [OD-025](./open/OD-025-secrets-kms.md) | Secrets product / KMS/HSM | pilot | open |
-| [OD-026](./open/OD-026-dual-control-break-glass.md) | Dual-control / break-glass workflows | non-blocking | open (grants resolved by ADR-033; break-glass deferred) |
+| [OD-026](./open/OD-026-dual-control-break-glass.md) | Dual-control / break-glass workflows | non-blocking | open (grants + ledger corrections resolved; break-glass deferred) |
 | [OD-027](./open/OD-027-rls-vs-app-tenancy.md) | PostgreSQL RLS vs app-only tenancy | non-blocking | open |
 | [OD-028](./open/OD-028-oauth-mtls-merchant-api.md) | OAuth/mTLS for enterprise merchant API | non-blocking | open |
 
@@ -240,11 +258,15 @@ ADR-030 freezes **merchant webhook** contracts. ADR-031 freezes **consumer notif
 
 ## Highest-priority before production cutover
 
-1. OD-008 PSP + OD-009 settlement partner (live money movement)
-2. OD-023 Identity provider + OD-024 admin MFA (**policy** for privileged recent MFA / production admin MFA required bound by ADR-033; provider/implementation still open)
-3. OD-025 Secrets manager product
+1. **OD-025** secrets/KMS (before live Stripe keys for PSP + settlement adapters) + Stripe EXTERNAL_IMPLEMENTATION → LIVE_EVIDENCE
+2. OD-023 Identity provider + OD-024 admin MFA (**policy** bound by ADR-033; provider still open)
+3. ~~OD-025~~ remains priority with adapters (listed above)
 4. OD-017 Queue/broker + OD-019 DB hosting topology
 5. OD-014 Legal retention + OD-012 wallet regulatory posture (if wallet enabled)
 6. ~~OD-002 Due-date local clock + OD-006 timezone-change policy~~ → **resolved by ADR-025**
 7. ~~OD-031 Webhook retry bounds~~ → **resolved by ADR-030**
-8. ~~OD-026 dual-control for platform admin grants~~ → **resolved by ADR-033**; break-glass remains NOT SUPPORTED / deferred H2+
+8. ~~OD-026 dual-control for platform admin grants~~ → **resolved by ADR-033**; ~~ledger corrections~~ → **resolved by ADR-036**; break-glass deferred
+9. ~~OD-036 collection funds-flow / MoR~~ → **resolved by ADR-037**
+10. ~~OD-008 PSP selection~~ → **resolved by ADR-038**
+11. ~~OD-009 settlement partner~~ → **resolved by ADR-039**
+12. ~~OD-010 provider capability matrix~~ → **resolved by ADR-038 + ADR-039**

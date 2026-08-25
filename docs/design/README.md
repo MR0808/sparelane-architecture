@@ -33,6 +33,7 @@ Do not invent requirement, test, view, or ADR IDs — frontmatter on each design
 | [SEQ-MONEY-004](money/settlement-failure.md) | Settlement Failure | accepted | `settlementFailure` |
 | [SEQ-MONEY-005](money/unknown-settlement-outcome.md) | Unknown Settlement Outcome | accepted | `unknownSettlementOutcome` |
 | [SEQ-MONEY-006](money/merchant-reconciliation.md) | Merchant Reconciliation | accepted | `merchantReconciliationFlow` |
+| [SEQ-MONEY-007](money/ledger-compensating-correction.md) | Ledger Compensating Correction | accepted | `adminPrivilegedAction`, `fundsLedger` |
 
 ## Integrations
 

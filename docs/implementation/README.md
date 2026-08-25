@@ -56,8 +56,10 @@ Phase 9 engineering blueprint for `sparelane-platform`. **Does not** implement t
 - [Phase D status](phase-d-status.md) — payment reliability (FakePSP)
 - [Phase F status](phase-f-status.md) — settlement (local Fake; not real money)
 - [Phase G status](phase-g-status.md) — notifications & webhooks (local sink + Fake email)
+- [Phase H status](phase-h-status.md) — security / admin hardening (H0–H2 PASS local)
+- [Phase I status](phase-i-status.md) — pilot readiness (I0–I3 **PASS** local Fake evidence; external ODs open)
 - [Build phases A–I](build-phases.md)
-- [MVP acceptance criteria](mvp-acceptance-criteria.md)
+- [MVP acceptance criteria](mvp-acceptance-criteria.md) — **NOT ACCEPTED — EXTERNAL BLOCKERS** (**4**); [gap plan](mvp-acceptance-gap-plan.md)
 - [Architecture traceability](architecture-traceability.md)
 
 Portal: [START-HERE](../START-HERE.md) · [Architecture map](../architecture-map.md).

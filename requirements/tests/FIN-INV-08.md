@@ -39,4 +39,4 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — Architecture policy frozen for F0 create/eligibility and F1 destination/instruction isolation. Full product verification Phase F+. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).
+`specified` — **Local Fake evidence: VERIFIED_LOCAL_FAKE** (Track 1A / Phase I platform suite). Architecture policy frozen for F0–F2 isolation. Still **not** `product_verified` / live-provider verified. See [financial-invariant-tests](../../docs/implementation/financial-invariant-tests.md).

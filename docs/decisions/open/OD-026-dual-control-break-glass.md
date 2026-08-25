@@ -8,13 +8,14 @@ related:
   - docs/security/admin-access.md
   - docs/decisions/ADR-033-privileged-admin-grant-management-and-approval.md
   - docs/decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md
+  - docs/decisions/ADR-036-financial-compensating-correction-policy.md
 ---
 
 # OD-026 — Dual-control / break-glass workflows
 
 ## Decision required
 
-Dual-control matrices for privileged classes beyond grants and H2 webhook replay; break-glass emergency access.
+Dual-control matrices for privileged classes beyond grants, H2 webhook replay, and MVP ledger corrections; break-glass emergency access.
 
 ## Why it matters
 
@@ -22,11 +23,11 @@ Privileged financial and operational actions; incident response elevation.
 
 ## Blocking stage
 
-`non-blocking` for H1 Option A and H2 Option A (grants dual-control bound by ADR-033; webhook replay dual-control **not required** by ADR-034)
+`non-blocking` for H1 Option A, H2 Option A, and ADR-036 ledger corrections (grants dual-control bound by ADR-033; webhook replay dual-control **not required** by ADR-034; ledger corrections **require** dual control by ADR-036)
 
 ## Status
 
-`open` — grants dual-control resolved (ADR-033); **webhook replay dual-control resolved as not required (ADR-034)**; break-glass remains NOT SUPPORTED / deferred; other privileged mutations still open.
+`open` — grants dual-control resolved (ADR-033); **webhook replay dual-control resolved as not required (ADR-034)**; **ledger corrections dual-control resolved as required (ADR-036)**; break-glass remains NOT SUPPORTED / deferred; other privileged mutations still open.
 
 ## Notes
 
@@ -44,7 +45,14 @@ Privileged financial and operational actions; incident response elevation.
 - Notification replay dual-control remains **deferred** with notification replay itself
 - Financial replay remains **prohibited** (not a dual-control question)
 
+**Resolved for MVP ledger compensating corrections by [ADR-036](../ADR-036-financial-compensating-correction-policy.md):**
+
+- Dual control **required** for `admin.ledger.correct`
+- Requester ≠ approver; both active `platform_admin` with `admin.ledger.correct`
+- Exactly one approval; 24h expiry; fingerprint = action + `jt_…` + amount_minor + currency
+- Accounting-evidence only — not refunds / settlement rewrite
+
 **Still open / deferred:**
 
-- Dual-control matrices for other privileged actions (suspend, disable, financial corrections, future notification replay, etc.)
+- Dual-control matrices for other privileged actions (suspend, disable, future notification replay, etc.)
 - Break-glass emergency access — **NOT SUPPORTED** until explicit OD acceptance

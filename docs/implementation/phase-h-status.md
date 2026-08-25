@@ -57,3 +57,5 @@ Phase H delivers admin workflows, audit completeness, security controls, and ope
 ## Next canonical phase
 
 **Phase I — Pilot Readiness** per [build-phases](./build-phases.md).
+
+Architecture decision gate: [phase-i-pilot-readiness-decision-gate](./phase-i-pilot-readiness-decision-gate.md) — **PASS** ([ADR-035](../decisions/ADR-035-pilot-readiness-local-evidence-policy.md)). Platform Phase I: **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-i-status](./phase-i-status.md). **Next:** MVP acceptance gate (not a new build phase).

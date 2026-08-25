@@ -7,17 +7,22 @@ The Audit Service records security-relevant and financially sensitive actions in
 **H1:** privileged grant request/approve/deny/execute/fail must emit durable audit per [ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md). No financial mutation audit from admin in H1 — grant management only. Platform H1 local evidence: `sparelane-platform` `npm run test:phase-h1` (production IdP MFA not claimed; OD-024 open).
 
 **H2:** operator webhook replay request/execute/success/fail/deny must emit durable audit per [ADR-034](../decisions/ADR-034-durable-dead-letter-and-operator-replay-policy.md). No financial mutation from replay.
+
+**ADR-036:** privileged ledger correction request/approve/deny/execute/fail must emit durable audit. Accounting-evidence only — no payment/settlement rewrite.
+
 ## Events that should be audited (conceptual)
 
 - login / security events (success and material failure where useful)
 - credential issuance / rotation / revocation
-- **privileged admin mutations** — H1 grant catalogue; H2 webhook replay catalogue; other mutations deferred
+- **privileged admin mutations** — H1 grant catalogue; H2 webhook replay catalogue; ADR-036 ledger correction catalogue
 - merchant configuration changes (webhooks, integration mode, etc.)
 - payment-sensitive actions
 - settlement-sensitive actions
 - consumer notification contact lifecycle (add, verify, default change, disable, revoke) — **not** routine automated sends
 - manual webhook replay / retry actions by authorised operators (H2 — ADR-034)
 - role / permission / **platform admin grant changes** (H1 via PrivilegedActionRequest)
+- **compensating ledger corrections** (ADR-036 via PrivilegedActionRequest)
+
 ## H1 privileged grant audit taxonomy
 
 Mandatory durable audit for grant privileged steps ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md); [ADR-012](../decisions/ADR-012-privileged-admin-audit.md)):
@@ -31,6 +36,19 @@ Mandatory durable audit for grant privileged steps ([ADR-033](../decisions/ADR-0
 | Privileged **fail** | Execute rejected after approval (e.g. last-admin race) |
 
 Required fields (conceptual): `actor_user_public_id`, `action`, `privileged_action`, `request_public_id`, `target_type` / `target_public_id`, `result`, `reason`, `mfa_satisfied_at`, correlation IDs, `payload_fingerprint`. No secrets in payloads.
+
+## ADR-036 ledger correction audit taxonomy
+
+Mandatory durable audit for compensating corrections ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)):
+
+| Action class | When |
+| --- | --- |
+| Privileged **request** create | `admin.ledger.correct` submitted (`jt_…`, amount, currency, reason) |
+| Privileged **approval** / **deny** | Approver decision |
+| Privileged **execution** | Compensating journal appended (`jt_…` result) or `already_applied` |
+| Privileged **fail** | Eligibility / capacity / authz failure — no journal |
+
+Safe fields: actors `usr_…`, source `jt_…`, compensating `jt_…`, `par_…`, amount_minor, currency, reason, result. **No** secrets/CHD/provider payloads.
 
 ## H2 operator replay audit taxonomy
 

@@ -166,7 +166,7 @@ views {
 
   view settlement {
     title '04 Money Movement / Settlement & Reconciliation'
-    description 'Combined money-movement context from settlement-eligible funds through banking partner payout and merchant reconciliation. COLLECTED is not SETTLED.'
+    description 'Combined money-movement context from settlement-eligible funds through provider-mediated payout (connected/sub-merchant balance → merchant bank; OD-009 may be same PSP) and merchant reconciliation. COLLECTED is not SETTLED. Sparelane does not custody merchant funds (ADR-037).'
     include sparelane.paymentPlatform.orchestration,
       sparelane.events.eventBus,
       sparelane.fundsPlatform.ledgerService,

@@ -306,12 +306,32 @@ revoked
 
 ## PrivilegedActionType
 
-Closed H1 catalogue ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)). Unknown actions denied.
+Closed catalogue. Unknown actions denied.
+
+H1 grants ([ADR-033](../decisions/ADR-033-privileged-admin-grant-management-and-approval.md)):
 
 ```text
 admin.grant.create
 admin.grant.revoke
 ```
+
+MVP ledger correction ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)):
+
+```text
+admin.ledger.correct
+```
+
+## JournalTransactionType
+
+Closed MVP journal types:
+
+```text
+collection
+settlement_payout
+correction
+```
+
+`correction` journals require `corrects_journal_transaction_id` and `business_reference = ledger-correction:{parPublicId}` ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)).
 
 ## PrivilegedActionRequestStatus
 

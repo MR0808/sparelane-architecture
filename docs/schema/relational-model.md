@@ -328,10 +328,11 @@ Not the merchant customer master.
 | --- | --- |
 | PK | `id` |
 | Public | `public_id` (`jt_...`) optional for ops |
-| Fields | `business_reference` UNIQUE (**Sparelane-generated financial posting identity**, not a merchant or provider reference), `transaction_type`, `currency`, `posted_at`, `payment_workflow_id` nullable, `settlement_id` nullable, `correlation_id` |
+| Fields | `business_reference` UNIQUE (**Sparelane-generated financial posting identity**, not a merchant or provider reference), `transaction_type`, `currency`, `posted_at`, `payment_workflow_id` nullable, `settlement_id` nullable, `correlation_id`, `corrects_journal_transaction_id` nullable FK → `journal_transactions.id` (**required** when `transaction_type = correction`) |
 | Mutability | Insert-only; no updates/deletes |
-| Idempotency | `business_reference` uniquely identifies one financial effect. **MVP collection** ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)): `payment-collection:{paymentWorkflowPublicId}`. **MVP payout** ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)): `settlement-payout:{settlementPublicId}`. Merchant reconciliation references and provider transaction IDs remain separate columns/relations. |
-| transaction_type | Includes at least `collection` and `settlement_payout` |
+| Idempotency | `business_reference` uniquely identifies one financial effect. **MVP collection** ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)): `payment-collection:{paymentWorkflowPublicId}`. **MVP payout** ([ADR-029](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)): `settlement-payout:{settlementPublicId}`. **MVP correction** ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)): `ledger-correction:{parPublicId}`. Merchant reconciliation references and provider transaction IDs remain separate columns/relations. |
+| transaction_type | Includes at least `collection`, `settlement_payout`, and `correction` |
+| Correction link | Compensating journals only: immutable FK `corrects_journal_transaction_id` to source; source journals remain forever immutable |
 
 ---
 
@@ -365,6 +366,7 @@ Not the merchant customer master.
 | Indexes | `(merchant_id, status)`, `public_id`, unique `payment_workflow_id`, unique `business_reference` |
 | Amount | Gross merchant payable CREDIT from ADR-026 journal `payment-collection:{paymentWorkflowPublicId}` (must equal Bill `amount_minor`) |
 | Gate | Create only when source collection `ledger_posting_status = CONFIRMED` and journal validates; ELIGIBLE only after merchant status + `APPROVED_FOR_SETTLEMENT` |
+| Correction capacity ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)) | Create/execute instruction must refuse when remaining uncompensated collection amount ≤ 0 or Settlement amount would exceed remaining (`remaining = collectionAmount − Σ linked correction amounts`) |
 | Aggregation | Not via multi-workflow FK; optional later grouping through `settlement_batches` (**not F1** — [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)) |
 
 ---

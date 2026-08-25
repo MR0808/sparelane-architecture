@@ -3,7 +3,7 @@
 **Status:** Current  
 **Owner:** Architecture (TBD)  
 **Last Reviewed:** 2026-08-13  
-**Related ADRs:** ADR-001–033  
+**Related ADRs:** ADR-001–036  
 **Related Views:** —
 
 ## Accepted vs open
@@ -23,7 +23,7 @@ Do not treat open decisions as Accepted architecture. Do not implement against a
 
 ## Indexes
 
-- [Decision register](decision-register.md) — ADR-001–033 status and consequences
+- [Decision register](decision-register.md) — ADR-001–036 status and consequences
 - [Open decisions](open-decisions.md) — TBDs with blocker summary
 - [Architecture traceability](../implementation/architecture-traceability.md) — ADR → docs → modules → tests
 
@@ -64,3 +64,9 @@ Do not treat open decisions as Accepted architecture. Do not implement against a
 | [ADR-031](./ADR-031-consumer-notification-contact-channel-and-delivery-policy.md) | Consumer Notification Contact, Channel and Delivery Policy | Accepted |
 | [ADR-032](./ADR-032-platform-admin-authority-read-only-control-plane.md) | Platform Admin Authority and Read-Only Control Plane Policy | Accepted |
 | [ADR-033](./ADR-033-privileged-admin-grant-management-and-approval.md) | Privileged Admin Grant Management and Dual-Control Approval | Accepted |
+| [ADR-034](./ADR-034-durable-dead-letter-and-operator-replay-policy.md) | Durable Dead Letter and Operator Replay Policy | Accepted |
+| [ADR-035](./ADR-035-pilot-readiness-local-evidence-policy.md) | Pilot Readiness Local Evidence Policy | Accepted |
+| [ADR-036](./ADR-036-financial-compensating-correction-policy.md) | Financial Compensating Correction Policy | Accepted |
+| [ADR-037](./ADR-037-collection-funds-flow-merchant-of-record.md) | Collection Funds-Flow and Merchant-of-Record Operating Model | Accepted |
+| [ADR-038](./ADR-038-mvp-payment-service-provider-selection.md) | MVP Payment Service Provider Selection | Accepted |
+| [ADR-039](./ADR-039-mvp-settlement-provider-selection.md) | MVP Settlement Provider Selection | Accepted |

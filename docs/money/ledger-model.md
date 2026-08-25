@@ -24,7 +24,7 @@ Derived balances (Balance Service) must be reproducible from ledger entries.
 
 | Type | Practical meaning | MVP collection use |
 | --- | --- | --- |
-| **Asset** | Claims Sparelane holds or controls for settlement/clearing purposes (exact legal characterisation TBD) | Not used for MVP collection legs |
+| **Asset** | Claims Sparelane holds or controls for settlement/clearing purposes | Not used for MVP collection legs; ADR-037: Sparelane does **not** custody merchant collection proceeds |
 | **Liability** | Amounts owed to consumers (wallet) or merchants (payable) | Merchant payable |
 | **Revenue** | Platform fees earned when product rules allow recognition | Not in collection journal |
 | **Clearing / control** | Temporary accounts used to move value between collection, processor, settlement and exception handling | Processor collection clearing; settlement-partner clearing (`account_type = clearing`) |
@@ -44,8 +44,8 @@ Suspense / Exception
 
 Notes:
 
-- Terminology is cautious because custody, safeguarding and commercial structure depend on the selected PSP/banking partner and regulatory advice.
-- Outside ADR-026, do not treat these names as a final CoA.
+- MVP collection/settlement operating model: [ADR-037](../decisions/ADR-037-collection-funds-flow-merchant-of-record.md) — merchant MoR; Sparelane `NO_CUSTODY`; connected/sub-merchant funds landing.
+- Outside ADR-026/029/037, do not treat these names as a final CoA.
 - Multi-currency FX, merchant reserves and lending accounts are out of Phase 3 scope.
 
 ## Journal Transaction
@@ -84,14 +84,23 @@ The same business financial effect must resolve to the same unique ledger-postin
 
 Merchant reconciliation references and provider references remain separate.
 
-## MVP successful collection posting (binding — ADR-026)
+## MVP successful collection posting (binding — ADR-026 + ADR-037 economics)
 
-Economic event: verified PSP collection → processor clearing claim + merchant payable eligibility (gross Bill amount). Not bank cash. Not settlement. Not fees.
+Economic event: verified PSP collection on the merchant’s **connected/sub-merchant** account → operational processor clearing recognition + merchant payable eligibility (gross Bill amount). **Not** Sparelane bank cash. **Not** Sparelane legal custody of client money ([ADR-037](../decisions/ADR-037-collection-funds-flow-merchant-of-record.md)). Not settlement. Not fees.
 
 | Leg | Side | Account code | Scope | `account_type` | Amount | Currency |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | DEBIT | `sys:processor-clearing:{providerCode}:{currency}` | Platform | `clearing` | Bill `amount_minor` | Bill `currency` |
 | 2 | CREDIT | `mrc:{merchantPublicId}:payable:{currency}` | Merchant | `liability` | Bill `amount_minor` | Bill `currency` |
+
+**Economic interpretation (ADR-037):**
+
+| Account | Meaning |
+| --- | --- |
+| Processor clearing | Operational control for verified provider-backed collection evidence — **not** Sparelane-held client money |
+| Merchant payable | Operational payable eligibility for provider-mediated merchant settlement — **not** Sparelane custodian liability for pooled funds |
+
+Funds land first in the **merchant connected/sub-merchant PSP balance** (provider-controlled).
 
 - `transaction_type` = `collection`
 - `business_reference` = `payment-collection:{paymentWorkflowPublicId}`
@@ -122,14 +131,16 @@ Cr Consumer Wallet Reserved
 
 Reservation is not final spend. Exact legs TBD.
 
-### Merchant settlement / confirmed payout (binding — ADR-029)
+### Merchant settlement / confirmed payout (binding — ADR-029 + ADR-037 economics)
 
-Economic event: provider-adapter-normalised payout **completed** for one SettlementInstruction → discharge merchant payable + recognise settlement-partner clearing (gross). Not Sparelane bank cash. Not fee netting. Not a mutation of PSP `processor-clearing`.
+Economic event: provider-adapter-normalised **provider-mediated** payout **completed** for one SettlementInstruction (from merchant connected/sub-merchant balance to merchant bank destination) → discharge merchant payable + recognise settlement clearing (gross). **Not** Sparelane bank cash / custody ([ADR-037](../decisions/ADR-037-collection-funds-flow-merchant-of-record.md)). Not fee netting. Not a mutation of PSP `processor-clearing`.
 
 | Leg | Side | Account code | Scope | `account_type` | Amount | Currency |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | DEBIT | `mrc:{merchantPublicId}:payable:{currency}` | Merchant | `liability` | `Settlement.amount_minor` | `Settlement.currency` |
 | 2 | CREDIT | `sys:settlement-clearing:{settlementProviderCode}:{currency}` | Platform | `clearing` | `Settlement.amount_minor` | `Settlement.currency` |
+
+**Economic interpretation (ADR-037):** `settlement-clearing` is a control account for provider-mediated payout completion — preferably the same PSP’s connected-account payout rail (OD-009 narrowed) — not Sparelane ADI cash.
 
 - `transaction_type` = `settlement_payout`
 - `business_reference` = `settlement-payout:{settlementPublicId}`
@@ -137,27 +148,45 @@ Economic event: provider-adapter-normalised payout **completed** for one Settlem
 - [ADR-028](../decisions/ADR-028-settlement-execution-payout-destination-instruction-idempotency.md) F1 may submit Fake **without** this journal; F2 requires this journal before `SETTLED`
 - Bank-cash / statement reconciliation remains a later independent control (not required for MVP `SETTLED`)
 
+## MVP compensating correction posting (binding — ADR-036)
+
+Economic event: privileged books correction against an eligible **collection** journal — reverse sides on the same accounts for amount `A` ≤ remaining capacity. Not a PSP refund. Not a payout reverse. Not a mutation of PaymentWorkflow / Settlement status.
+
+| Leg | Side | Account code | Scope | `account_type` | Amount | Currency |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | CREDIT | same processor-clearing as source DEBIT | Platform | `clearing` | `A` | source currency |
+| 2 | DEBIT | same merchant-payable as source CREDIT | Merchant | `liability` | `A` | source currency |
+
+- `transaction_type` = `correction`
+- `business_reference` = `ledger-correction:{parPublicId}`
+- `corrects_journal_transaction_id` → source collection journal (immutable FK)
+- Original journal remains forever immutable (no UPDATE/DELETE)
+- Partial / multiple corrections allowed until remaining = 0; correction-of-correction **NOT SUPPORTED**
+- Settlement create/execute must refuse when remaining uncompensated collection amount ≤ 0
+
+See [ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md) and [SEQ-MONEY-007](../design/money/ledger-compensating-correction.md).
+
 ## Ledger Invariants
 
 1. Every journal transaction balances.
 2. Posted entries are immutable.
-3. Corrections use compensating entries (never update-in-place).
+3. Corrections use compensating entries (never update-in-place) — MVP workflow: [ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md).
 4. Currency must balance independently.
 5. Journal posting must be idempotent for the same source event/command.
 6. Financial references must be traceable to the originating business event.
 7. Operational↔ledger consistency uses transactional outbox + idempotent posting ([ADR-016](../decisions/ADR-016-operational-ledger-consistency.md)); brief `COLLECTED` without journal is allowed with recovery; settlement waits for `CONFIRMED`.
-8. Settlement may only consume eligible payable funds — per-collection Settlement obligation ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)), not arbitrary aggregate account balance alone.
+8. Settlement may only consume eligible payable funds — per-collection Settlement obligation ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)), not arbitrary aggregate account balance alone; remaining capacity reduced by ADR-036 corrections.
 9. Derived balances must be reproducible from ledger entries.
 10. One successful collection → exactly one collection journal ([ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md), FIN-INV-02).
 11. One confirmed collection → at most one Settlement ([ADR-027](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)).
 
-### Implementation questions TBD (outside ADR-026 / ADR-027 / ADR-029)
+### Implementation questions TBD (outside ADR-026 / ADR-027 / ADR-029 / ADR-036 / ADR-037)
 
 - materialised balance cache invalidation strategy
 - remaining CoA for fees / refunds / wallet / suspense / bank-cash statement
 - fee recognition timing (production net-payout blocker)
 - treatment of processor settlement reports versus Sparelane collection events (independent of MVP SETTLED)
-- settlement-clearing → bank cash movement when custody model is known
+- settlement-clearing → optional bank-cash statement control (Sparelane does not custody under ADR-037; bank statement is independent control)
 
 ## Related docs
 
@@ -169,3 +198,5 @@ Economic event: provider-adapter-normalised payout **completed** for one Settlem
 - [ADR-026 Collection ledger posting / minimal CoA](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md)
 - [ADR-027 Settlement obligation / eligibility](../decisions/ADR-027-settlement-obligation-eligibility-cardinality.md)
 - [ADR-029 Settlement finality / payout accounting](../decisions/ADR-029-settlement-finality-reconciliation-payout-accounting.md)
+- [ADR-036 Financial compensating correction policy](../decisions/ADR-036-financial-compensating-correction-policy.md)
+- [ADR-037 Collection funds-flow / MoR operating model](../decisions/ADR-037-collection-funds-flow-merchant-of-record.md)

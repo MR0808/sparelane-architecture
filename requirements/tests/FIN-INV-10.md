@@ -30,6 +30,4 @@ Invariant holds; test fails the release if violated.
 
 ## Implementation status
 
-`specified` — product financial E2E is **not** fully executable.
-
-Phase A foundation prerequisite remains. Phase D adds **local crash-recovery** evidence under FakePSP — still not `product_verified`.
+`specified` — **Local Fake evidence: VERIFIED_LOCAL_FAKE** (Track 1A / Phase I platform suite: restart drills + prior D/F evidence). Still **not** `product_verified` / live-provider verified. Foundation prerequisite retained as historical note.

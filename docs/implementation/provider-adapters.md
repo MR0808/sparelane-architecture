@@ -21,5 +21,11 @@ Domain modules talk to **interfaces**, not vendor SDKs.
 - Settlement adapter finality outcomes: `pending` \| `settled` \| `failed` \| `not_found` \| `unknown` (ADR-029); reconcile/lookup must not call submit
 - Adapter failures classified as transient vs permanent vs unknown outcome
 - Fakes/stubs required for local/CI before vendor selection; production fail-closed without approved settlement provider (OD-009)
+- **Funds-flow / money rails ([ADR-037](../decisions/ADR-037-collection-funds-flow-merchant-of-record.md) / [ADR-038](../decisions/ADR-038-mvp-payment-service-provider-selection.md) / [ADR-039](../decisions/ADR-039-mvp-settlement-provider-selection.md)):** MVP PSP = Stripe Connect **direct charges**; SettlementProvider = Stripe Connect **manual payouts**; `fees_collector=application`; live adapters use `acct_…` / `ba_…` / `po_…`; Sparelane never MoR / never custodies merchant funds
 - Email: FakeEmailProvider `nonProductionOnly` for G2 local; production fail-closed without OD-035 approved provider
 - Settlement submit uses stable idempotency key `settlement-instruction:{settlementPublicId}`
+
+## Stripe adapter checklists
+
+- Payment: [stripe-connect-adapter-checklist.md](./stripe-connect-adapter-checklist.md)
+- Settlement: [stripe-connect-settlement-adapter-checklist.md](./stripe-connect-settlement-adapter-checklist.md)

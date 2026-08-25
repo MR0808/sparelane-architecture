@@ -3,9 +3,12 @@ id: OD-009
 title: Settlement / banking partner
 category: payments
 blockingStage: sandbox
-status: open
+status: resolved
 related:
   - docs/decisions/ADR-006-separate-settlement-lifecycle.md
+  - docs/decisions/ADR-037-collection-funds-flow-merchant-of-record.md
+  - docs/decisions/ADR-038-mvp-payment-service-provider-selection.md
+  - docs/decisions/ADR-039-mvp-settlement-provider-selection.md
 ---
 
 # OD-009 — Settlement / banking partner
@@ -14,24 +17,23 @@ related:
 
 Settlement / banking partner.
 
-## Why it matters
-
-Payout rails, confirmation events
-
-## Blocking stage
-
-`sandbox`
-
 ## Status
 
-`open`
+`resolved` by [ADR-039](../ADR-039-mvp-settlement-provider-selection.md) (2026-08-25).
+
+## Accepted selection (summary)
+
+| Binding | Value |
+| --- | --- |
+| Provider | **Stripe Connect** (same as ADR-038 PSP) |
+| Model | **Manual payout** on connected account (`po_…`) |
+| Amount | **Gross** Settlement (platform pays Stripe processing fees via `fees_collector=application`) |
+| Destination | Connected-account external bank `ba_…` |
+| Finality | Payout status **`paid`** → SETTLED (+ journal) |
+| Schedule | Automatic payouts **disabled** (manual) |
 
 ## Notes
 
-Unresolved item tracked separately from Accepted ADRs. See the [open decisions index](../open-decisions.md).
+**Vendor decision closed.** Stripe settlement adapter + LIVE_EVIDENCE remain EXTERNAL_IMPLEMENTATION / LIVE_EVIDENCE — not claimed by this OD Accept.
 
-**F1 consequence ([ADR-028](../ADR-028-settlement-execution-payout-destination-instruction-idempotency.md)):** local/CI uses **FakeSettlementProvider** only to prove execution semantics. This OD remains open for real partner selection. Production live money must fail closed without an approved configured provider — no silent Fake fallback.
-
-**F2 consequence ([ADR-029](../ADR-029-settlement-finality-reconciliation-payout-accounting.md)):** Fake may prove finality + gross payout journal → SETTLED locally. Sandbox/production live rails still require this OD’s approved partner + adapter. Bank-statement finality is not required for MVP SETTLED under ADR-029.
-
-**Phase F exit:** Platform Phase F PASS is **local Fake only**. This OD remains open and blocks sandbox/pilot/production live settlement money.
+FakeSettlementProvider remains local/CI only; production fail-closed without approved adapter.

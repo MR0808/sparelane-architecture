@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-08-23T14:03:46.402Z",
+  "generatedAt": "2026-08-25T00:36:37.172Z",
   "label": "Generated from repository state",
   "requirements": {
-    "total": 92,
-    "mvp": 89,
+    "total": 94,
+    "mvp": 91,
     "future": 3,
-    "blocked": 15,
+    "blocked": 17,
     "missingArchitecture": 4,
-    "missingTests": 38,
+    "missingTests": 36,
     "mvpVerified": 0,
     "foundationImplemented": 15,
-    "productImplemented": 36
+    "productImplemented": 41
   },
   "decisions": {
-    "adrs": 34,
-    "open": 35
+    "adrs": 39,
+    "open": 36
   },
   "tests": {
-    "total": 51
+    "total": 55
   },
   "designs": {
-    "total": 38,
-    "sequence": 35,
+    "total": 39,
+    "sequence": 36,
     "state": 3,
     "invalidTraceability": 0
   },
@@ -32,7 +32,7 @@
     "openapi": "present"
   },
   "docs": {
-    "count": 264
+    "count": 278
   },
   "implementation": {
     "phaseAGate": "pass_with_documented_non_blocking_risks",
@@ -65,7 +65,39 @@
     "phaseH2Exit": "pass",
     "phaseH2Documented": true,
     "phaseH": "pass_with_documented_non_blocking_risks",
-    "nextPhase": "I",
+    "phaseIGate": "pass",
+    "phaseIDocumented": true,
+    "phaseI0Exit": "pass",
+    "phaseI1Exit": "pass",
+    "phaseI2Exit": "pass",
+    "phaseI3Exit": "pass",
+    "phaseI": "pass_with_documented_non_blocking_risks",
+    "nextPhase": "MVP_ACCEPTANCE",
+    "nextPhaseStatus": "local_evidence_complete_external_blockers_remain",
+    "mvpAcceptance": "not_accepted_external_blockers",
+    "mvpAcceptanceBlockerCount": 2,
+    "mvpAcceptanceBlockerCategories": {
+      "EXTERNAL_VENDOR_DECISION": 2
+    },
+    "localMvpBlockers": 0,
+    "track1a": "pass",
+    "track1b": "pass",
+    "track1c": "pass",
+    "track1d": "pass",
+    "track1e": "pass",
+    "track1f": "pass",
+    "finInv07": "verified_local_fake",
+    "mvpAcceptanceGapPlan": "docs/implementation/mvp-acceptance-gap-plan.md",
+    "nextActivity": "OD_025_MANAGED_SECRETS_KMS_DECISION_GATE",
+    "track2a": "pass",
+    "track2": "pass_od008_stripe_connect",
+    "track2b": "pass_od009_stripe_payouts",
+    "od008": "resolved_adr038_stripe_connect",
+    "od036": "resolved_adr037",
+    "od009": "resolved_adr039_stripe_manual_payouts",
+    "od010": "resolved_adr038_adr039",
+    "stripePaymentAdapter": "external_implementation_pending",
+    "stripeSettlementAdapter": "external_implementation_pending",
     "label": "Generated from repository state — not live production health"
   }
 }

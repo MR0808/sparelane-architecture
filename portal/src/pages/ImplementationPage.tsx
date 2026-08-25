@@ -6,8 +6,8 @@ export function ImplementationPage() {
       <h1 className="page-title">Implementation</h1>
       <p className="page-lead">
         Engineering blueprint for <code>sparelane-platform</code>. Architecture Accepted is not
-        product verified for live money. Phases A–F: PASS WITH DOCUMENTED NON-BLOCKING RISKS. Phase F
-        is <strong>local Fake settlement only</strong> — not real-provider / real-bank production.
+        product verified for live money. Phases A–I: PASS WITH DOCUMENTED NON-BLOCKING RISKS under
+        local Fake evidence (ADR-035). Not production/pilot money-ready.
       </p>
 
       <div className="card-grid">
@@ -58,10 +58,42 @@ export function ImplementationPage() {
         <div className="info-card">
           <strong>Phase G</strong>
           <span>Notifications &amp; Webhooks</span>
-          <span>NOT STARTED</span>
-          <Link to="/docs/implementation/build-phases">Build phases</Link>
+          <span>PASS WITH DOCUMENTED NON-BLOCKING RISKS</span>
+          <span>G0–G2 · local webhook sink · Fake email</span>
+          <Link to="/docs/implementation/phase-g-status">Phase G status</Link>
+        </div>
+        <div className="info-card">
+          <strong>Phase H</strong>
+          <span>Security / Admin Hardening</span>
+          <span>PASS WITH DOCUMENTED NON-BLOCKING RISKS</span>
+          <span>H0–H2 · read-only admin · grants · DLQ webhook replay</span>
+          <Link to="/docs/implementation/phase-h-status">Phase H status</Link>
+        </div>
+        <div className="info-card">
+          <strong>Phase I</strong>
+          <span>Pilot Readiness</span>
+          <span>PASS WITH DOCUMENTED NON-BLOCKING RISKS</span>
+          <span>I0–I3 · local Fake runbooks · E2E · recovery · security</span>
+          <Link to="/docs/implementation/phase-i-status">Phase I status</Link>
         </div>
       </div>
+
+      <h2>Phase I at a glance</h2>
+      <ul className="link-list">
+        <li>Last canonical build phase — no Phase J</li>
+        <li>
+          Local Fake evidence: runbooks, alert catalogue, A→H E2E, FIN-INV consolidation, recovery
+          drills, security regressions
+        </li>
+        <li>
+          Boundary: not live sandbox; not production money; external pen-test deferred; thresholds
+          TBD; OD-008/009/010/021/023/024/025/035 remain open
+        </li>
+        <li>
+          <Link to="/docs/implementation/mvp-acceptance-criteria">MVP acceptance</Link> — **NOT
+          ACCEPTED** (external blockers; **4**) — next: OD-036 funds-flow gate (OD-008 STOP)
+        </li>
+      </ul>
 
       <h2>Phase F at a glance</h2>
       <ul className="link-list">

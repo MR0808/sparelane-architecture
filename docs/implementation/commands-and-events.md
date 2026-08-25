@@ -75,7 +75,20 @@ Session BFF under `/admin/v1/*`. Require active `PlatformAdminGrant` ([ADR-034](
 | `CreateDeadLetter` | (internal ops) | On exhaustion — not an admin API |
 | `ReplayWebhookDelivery` | (worker) | notification-worker transport; same delivery; attempt 6+ |
 
-**Forbidden:** `ReplayAnyWork`, notification replay commands, payment/settlement/ledger replay commands via admin.
+**Forbidden:** `ReplayAnyWork`, notification replay commands, payment/settlement/ledger **replay** commands via admin.
+
+## Admin privileged commands (MVP — ledger compensating correction)
+
+Session BFF `POST /admin/v1/*` only. Require active `PlatformAdminGrant` + `admin.ledger.correct` + recent MFA + dual-control workflow ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md)).
+
+| Command | Notes |
+| --- | --- |
+| `RequestPrivilegedAction` | Create `PrivilegedActionRequest` for `admin.ledger.correct`; target `jt_…` + amount_minor + currency + reason; fingerprint immutable |
+| `ApprovePrivilegedAction` | Approver ≠ requester; recent MFA; → `approved` or `denied` |
+| `ExecutePrivilegedAction` | Lock source journal; append compensating `correction` journal once; recent MFA; → `executed` / `failed` / idempotent `already_applied` |
+| `CancelPrivilegedAction` | Optional; cancel `approved` pre-execute if product implements |
+
+**Effects:** append-only ledger journal only. **Forbidden effects:** UPDATE/DELETE journals; mutate PaymentWorkflow / PaymentAttempt / Settlement / SettlementInstruction; PSP refund; payout reverse; force-balance; arbitrary debit/credit.
 
 ## Important domain events (internal)
 

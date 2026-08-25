@@ -216,7 +216,7 @@ business_reference = payment-collection:pay_example
 - OD-008 PSP selection / OD-010 capability matrix — still open; `{providerCode}` values come from the selected provider registry.
 - OD-019 physical DB topology — still open; this ADR assumes logical separation only.
 - Full CoA for settlement, fees, refunds, chargebacks, wallet, tax, FX — **remain TBD**.
-- Regulatory/custody characterisation of clearing vs payable — still needs advice for production legal treatment; MVP operational accounting uses this template.
+- Regulatory/custody characterisation of clearing vs payable for MVP collection operating model — **bound by [ADR-037](./ADR-037-collection-funds-flow-merchant-of-record.md)** (merchant MoR; Sparelane `NO_CUSTODY`; operational accounting only). Production legal confirmation of AU perimeter remains required before live money.
 
 ## Related Architecture
 

@@ -2,8 +2,8 @@
 
 **Status:** Current  
 **Owner:** Engineering / Architecture  
-**Last Reviewed:** 2026-08-22  
-**Related ADRs:** ADR-001–033  
+**Last Reviewed:** 2026-08-25 (Track 2 OD-008 STOP)  
+**Related ADRs:** ADR-001–036  
 
 Tracks how far `sparelane-platform` has progressed against this architecture. **This is not a product completeness percentage.** Architecture Accepted does not mean the product is built.
 
@@ -37,9 +37,11 @@ Test specifications keep `status: specified` until a product test is executable.
 | F | Settlement | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-f-status](phase-f-status.md) (local Fake settlement; not real-provider / real-money) |
 | G | Notifications & Webhooks | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-g-status](phase-g-status.md) (local webhook sink + Fake email; OD-025/OD-035 open) |
 | H | Security / Admin Hardening | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-h-status](phase-h-status.md) (H0–H2 local; OD-024 blocks production admin; H3+ deferred) |
-| I | Pilot Readiness | **NOT STARTED** on platform |
+| I | Pilot Readiness | **PASS WITH DOCUMENTED NON-BLOCKING RISKS** — [phase-i-status](phase-i-status.md) (I0–I3 local Fake evidence; external ODs open) |
 
 Canonical phase definitions remain in [build-phases](build-phases.md). Do not treat module shells or provider ports as deployed product systems.
+
+**Next activity:** [mvp-acceptance-gap-plan](mvp-acceptance-gap-plan.md) — **Track 2A: OD-036 funds-flow / MoR decision gate** (prerequisite; OD-008 STOP). Tracks 1A–1F closed. FIN-INV-01…10 **`VERIFIED_LOCAL_FAKE`**. MVP **NOT ACCEPTED — EXTERNAL BLOCKERS** (4: OD-008/009/023/025).
 
 ## Discovery path
 

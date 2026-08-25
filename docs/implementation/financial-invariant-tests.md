@@ -93,6 +93,29 @@ See [phase-d-status](phase-d-status.md). Platform detail: `sparelane-platform/do
 
 See [phase-f-status](phase-f-status.md). Platform: `sparelane-platform/docs/development/phase-f-test-evidence.md`.
 
+## Implementation evidence (Phase I — local Fake consolidation)
+
+**None of FIN-INV-01–10 become `product_verified` from Phase I Fake evidence alone.**
+
+| ID | Phase I local classification | Platform evidence |
+| --- | --- | --- |
+| FIN-INV-01 | VERIFIED_LOCAL_FAKE | I1 happy path + Phase D FakePSP idempotency |
+| FIN-INV-02 | VERIFIED_LOCAL_FAKE | I1 single collection journal |
+| FIN-INV-03 | VERIFIED_LOCAL_FAKE | I1 balanced collection + payout journals |
+| FIN-INV-04 | VERIFIED_LOCAL_FAKE | I1 one Settlement; Phase F FAILED paths |
+| FIN-INV-05 | VERIFIED_LOCAL_FAKE | I1 one instruction/transfer/journal/SETTLED |
+| FIN-INV-06 | VERIFIED_LOCAL_FAKE | Phase F2 unknown/not_found hold |
+| FIN-INV-07 | **VERIFIED_LOCAL_FAKE** | Track 1C + Track 1E: 18 E2E scenarios; from-zero ×2 (20 migrations); post-zero Track 1C / Phase I / Phase H / integration — **not** `product_verified` |
+| FIN-INV-08 | VERIFIED_LOCAL_FAKE | Track 1A + I1/I3 tenant isolation (Fake) — **not** `product_verified` |
+| FIN-INV-09 | VERIFIED_LOCAL_FAKE | Track 1A + I1/I2 replay drills (Fake) — **not** `product_verified` |
+| FIN-INV-10 | VERIFIED_LOCAL_FAKE | Track 1A + I2 restart drills (Fake) — **not** `product_verified` |
+
+See [phase-i-status](phase-i-status.md), [mvp-acceptance-gap-plan](mvp-acceptance-gap-plan.md). Platform: `phase-i1-financial-invariant-evidence.md`, Track 1A/1C/1E evidence, `npm run test:phase-i1` / `test:mvp-track1a` / `test:mvp-track1c` / `db:migrate:test:from-zero`.
+
+## Architecture gate (compensating correction)
+
+[ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md) freezes the MVP compensating correction model (Option A). Platform Track 1C implements the workflow; Track 1E proved from-zero + regression. Architecture Track 1F promotes FIN-INV-07 to **`VERIFIED_LOCAL_FAKE`**. Still **not** `product_verified`.
+
 ## Architecture gate (collection CoA)
 
 [ADR-026](../decisions/ADR-026-collection-ledger-posting-minimal-coa.md) freezes the MVP collection journal template (accounts, sides, codes, amount source, `business_reference`, PENDING→CONFIRMED). Platform Phase E1 may implement against that ADR. This does **not** mark FIN-INV-02/03 product_verified.

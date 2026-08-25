@@ -4,6 +4,7 @@ title: Retrieve payment status
 type: functional
 area: merchant
 status: accepted
+implementationStatus: implemented
 priority: must
 mvp: true
 architecture:
@@ -39,3 +40,5 @@ Polling complements webhooks for reconciliation.
 ## Notes
 
 MVP merchant integration scope.
+
+`implementationStatus: implemented` — Track 1A local platform evidence (`GET /v1/payments/{paymentId}`; merchant-machine auth; tenant-scoped). Not marked `verified` / live-provider verified.

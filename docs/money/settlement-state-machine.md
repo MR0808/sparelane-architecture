@@ -94,7 +94,7 @@ Partner async in-progress after SUBMITTED; final settlement not confirmed. **F2:
 
 ### SETTLED
 
-**Binding (ADR-029):** provider-adapter-normalised finality outcome **`settled`**, integrity-matched to the SettlementInstruction, **and** durable payout journal `settlement-payout:{settlementPublicId}` (Dr merchant payable / Cr settlement clearing). Not provider ack. Not bank-cash statement proof.
+**Binding (ADR-029 + ADR-037):** provider-adapter-normalised finality outcome **`settled`**, integrity-matched to the SettlementInstruction, **and** durable payout journal `settlement-payout:{settlementPublicId}` (Dr merchant payable / Cr settlement clearing). Represents **provider-mediated** payout completion from connected/sub-merchant balance — not Sparelane custody. Not provider ack. Not bank-cash statement proof.
 
 **Typical trigger:** `ReconcileSettlement` with outcome `settled` → journal → operational SETTLED + `SettlementSettled`.
 
