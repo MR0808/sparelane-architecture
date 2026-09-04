@@ -2,55 +2,32 @@
 
 Sparelane distinguishes interactive and machine authentication. Do not conflate merchant portal sessions with Merchant API credentials.
 
-Identity provider and exact MFA/session products remain TBD.
+**Human IdP architecture (ADR-043):** **Better Auth** for all human populations (consumer, merchant user, platform admin). Auth0 is removed from the target architecture. Sparelane remains authorisation SoT. Privileged MFA freshness uses Sparelane `AuthenticationAssurance` (not Auth0 `amr`/`auth_time`). See [ADR-043](../decisions/ADR-043-unified-better-auth-human-authentication.md). ADR-041 and ADR-042 are **Superseded**.
+
+## Target flow
+
+```text
+Browser → Better Auth → session → BetterAuthAuthenticationProvider
+→ AuthenticatedSubject (+ mfaSatisfiedAt from AuthenticationAssurance)
+→ ExternalIdentity → User → Sparelane authorisation
+```
 
 ## Consumer authentication
 
-Interactive consumer identity for Consumer Web and Hosted Flow.
-
-Conceptual controls:
-
-- verified identity/account
-- MFA / passkeys where supported
-- secure session management
-- account recovery controls
-- account-takeover protections (session invalidation, sensitive-action step-up where appropriate, notifications/audit)
-
-Consumers authenticate to manage connections, payment methods and bill visibility — not to act as merchants.
+Email + password (MVP); email verification before payment-method mutations. MFA not required for ADR-033. Magic-link/OTP/passkeys deferred.
 
 ## Merchant user authentication
 
-Interactive authentication for Merchant Portal users (finance, operations, developers configuring integrations via UI).
-
-Distinct from machine credentials. Portal sessions must not be reused as API keys.
+Better Auth email/password. MFA (TOTP) **required** for `OWNER`/`ADMIN` before API-credential UI mutations. Portal sessions ≠ API keys.
 
 ## Merchant machine authentication
 
-Server-to-server authentication for Merchant API using merchant API credentials.
-
-Conceptual model:
-
-```text
-Merchant API credential
-→ merchant context
-→ allowed scopes
-→ request authorisation
-```
-
-See [`docs/integrations/api-authentication.md`](../integrations/api-authentication.md).
-
-Secrets are shown once at issuance; Sparelane stores hashes/references only.
+Unchanged — merchant API credentials (hash/pepper). See [`docs/integrations/api-authentication.md`](../integrations/api-authentication.md).
 
 ## Sparelane administrator authentication
 
-Highest-assurance interactive authentication for Admin Portal.
+Better Auth with **mandatory** TOTP enrollment before admin BFF use. Privileged request/approve/execute require `mfaSatisfiedAt` ≤ **15 minutes** (ADR-033) from Sparelane AuthenticationAssurance after verified TOTP step-up. Provider account alone never grants `PlatformAdminGrant`. No ENV admin. No break-glass unless a later Accepted ADR.
 
-Conceptual requirements:
+## Session vs MFA freshness
 
-- MFA required
-- stronger session controls (shorter TTL TBD)
-- explicit privileged role assignment
-- durable audit of authentication and privileged actions
-- no shared admin accounts
-
-Administrator authentication is distinct from consumer and merchant authentication even if the same identity platform is eventually used.
+Sessions may last hours/days. Privileged MFA assurance is ≤15 minutes and must not be extended by session refresh, cookie renewal, trust-device, or backup codes.

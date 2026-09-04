@@ -236,8 +236,8 @@ Gate: [phase-i-pilot-readiness-decision-gate](../implementation/phase-i-pilot-re
 
 | ID | Decision | Blocking stage | Status |
 | --- | --- | --- | --- |
-| [OD-023](./open/OD-023-identity-provider.md) | Identity provider | sandbox | **resolved** by [ADR-041](./ADR-041-mvp-production-identity-provider-selection.md) (Auth0) |
-| [OD-024](./open/OD-024-mfa-passkey.md) | MFA / passkey implementation | pilot | open (**narrowed** by ADR-033 policy + ADR-041 Auth0 MFA path; implementation pending) |
+| [OD-023](./open/OD-023-identity-provider.md) | Identity provider | sandbox | **resolved** by [ADR-043](./ADR-043-unified-better-auth-human-authentication.md) (Better Auth-all; ADR-042/041 superseded) |
+| [OD-024](./open/OD-024-mfa-passkey.md) | MFA / passkey implementation | pilot | open (**narrowed** by ADR-033 + ADR-043 AuthenticationAssurance/TOTP; evidence pending — not production-verified) |
 | [OD-025](./open/OD-025-secrets-kms.md) | Secrets product / KMS/HSM | pilot | **resolved** by [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md) |
 | [OD-026](./open/OD-026-dual-control-break-glass.md) | Dual-control / break-glass workflows | non-blocking | open (grants + ledger corrections resolved; break-glass deferred) |
 | [OD-027](./open/OD-027-rls-vs-app-tenancy.md) | PostgreSQL RLS vs app-only tenancy | non-blocking | open |
@@ -258,8 +258,8 @@ Gate: [phase-i-pilot-readiness-decision-gate](../implementation/phase-i-pilot-re
 
 ## Highest-priority before production cutover
 
-1. **EXTERNAL_IMPLEMENTATION:** ADR-040 managed-secret backends → Stripe Payment/Settlement adapters → Auth0 AuthenticationProvider → LIVE_EVIDENCE
-2. ~~OD-023~~ → **resolved by ADR-041**; OD-024 MFA implementation narrowed (Auth0) — EXTERNAL_IMPLEMENTATION
+1. **EXTERNAL_IMPLEMENTATION:** AUTH-B0 Better Auth foundation → AUTH-B* slices → BETTER_AUTH_* evidence; Stripe LIVE_EVIDENCE as needed (do not re-run unnecessarily)
+2. ~~OD-023~~ → **resolved by ADR-043** (Better Auth-all); OD-024 MFA implementation narrowed — EXTERNAL_IMPLEMENTATION / evidence (not production-verified)
 3. OD-017 Queue/broker + OD-019 DB hosting topology
 4. OD-014 Legal retention + OD-012 wallet regulatory posture (if wallet enabled)
 5. ~~OD-002 Due-date local clock + OD-006 timezone-change policy~~ → **resolved by ADR-025**

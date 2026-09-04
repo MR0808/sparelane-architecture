@@ -23,7 +23,7 @@ Do not treat open decisions as Accepted architecture. Do not implement against a
 
 ## Indexes
 
-- [Decision register](decision-register.md) — ADR-001–036 status and consequences
+- [Decision register](decision-register.md) — ADR-001–043 status and consequences
 - [Open decisions](open-decisions.md) — TBDs with blocker summary
 - [Architecture traceability](../implementation/architecture-traceability.md) — ADR → docs → modules → tests
 
@@ -71,4 +71,6 @@ Do not treat open decisions as Accepted architecture. Do not implement against a
 | [ADR-038](./ADR-038-mvp-payment-service-provider-selection.md) | MVP Payment Service Provider Selection | Accepted |
 | [ADR-039](./ADR-039-mvp-settlement-provider-selection.md) | MVP Settlement Provider Selection | Accepted |
 | [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md) | MVP Managed Secrets and Key Management Policy | Accepted |
-| [ADR-041](./ADR-041-mvp-production-identity-provider-selection.md) | MVP Production Identity Provider Selection | Accepted |
+| [ADR-041](./ADR-041-mvp-production-identity-provider-selection.md) | MVP Production Identity Provider Selection | Superseded |
+| [ADR-042](./ADR-042-human-authentication-population-split.md) | Human Authentication Population Split (Hybrid) | Superseded (→ ADR-043) |
+| [ADR-043](./ADR-043-unified-better-auth-human-authentication.md) | Unified Better Auth Human Authentication and Privileged MFA Assurance | Accepted |

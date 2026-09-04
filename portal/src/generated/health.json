@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-25T02:21:37.477Z",
+  "generatedAt": "2026-09-03T08:11:26.767Z",
   "label": "Generated from repository state",
   "requirements": {
     "total": 94,
@@ -13,11 +13,11 @@
     "productImplemented": 41
   },
   "decisions": {
-    "adrs": 41,
+    "adrs": 43,
     "open": 36
   },
   "tests": {
-    "total": 55
+    "total": 57
   },
   "designs": {
     "total": 39,
@@ -32,7 +32,7 @@
     "openapi": "present"
   },
   "docs": {
-    "count": 282
+    "count": 288
   },
   "implementation": {
     "phaseAGate": "pass_with_documented_non_blocking_risks",

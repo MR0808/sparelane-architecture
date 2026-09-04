@@ -1,12 +1,13 @@
 ---
 id: ADR-041
 title: MVP Production Identity Provider Selection
-status: Accepted
+status: Superseded
 date: 2026-08-25
 deciders: Architecture
 consulted: Security / Product / Ops
 informed: Platform engineering
 supersedes: []
+superseded_by: ADR-042
 related:
   - ADR-012
   - ADR-014
@@ -14,6 +15,7 @@ related:
   - ADR-033
   - ADR-034
   - ADR-040
+  - ADR-042
   - OD-023
   - OD-024
 ---
@@ -22,9 +24,13 @@ related:
 
 ## Status
 
-**Accepted**
+**Superseded** by [ADR-042](./ADR-042-human-authentication-population-split.md) (2026-09-03).
 
-Resolves [OD-023](./open/OD-023-identity-provider.md). Selects **Auth0** as the MVP production/sandbox **human** identity provider under [ADR-032](./ADR-032-platform-admin-authority-read-only-control-plane.md) / [ADR-033](./ADR-033-privileged-admin-grant-management-and-approval.md). Does **not** implement the adapter, does **not** claim LIVE_EVIDENCE, and does **not** mean MVP acceptance.
+Historical record: Accepted 2026-08-25. Selected **Auth0** as the single MVP production/sandbox **human** identity provider for all interactive populations. Reconsideration gate: [auth0-vs-better-auth-reconsideration-gate.md](./auth0-vs-better-auth-reconsideration-gate.md).
+
+**Do not implement new work against ADR-041 as the sole human-IdP binding.** Privileged (merchant user + admin) Auth0 bindings that remain valid are restated in ADR-042. Consumer human authentication is **Better Auth** under ADR-042.
+
+Original acceptance resolved [OD-023](./open/OD-023-identity-provider.md) under ADR-032 / ADR-033. OD-023 remains resolved; binding now ADR-042.
 
 **Research access date:** 2026-08-25 (Auth0 step-up / `amr` / `auth_time` / AU residency docs; WorkOS AuthKit step-up; Clerk/Cognito/Better Auth evaluation; platform identity composition evidence).
 

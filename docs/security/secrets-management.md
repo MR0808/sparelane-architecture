@@ -10,7 +10,7 @@ Production secrets are managed centrally per [ADR-011](../decisions/ADR-011-cent
 - email / SMS provider credentials (vendor OD-035)
 - KYC / KYB provider credentials (when selected)
 - database / broker credentials (deployment secrets)
-- identity/session / Auth0 client secrets ([ADR-041](../decisions/ADR-041-mvp-production-identity-provider-selection.md))
+- identity/session / Better Auth application secrets ([ADR-043](../decisions/ADR-043-unified-better-auth-human-authentication.md); ADR-040 managed secrets). Auth0 client secrets are **not** target-architecture requirements (AUTH-B6 removal).
 
 ## MVP backends (ADR-040)
 

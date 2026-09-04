@@ -1,6 +1,6 @@
 # Architecture Decision Register
 
-Quick-reference governance index for ADR-001 through ADR-041.
+Quick-reference governance index for ADR-001 through ADR-043.
 
 **Accepted** ADRs are binding implementation constraints unless superseded by a later ADR.
 
@@ -46,7 +46,9 @@ Quick-reference governance index for ADR-001 through ADR-041.
 | [ADR-038](./ADR-038-mvp-payment-service-provider-selection.md) | MVP PSP = Stripe Connect direct charges; platform pm_ + clone; acct_ as providerAccountRef | Accepted | Payments / Integrations | Resolves OD-008; ADR-037; OD-009 further narrowed | Unblocks Stripe adapter design; not live evidence |
 | [ADR-039](./ADR-039-mvp-settlement-provider-selection.md) | MVP SettlementProvider = Stripe Connect manual payouts; gross via fees_collector=application; SETTLED on paid | Accepted | Money / Settlement | Resolves OD-009/010; ADR-027/028/029/037/038 | Unblocks settlement adapter design; not live evidence |
 | [ADR-040](./ADR-040-mvp-managed-secrets-and-key-management-policy.md) | MVP secrets = AWS Secrets Manager (low-card) + KMS-envelope Postgres (high-card webhooks); fail closed | Accepted | Security / Ops | Resolves OD-025; implements ADR-011; narrows OD-016 | Unblocks managed-secret backends; not implemented |
-| [ADR-041](./ADR-041-mvp-production-identity-provider-selection.md) | MVP human IdP = Auth0; Sparelane remains authZ SoT; MFA via amr+auth_time step-up for ADR-033 | Accepted | Security / Identity | Resolves OD-023; narrows OD-024; ADR-032/033/040 | Unblocks Auth0 AuthenticationProvider; not live evidence |
+| [ADR-041](./ADR-041-mvp-production-identity-provider-selection.md) | MVP human IdP = Auth0 (all humans) | **Superseded** | Security / Identity | → ADR-042 → ADR-043 | Historical |
+| [ADR-042](./ADR-042-human-authentication-population-split.md) | Hybrid Auth0 privileged + Better Auth consumer | **Superseded** | Security / Identity | Superseded by ADR-043 greenfield | Do not implement Hybrid target |
+| [ADR-043](./ADR-043-unified-better-auth-human-authentication.md) | Better Auth-all humans; Sparelane AuthenticationAssurance for ADR-033 MFA | Accepted | Security / Identity | Resolves OD-023; narrows OD-024; supersedes ADR-042 | Next: AUTH-B0 foundation |
 
 ## Complementary pairs (not duplicates)
 
@@ -65,7 +67,7 @@ Quick-reference governance index for ADR-001 through ADR-041.
 | ADR-034 / ADR-035 | Admin/ops hardening (H2) vs pilot readiness local evidence scope (I) |
 | ADR-004 / ADR-036 | Append-only ledger principle vs MVP compensating correction workflow policy |
 | ADR-011 / ADR-040 | Centralised secrets principle vs concrete MVP AWS split backends |
-| ADR-033 / ADR-041 | Privileged MFA policy (≤15m server-derived) vs Auth0 amr/auth_time step-up binding |
+| ADR-033 / ADR-043 | Privileged MFA ≤15m via Sparelane AuthenticationAssurance + Better Auth TOTP (Auth0 claims retired) |
 | ADR-038 / ADR-039 | Stripe Connect collection (direct charges) vs Stripe Connect settlement (manual payouts) |
 | ADR-029 / ADR-039 | Payout journal / SETTLED mechanics vs concrete Stripe `paid` finality binding |
 | ADR-029 / ADR-037 | Payout journal mechanics vs provider-mediated settlement (no Sparelane custody) |
@@ -77,4 +79,4 @@ Quick-reference governance index for ADR-001 through ADR-041.
 
 ## None superseded or rejected
 
-No ADRs in 001–041 are Superseded or Rejected at this gate. ADR-041 resolves OD-023. **Independent EXTERNAL_VENDOR_DECISION blockers: 0.** Remaining money/auth path: EXTERNAL_IMPLEMENTATION (managed secrets, Stripe adapters, Auth0 AuthenticationProvider) + LIVE_EVIDENCE. **MVP acceptance still NOT ACCEPTED.** Track 3 OD-023 PASS documented.
+ADR-042 and ADR-041 are **Superseded** by ADR-043 (2026-09-03 Better Auth-all). OD-023 remains resolved. **Independent EXTERNAL_VENDOR_DECISION blockers: 0.** Remaining: EXTERNAL_IMPLEMENTATION (AUTH-B*, Stripe as needed) + BETTER_AUTH_* / Stripe LIVE_EVIDENCE. Auth0 LIVE evidence **not** MVP-mandatory. **MVP acceptance still NOT ACCEPTED.** Gate: [greenfield-better-auth-all-gate.md](./greenfield-better-auth-all-gate.md).

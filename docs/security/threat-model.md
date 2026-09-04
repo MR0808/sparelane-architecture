@@ -13,9 +13,9 @@ Each threat includes: affected assets, attack path, controls, residual risk, sta
 **STRIDE:** Spoofing, Elevation of Privilege  
 **Assets:** consumer profile, payment methods, merchant connections  
 **Attack path:** stolen session cookie; credential compromise; social engineering of recovery; malicious payment-method change after takeover  
-**Controls:** MFA/passkeys where supported; session security; step-up for sensitive actions where appropriate; notifications/audit; ownership checks  
-**Residual risk:** phishing and SIM-swap style attacks may still succeed without strong MFA; recovery-flow abuse remains a design focus  
-**Status:** Controls proposed; IdP/MFA vendor TBD
+**Controls:** Better Auth sessions (HttpOnly); password scrypt; TOTP MFA for elevated populations; Sparelane AuthenticationAssurance for privileged freshness (ADR-043); recovery dual-control for admin MFA reset; notifications/audit; ownership checks  
+**Residual risk:** phishing may still succeed without phishing-resistant MFA (passkeys post-MVP); recovery-flow abuse remains a design focus  
+**Status:** IdP = Better Auth (ADR-043); MFA evidence pending OD-024 / BETTER-AUTH-PRIV-001
 
 ## T-02 — Merchant credential theft
 
@@ -125,6 +125,15 @@ Each threat includes: affected assets, attack path, controls, residual risk, sta
 **Residual risk:** insider threat; dual-control not yet mandated  
 **Status:** Dual-control workflows TBD (ADR-012 covers auditability)
 
+## T-19 — Privileged MFA assurance forgery / refresh bypass
+
+**STRIDE:** Spoofing, Elevation of Privilege  
+**Assets:** PrivilegedActionRequest, ledger corrections, DLQ replay, PlatformAdminGrant  
+**Attack path:** client forges `mfaSatisfiedAt`; session refresh resets MFA age; backup-code or trust-device treated as privileged MFA; Auth metadata used as PlatformAdminGrant  
+**Controls:** Sparelane `AuthenticationAssurance` DB-only writes after verified TOTP (ADR-043); refresh/trustDevice/backup codes must not set privileged MFA; `assertRecentPrivilegedAuthentication` ≤15m; BETTER-AUTH-PRIV-001; Sparelane authZ SoT  
+**Residual risk:** implementation bugs in assurance write path; insider DB write  
+**Status:** Architecture bound (ADR-043); implementation/evidence pending
+
 ---
 
 ## Out of scope for this phase (explicit TBDs)
@@ -133,5 +142,5 @@ Each threat includes: affected assets, attack path, controls, residual risk, sta
 - regulatory licensing assessments
 - penetration testing provider
 - SIEM / WAF / DDoS / fraud vendor selection
-- cryptographic KMS/HSM selection
-- exact session TTLs and MFA implementation
+- cryptographic KMS/HSM selection (money-path secrets narrowed by ADR-040)
+- exact numeric session TTLs (bounds in ADR-043; config at implementation)

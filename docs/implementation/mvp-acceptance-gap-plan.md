@@ -1,14 +1,62 @@
 # MVP acceptance gap plan
 
 **Gate result:** **MVP ACCEPTANCE: NOT ACCEPTED — EXTERNAL_IMPLEMENTATION + LIVE_EVIDENCE** (independent EXTERNAL_VENDOR_DECISION count: **0**)  
-**Date:** 2026-08-25 (Track 3 OD-023 Accept)  
-**Evidence:** `sparelane-platform` Track 1A–1E docs; architecture Phase A–I local Fake complete  
+**Date:** 2026-09-03 (ADR-043 Better Auth-all greenfield; prior ADR-042 Hybrid superseded)  
+**Evidence:** `sparelane-platform` Track 1A–1E docs; architecture Phase A–I local Fake complete; [ADR-043](../decisions/ADR-043-unified-better-auth-human-authentication.md)  
 **FIN-INV-07 decision:** [phase-fin-inv-07-decision-gate](./phase-fin-inv-07-decision-gate.md) — **PASS** ([ADR-036](../decisions/ADR-036-financial-compensating-correction-policy.md))  
 **FIN-INV-07 verification:** **`VERIFIED_LOCAL_FAKE`** (Track 1C + Track 1E from-zero ×2 + post-zero regression) — **not** `product_verified`
 
-Phase I (local Fake pilot readiness) is complete. Tracks 1A–1E closed. **No LOCAL_IMPLEMENTATION or LOCAL_VALIDATION blockers remain.**
+Phase I (local Fake pilot readiness) is complete. Tracks 1A–1E closed. Human-auth target is **Better Auth-all** (ADR-043). Auth0 LIVE browser/MFA evidence is **not** an MVP mandatory track.
 
-## Hard blockers summary (recalculated Track 3 OD-023 Accept)
+## Hard blockers summary (recalculated ADR-043 Accept)
+
+| # | Blocker | Taxonomy | Independently counted? |
+| --- | --- | --- | --- |
+| — | *(none)* | — | **Independent EXTERNAL_VENDOR_DECISION count: 0** |
+
+**Independent EXTERNAL_VENDOR_DECISION count:** **0**.
+
+**MVP acceptance remains NOT ACCEPTED** — EXTERNAL_IMPLEMENTATION + evidence remain.
+
+### Documented follow-ups (not independent vendor decisions)
+
+| Item | Taxonomy | Notes |
+| --- | --- | --- |
+| Managed secret backends (Secrets Manager + KMS envelope) | **EXTERNAL_IMPLEMENTATION** | ADR-040 |
+| Stripe Connect Payment/Settlement adapters + LIVE_EVIDENCE | **EXTERNAL_IMPLEMENTATION** / **LIVE_EVIDENCE** | ADR-038/039 — do not re-run unnecessarily if already evidenced |
+| Better Auth foundation + all-human auth (AUTH-B0…) | **EXTERNAL_IMPLEMENTATION** | ADR-043; [unified checklist](./better-auth-unified-platform-checklist.md) |
+| BETTER_AUTH_SECURITY_EVIDENCE | **LIVE_EVIDENCE** / LOCAL | AUTH-B2/B7 |
+| BETTER_AUTH_PRIVILEGED_MFA_EVIDENCE | **LIVE_EVIDENCE** / LOCAL | BETTER-AUTH-PRIV-001; OD-024 |
+| Auth0 LIVE browser/MFA evidence | **NOT_REQUIRED** | Removed from MVP track (ADR-043) |
+| [OD-024](../decisions/open/OD-024-mfa-passkey.md) | EXTERNAL_IMPLEMENTATION | Narrowed; not production-verified |
+| [OD-035](../decisions/open/OD-035-email-provider.md) | LIVE_EVIDENCE / pilot | Verification/reset mail |
+
+### Closed (removed from blocker list)
+
+| Item | Status |
+| --- | --- |
+| OD-023 production IdP | **CLOSED** — ADR-043 Better Auth-all |
+| Auth0 as MVP IdP dependency | **REMOVED** from target (AUTH-B6 cleanup later) |
+| Hybrid Auth0 privileged path (ADR-042) | **SUPERSEDED** |
+
+### Track 5 — ADR-043 GREENFIELD BETTER AUTH-ALL — **PASS (architecture)**
+
+Gate: [greenfield-better-auth-all-gate.md](../decisions/greenfield-better-auth-all-gate.md).
+
+- **Selected:** Better Auth for consumer + merchant + admin
+- MFA: Sparelane AuthenticationAssurance + TOTP; ≤15m ADR-033 unchanged
+- Next platform activity: **AUTH-B0 Better Auth foundation**
+
+### Track 6 — **NEXT: AUTH-B0_BETTER_AUTH_FOUNDATION**
+
+1. AUTH-B0…AUTH-B-EXIT per unified checklist
+2. Stripe evidence: retain; do not repeat unnecessarily
+3. Do not finish Auth0 LIVE evidence as MVP mandatory
+4. AUTH-B6 Auth0 removal after Better Auth evidence
+
+---
+
+## Historical notes (Track 3 era — superseded)
 
 | # | Blocker | Taxonomy | Independently counted? |
 | --- | --- | --- | --- |
@@ -18,7 +66,7 @@ Phase I (local Fake pilot readiness) is complete. Tracks 1A–1E closed. **No LO
 
 **MVP acceptance remains NOT ACCEPTED** — EXTERNAL_IMPLEMENTATION + LIVE_EVIDENCE remain.
 
-### Documented follow-ups (not independent vendor decisions)
+### Documented follow-ups (Track 3 era — historical)
 
 | Item | Taxonomy | Notes |
 | --- | --- | --- |
@@ -31,7 +79,7 @@ Phase I (local Fake pilot readiness) is complete. Tracks 1A–1E closed. **No LO
 | [OD-024](../decisions/open/OD-024-mfa-passkey.md) | EXTERNAL_IMPLEMENTATION | Narrowed; not a vendor blocker |
 | [OD-035](../decisions/open/OD-035-email-provider.md) | LIVE_EVIDENCE / pilot | Local Fake satisfies G2 |
 
-### Closed (removed from blocker list)
+### Closed (removed from blocker list) — Track 3 era
 
 | Item | Status |
 | --- | --- |
@@ -126,24 +174,33 @@ Gate date: 2026-08-25. Binding: [ADR-040](../decisions/ADR-040-mvp-managed-secre
 
 ### Track 3 — OD-023 PRODUCTION IdP — **PASS**
 
-Gate date: 2026-08-25. Binding: [ADR-041](../decisions/ADR-041-mvp-production-identity-provider-selection.md).
+Gate date: 2026-08-25. Binding: [ADR-041](../decisions/ADR-041-mvp-production-identity-provider-selection.md) (later **Superseded** by ADR-042).
 
-- **Selected:** Auth0 human IdP; Sparelane remains authorisation SoT
+- **Selected (then):** Auth0 human IdP for all humans; Sparelane remains authorisation SoT
 - ADR-033 MFA: Auth0 step-up + `amr` contains `mfa` → `mfaSatisfiedAt` (≤15 min); fail closed
-- OD-023 **resolved**; OD-024 **narrowed**; Auth0 adapter **not** implemented
+- OD-023 **resolved**; OD-024 **narrowed**; Auth0 adapter **not** implemented at that gate
 - Independent EXTERNAL_VENDOR_DECISION count → **0**
 - **MVP acceptance still NOT ACCEPTED**
 
-### Track 4 — **NEXT: ADR-040 MANAGED SECRETS PLATFORM IMPLEMENTATION**
+### Track 4 — ADR-041 RECONSIDERATION / ADR-042 HYBRID — **PASS (architecture; later superseded)**
 
-Architecture/vendor decision work for MVP is complete unless a new blocker appears. Next = platform EXTERNAL_IMPLEMENTATION:
+Gate date: 2026-09-03. Binding: [ADR-042](../decisions/ADR-042-human-authentication-population-split.md) — later **Superseded** by ADR-043.
 
-1. Managed-secret backends (ADR-040) — unblocks Stripe + Auth0 live credentials
-2. Stripe PaymentProvider + SettlementProvider
-3. Auth0 AuthenticationProvider + admin step-up
-4. LIVE_EVIDENCE (Stripe sandbox E2E; Auth0 MFA sandbox)
+- **Selected (then):** Auth0 for merchant/admin; Better Auth for consumers
+- Platform code **not** changed in that gate
 
-### Track 4 notes — OPS / COMPLIANCE (mostly non-blocking for MVP local gate)
+### Track 5 — ADR-043 GREENFIELD BETTER AUTH-ALL — **PASS (architecture)**
+
+See top of this document. Binding: [ADR-043](../decisions/ADR-043-unified-better-auth-human-authentication.md).
+
+### Track 6 — **NEXT: AUTH-B0_BETTER_AUTH_FOUNDATION**
+
+1. AUTH-B0…AUTH-B-EXIT ([unified checklist](./better-auth-unified-platform-checklist.md))
+2. Retain Stripe LIVE evidence; do not repeat unnecessarily
+3. Auth0 LIVE MFA evidence **NOT_REQUIRED** for MVP
+4. AUTH-B6 remove Auth0 after Better Auth evidence
+
+### Track notes — OPS / COMPLIANCE (mostly non-blocking for MVP local gate)
 
 OD-021 SIEM, external pen-test, PCI/SOC certification — production-oriented; keep as **NON_BLOCKING_RISK** / **COMPLIANCE_EXTERNAL** unless criteria explicitly require them for MVP acceptance.
 
@@ -151,31 +208,30 @@ OD-021 SIEM, external pen-test, PCI/SOC certification — production-oriented; k
 
 ```text
 ~~OD-036~~ ADR-037 → ~~OD-008~~ ADR-038 → Stripe PaymentProvider ─┐
-~~OD-009~~ ADR-039 → Stripe SettlementProvider ───────────────────┼→ LIVE_EVIDENCE
+~~OD-009~~ ADR-039 → Stripe SettlementProvider ───────────────────┼→ LIVE_EVIDENCE (retain)
 ~~OD-025~~ ADR-040 → managed-secret backends ─────────────────────┤
-~~OD-023~~ ADR-041 → Auth0 AuthenticationProvider + MFA step-up ──┘
+~~OD-023~~ ADR-043 → Better Auth AUTH-B* + AuthenticationAssurance ┘
 ```
 
-## Why next is managed-secrets implementation
+## Why next is AUTH-B0
 
 | Question | Answer |
 | --- | --- |
 | Remaining EXTERNAL_VENDOR_DECISION? | **None** |
-| Does MVP acceptance pass? | **No** — implementation + LIVE_EVIDENCE remain |
-| Exact next activity | **ADR-040 managed-secrets EXTERNAL_IMPLEMENTATION** (before live Stripe/Auth0 secrets) |
+| Does MVP acceptance pass? | **No** — AUTH-B* + BETTER_AUTH_* evidence remain |
+| Exact next activity | **AUTH-B0 Better Auth foundation** |
 
-## MVP requirement matrix (Track 3 PASS)
+## MVP requirement matrix (ADR-043)
 
 | Criterion area | Classification |
 | --- | --- |
 | Local Fake collection / ledger / settlement / auth | **LOCAL_PASS** |
 | FIN-INV-01…10 | **LOCAL_PASS** (`VERIFIED_LOCAL_FAKE`) |
-| PSP / settlement / secrets / IdP vendor decisions | **CLOSED** (ADR-038/039/040/041) |
-| Managed-secret backends | **EXTERNAL_IMPLEMENTATION** |
-| Stripe PaymentProvider + SettlementProvider | **EXTERNAL_IMPLEMENTATION** |
-| Auth0 AuthenticationProvider + MFA step-up | **EXTERNAL_IMPLEMENTATION** |
-| Live money / auth E2E | **LIVE_EVIDENCE_PENDING** |
-| AU legal perimeter confirmation | **NON_BLOCKING_RISK** |
+| IdP architecture | **CLOSED** (ADR-043 Better Auth-all) |
+| AUTH-B* Better Auth implementation | **EXTERNAL_IMPLEMENTATION** |
+| BETTER_AUTH_SECURITY / PRIVILEGED_MFA evidence | **EVIDENCE_PENDING** |
+| Auth0 LIVE evidence | **NOT_REQUIRED** |
+| Stripe LIVE evidence | **RETAIN** (do not re-run unnecessarily) |
 | MVP acceptance | **NOT ACCEPTED** |
 
 ## Non-blocking risks (not blockers)

@@ -11,7 +11,7 @@ Domain modules talk to **interfaces**, not vendor SDKs.
 | KYC/KYB | Start/verify business verification |
 | Email | Send transactional email ([ADR-031](../decisions/ADR-031-consumer-notification-contact-channel-and-delivery-policy.md)) |
 | SMS | Send transactional SMS — **G3+** |
-| Identity (where relevant) | OAuth/OIDC/passkey verification — MVP human IdP = Auth0 ([ADR-041](../decisions/ADR-041-mvp-production-identity-provider-selection.md)) |
+| Identity (where relevant) | Better Auth-all humans ([ADR-043](../decisions/ADR-043-unified-better-auth-human-authentication.md)); Sparelane AuthenticationAssurance for privileged MFA; Sparelane authZ SoT |
 
 ## Rules
 
@@ -29,6 +29,8 @@ Domain modules talk to **interfaces**, not vendor SDKs.
 ## Checklists
 
 - Managed secrets: [managed-secrets-backend-checklist.md](./managed-secrets-backend-checklist.md)
-- Auth0 human auth: [auth0-authentication-provider-checklist.md](./auth0-authentication-provider-checklist.md)
+- Unified Better Auth (all humans): [better-auth-unified-platform-checklist.md](./better-auth-unified-platform-checklist.md)
+- Auth0 (legacy — remove AUTH-B6): [auth0-authentication-provider-checklist.md](./auth0-authentication-provider-checklist.md)
+- Historical consumer-only Better Auth checklist: [better-auth-consumer-implementation-checklist.md](./better-auth-consumer-implementation-checklist.md) (superseded by unified checklist)
 - Payment: [stripe-connect-adapter-checklist.md](./stripe-connect-adapter-checklist.md)
 - Settlement: [stripe-connect-settlement-adapter-checklist.md](./stripe-connect-settlement-adapter-checklist.md)

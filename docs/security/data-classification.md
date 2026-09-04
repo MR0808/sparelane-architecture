@@ -43,6 +43,8 @@ Highest sensitivity within Sparelane-controlled systems.
 Examples:
 
 - authentication secrets and session material
+- Better Auth password hashes; encrypted TOTP secrets / backup codes
+- Sparelane AuthenticationAssurance records (session-scoped MFA timestamps)
 - API key material (hashes/references; plaintext only at one-time issuance)
 - webhook signing secrets
 - financial ledger data

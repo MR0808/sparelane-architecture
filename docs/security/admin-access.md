@@ -69,7 +69,7 @@ Deny-by-default. H0 read capabilities unchanged. No other mutation capabilities 
 
 ### Recent MFA
 
-Request, approve, and execute each require recent MFA (`PrivilegedAuthenticationContext`; max age **15 minutes**). MFA **policy** bound by ADR-033; production IdP = Auth0 ([ADR-041](../decisions/ADR-041-mvp-production-identity-provider-selection.md)); adapter/step-up implementation remains EXTERNAL_IMPLEMENTATION ([OD-024](../decisions/open/OD-024-mfa-passkey.md) narrowed).
+Request, approve, and execute each require recent MFA (`PrivilegedAuthenticationContext`; max age **15 minutes**). MFA **policy** bound by ADR-033; human IdP = Better Auth with Sparelane `AuthenticationAssurance` ([ADR-043](../decisions/ADR-043-unified-better-auth-human-authentication.md)); implementation/evidence remains EXTERNAL_IMPLEMENTATION ([OD-024](../decisions/open/OD-024-mfa-passkey.md) — not production-verified by architecture alone).
 
 ### Deferred (non-blocking for H1)
 

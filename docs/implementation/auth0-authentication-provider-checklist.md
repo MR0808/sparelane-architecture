@@ -1,7 +1,9 @@
-# Platform checklist — Auth0 AuthenticationProvider (ADR-041)
+# Platform checklist — Auth0 AuthenticationProvider (LEGACY — AUTH-B6 removal)
 
-**Status:** Architecture-only (no code in this track)  
-**Binding:** [ADR-041](../decisions/ADR-041-mvp-production-identity-provider-selection.md)
+**Status:** Legacy — **not** target architecture after [ADR-043](../decisions/ADR-043-unified-better-auth-human-authentication.md)  
+**Do not** expand Auth0 work for MVP. Prefer [better-auth-unified-platform-checklist.md](./better-auth-unified-platform-checklist.md).  
+**Historical binding:** ADR-041 / ADR-042 (both superseded)
+
 
 ## Location
 
